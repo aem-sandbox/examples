@@ -1,9 +1,9 @@
-# Your Project's Title...
-Your project's description...
+# AEM Examples
+Curated collection of real-world implementation examples built with Adobe Experience Manager Edge Delivery Services and Document Authoring.
 
 ## Environments
-- Preview: https://main--{repo}--{owner}.aem.page/
-- Live: https://main--{repo}--{owner}.aem.live/
+- Preview: https://main--examples--aem-sandbox.aem.page/
+- Live: https://main--examples--aem-sandbox.aem.live/
 
 ## Documentation
 
