@@ -1,20 +1,23 @@
 footer {
+  margin-top: var(--section-space);
+  border-top: 1px solid var(--color-border);
   background-color: var(--light-color);
   font-size: var(--body-font-size-xs);
 }
 
 footer .footer > div {
   margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+  max-width: var(--content-max-width);
+  padding: var(--space-xl) var(--content-padding-inline) var(--space-l);
 }
 
 footer .footer p {
   margin: 0;
+  line-height: 1.6;
 }
 
 @media (width >= 900px) {
   footer .footer > div {
-    padding: 40px 32px 24px;
+    padding: var(--space-xl) var(--space-xl) var(--space-l);
   }
 }

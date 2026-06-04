@@ -12,6 +12,40 @@ import {
   loadCSS,
 } from './aem.js';
 
+const COLOR_SCHEME_KEY = 'color-scheme';
+
+/**
+ * Applies light or dark color scheme to the page.
+ * @param {string} [scheme] 'light-scheme' or 'dark-scheme'
+ */
+export function applyColorScheme(scheme) {
+  let pref = scheme;
+  if (!pref) {
+    try {
+      pref = localStorage.getItem(COLOR_SCHEME_KEY);
+    } catch (e) {
+      // ignore
+    }
+  }
+  if (pref !== 'light-scheme' && pref !== 'dark-scheme') {
+    pref = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark-scheme' : 'light-scheme';
+  }
+  document.body.classList.remove('light-scheme', 'dark-scheme');
+  document.body.classList.add(pref);
+  try {
+    localStorage.setItem(COLOR_SCHEME_KEY, pref);
+  } catch (e) {
+    // ignore
+  }
+}
+
+/** Toggles between light and dark color scheme. */
+export function toggleColorScheme() {
+  applyColorScheme(document.body.classList.contains('dark-scheme') ? 'light-scheme' : 'dark-scheme');
+}
+
+applyColorScheme();
+
 /**
  * Builds hero block and prepends to main in a new section.
  * @param {Element} main The container element
@@ -21,12 +55,21 @@ function buildHeroBlock(main) {
   const picture = main.querySelector('picture');
   // eslint-disable-next-line no-bitwise
   if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
-    // Check if h1 or picture is already inside a hero block
     if (h1.closest('.hero') || picture.closest('.hero')) {
-      return; // Don't create a duplicate hero block
+      return;
+    }
+    const textElems = [h1];
+    let sibling = h1.nextElementSibling;
+    while (sibling?.tagName === 'P' && !sibling.classList.contains('button-wrapper')) {
+      textElems.push(sibling);
+      sibling = sibling.nextElementSibling;
     }
     const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
+    // Image and text in separate rows so wrapTextNodes does not wrap them in one <p>
+    section.append(buildBlock('hero', [
+      [{ elems: [picture] }],
+      [{ elems: textElems }],
+    ]));
     main.prepend(section);
   }
 }
@@ -133,6 +176,14 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+  try {
+    if (!localStorage.getItem(COLOR_SCHEME_KEY)) {
+      if (document.body.classList.contains('dark')) applyColorScheme('dark-scheme');
+      else if (document.body.classList.contains('light')) applyColorScheme('light-scheme');
+    }
+  } catch (e) {
+    // ignore
+  }
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);

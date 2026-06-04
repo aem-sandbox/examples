@@ -1,1 +1,14 @@
-/* add global styles that can be loaded post LCP here */
+/* below-fold polish */
+
+main > .section > div > p.button-wrapper:first-child {
+  margin-top: 0;
+}
+
+main h2 + p {
+  margin-top: 0.35em;
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+main .default-content-wrapper > p > a:not(.button) {
+  font-weight: 500;
+}
