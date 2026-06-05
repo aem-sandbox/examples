@@ -277,9 +277,9 @@ header nav .nav-tools a.button.nav-auth-link:any-link {
 
 header nav .nav-tools a.button.nav-auth-link:any-link:hover,
 header nav .nav-tools a.button.nav-auth-link:any-link:focus-visible {
-  border-color: var(--color-red-600);
+  border-color: var(--color-blue-600);
   background-color: var(--color-brand-subtle);
-  color: var(--color-red-600);
+  color: var(--color-blue-600);
   transform: translateY(-1px);
 }
 

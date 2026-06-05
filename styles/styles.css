@@ -19,16 +19,18 @@
   --color-gray-500: #6f6f6f;
   --color-gray-600: #525252;
   --color-gray-900: #2b2b2b;
-  --color-red-500: #eb1000;
-  --color-red-600: #c40000;
-  --color-red-400: #ff4747;
+  --color-blue-500: #1473e6;
+  --color-blue-600: #095aba;
+  --color-blue-400: #5599ff;
   --color-light: #fff;
   --color-dark: #000;
 
   /* semantic tokens */
   --color-text: light-dark(var(--color-dark), var(--color-light));
   --color-link: light-dark(var(--color-gray-900), var(--color-gray-100));
-  --color-brand: var(--color-red-500);
+  --color-brand: var(--color-blue-500);
+  --color-brand-rgb: 20 115 230;
+  --color-brand-rgb-light: 85 153 255;
   --color-background: light-dark(var(--color-light), var(--color-dark));
   --color-shaded: light-dark(#faf9f7, #141414);
 
@@ -38,7 +40,7 @@
   --dark-color: var(--color-gray-500);
   --text-color: var(--color-text);
   --link-color: var(--color-brand);
-  --link-hover-color: var(--color-red-600);
+  --link-hover-color: var(--color-blue-600);
 
   /* fonts */
   --body-font-family: montserrat, "Trebuchet MS", sans-serif;
@@ -71,15 +73,15 @@
 
   /* interactive surfaces */
   --color-border: light-dark(var(--color-gray-200), var(--color-gray-600));
-  --color-brand-subtle: light-dark(rgb(235 16 0 / 8%), rgb(235 16 0 / 16%));
+  --color-brand-subtle: light-dark(rgb(var(--color-brand-rgb) / 8%), rgb(var(--color-brand-rgb) / 16%));
   --color-hover-surface: light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 10%));
   --shadow-dropdown: 0 12px 32px light-dark(rgb(0 0 0 / 8%), rgb(0 0 0 / 35%));
   --shadow-soft: 0 2px 16px light-dark(rgb(0 0 0 / 6%), rgb(0 0 0 / 28%));
   --shadow-card: 0 8px 40px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 40%));
   --shadow-lift: 0 16px 40px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 35%));
-  --gradient-brand: linear-gradient(135deg, var(--color-red-600) 0%, var(--color-red-500) 52%, #ff5c45 100%);
+  --gradient-brand: linear-gradient(135deg, var(--color-blue-600) 0%, var(--color-blue-500) 52%, var(--color-blue-400) 100%);
   --gradient-surface:
-    radial-gradient(ellipse 70% 45% at 8% 0%, light-dark(rgb(235 16 0 / 7%), rgb(235 16 0 / 12%)) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 45% at 8% 0%, light-dark(rgb(var(--color-brand-rgb) / 7%), rgb(var(--color-brand-rgb) / 12%)) 0%, transparent 58%),
     radial-gradient(ellipse 50% 35% at 92% 88%, light-dark(rgb(0 0 0 / 4%), rgb(255 255 255 / 4%)) 0%, transparent 52%);
 
   /* buttons */
@@ -123,7 +125,7 @@ html {
 }
 
 ::selection {
-  background: light-dark(rgb(235 16 0 / 22%), rgb(235 16 0 / 35%));
+  background: light-dark(rgb(var(--color-brand-rgb) / 22%), rgb(var(--color-brand-rgb) / 35%));
 }
 
 body {
@@ -246,7 +248,7 @@ a:hover {
 main a:any-link:not(.button):hover {
   text-decoration: underline;
   text-underline-offset: 0.22em;
-  text-decoration-color: light-dark(rgb(235 16 0 / 45%), rgb(255 71 71 / 55%));
+  text-decoration-color: light-dark(rgb(var(--color-brand-rgb) / 45%), rgb(var(--color-brand-rgb-light) / 55%));
 }
 
 /* buttons */
