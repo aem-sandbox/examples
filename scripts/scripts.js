@@ -8,8 +8,8 @@ import {
   decorateTemplateAndTheme,
   waitForFirstImage,
   loadSection,
-  loadSections,
   loadCSS,
+  sampleRUM,
 } from './aem.js';
 
 const COLOR_SCHEME_KEY = 'color-scheme';
@@ -86,30 +86,45 @@ async function loadFonts() {
   }
 }
 
+/** Hash that opts out of fragment auto-blocking. Links with #_dnb stay as normal links. */
+const DNB_HASH = '#_dnb';
+
+/**
+ * Inlines fragment links in a section.
+ * @param {Element} section The section element
+ */
+async function loadFragments(section) {
+  const links = [...section.querySelectorAll('a[href*="/fragments/"]')]
+    .filter((a) => !a.closest('.fragment'));
+  const fragments = links.filter((a) => {
+    if (a.href.includes(DNB_HASH)) {
+      a.href = a.href.replace(DNB_HASH, '').replace(/#$/, '');
+      return false;
+    }
+    return true;
+  });
+  if (fragments.length === 0) return;
+
+  const { loadFragment } = await import('../blocks/fragment/fragment.js');
+  await Promise.all(fragments.map(async (a) => {
+    try {
+      const { pathname } = new URL(a.href);
+      const frag = await loadFragment(pathname);
+      if (!frag) return;
+      a.parentElement.replaceWith(...frag.children);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Fragment loading failed', error);
+    }
+  }));
+}
+
 /**
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
 function buildAutoBlocks(main) {
   try {
-    // auto load `*/fragments/*` references
-    const fragments = [...main.querySelectorAll('a[href*="/fragments/"]')].filter((f) => !f.closest('.fragment'));
-    if (fragments.length > 0) {
-      // eslint-disable-next-line import/no-cycle
-      import('../blocks/fragment/fragment.js').then(({ loadFragment }) => {
-        fragments.forEach(async (fragment) => {
-          try {
-            const { pathname } = new URL(fragment.href);
-            const frag = await loadFragment(pathname);
-            fragment.parentElement.replaceWith(...frag.children);
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Fragment loading failed', error);
-          }
-        });
-      });
-    }
-
     buildHeroBlock(main);
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -188,7 +203,10 @@ async function loadEager(doc) {
   if (main) {
     decorateMain(main);
     document.body.classList.add('appear');
-    await loadSection(main.querySelector('.section'), waitForFirstImage);
+    await loadSection(main.querySelector('.section'), async (s) => {
+      await waitForFirstImage(s);
+      await loadFragments(s);
+    });
   }
 
   try {
@@ -209,7 +227,14 @@ async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
 
   const main = doc.querySelector('main');
-  await loadSections(main);
+  if (main) {
+    const sections = [...main.querySelectorAll('.section')];
+    for (let i = 0; i < sections.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await loadSection(sections[i], loadFragments);
+      if (i === 0 && sampleRUM.enhance) sampleRUM.enhance();
+    }
+  }
 
   const { hash } = window.location;
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
