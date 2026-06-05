@@ -1,0 +1,275 @@
+/* form block */
+
+main .form-container {
+  max-width: min(var(--content-max-width), 720px);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-l) var(--content-padding-inline);
+  box-sizing: border-box;
+}
+
+main .form-container .form-wrapper {
+  margin-top: var(--space-m);
+}
+
+.form form,
+main .form form {
+  position: relative;
+  display: grid;
+  gap: var(--space-m);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-l);
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 10%), rgb(255 255 255 / 10%));
+  border-radius: var(--radius-l);
+  background-color: light-dark(var(--color-light), var(--color-gray-900));
+  background-image: light-dark(
+    linear-gradient(118deg, rgb(var(--color-brand-rgb) / 4%) 0%, transparent 42%),
+    linear-gradient(118deg, rgb(var(--color-brand-rgb) / 12%) 0%, transparent 48%)
+  );
+  box-shadow: var(--shadow-soft);
+  color: inherit;
+  overflow: hidden;
+}
+
+.form form::after,
+main .form form::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--gradient-brand);
+  opacity: 0.85;
+}
+
+.form [aria-hidden='true'] {
+  display: none;
+}
+
+.form input,
+.form textarea,
+.form select,
+.form button {
+  box-sizing: border-box;
+  display: block;
+  max-width: 100%;
+  font: inherit;
+}
+
+.form input,
+.form textarea,
+.form select {
+  scroll-margin: 1em;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
+  background: light-dark(var(--color-light), rgb(255 255 255 / 6%));
+  color: inherit;
+  font-size: var(--body-font-size-s);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form fieldset {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+.form input:hover,
+.form textarea:hover,
+.form select:hover {
+  border-color: light-dark(var(--color-gray-500), var(--color-gray-200));
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px rgb(var(--color-brand-rgb) / 12%);
+}
+
+.form input:disabled,
+.form textarea:disabled,
+.form select:disabled,
+.form input[readonly],
+.form textarea[readonly],
+.form select[readonly] {
+  opacity: 0.6;
+  background: transparent;
+  color: inherit;
+}
+
+.form input[type='checkbox'],
+.form input[type='radio'] {
+  width: unset;
+  accent-color: var(--color-brand);
+}
+
+.form .form-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.form .form-field > label:first-child,
+.form .form-field > legend {
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.form label[data-required]::after,
+.form legend[data-required]::after {
+  content: '*';
+  margin-left: 0.25ch;
+  color: var(--color-brand);
+}
+
+.form .form-field.checkbox-field label,
+.form .form-field.radio-field label {
+  position: relative;
+  padding-left: calc(1em + 1ch);
+  font-size: var(--body-font-size-s);
+  font-weight: 500;
+  line-height: 44px;
+  cursor: pointer;
+}
+
+.form .form-field.checkbox-field label input,
+.form .form-field.radio-field label input,
+.form .form-field.toggle-field label input {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  margin: 0;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+}
+
+.form .form-field.toggle-field label {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1ch;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.form .form-field.toggle-field label input {
+  width: 2em;
+  opacity: 0;
+  border-radius: 50%;
+}
+
+.form .form-field.toggle-field label span {
+  position: relative;
+  width: calc(2em + 2px);
+  height: calc(1em + 2px);
+  border-radius: 1em;
+  border: 1px solid var(--color-border);
+  background: var(--color-border);
+  opacity: 0.55;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  cursor: pointer;
+}
+
+.form .form-field.toggle-field label span::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: var(--color-background);
+  transition: left var(--transition-fast);
+}
+
+.form .form-field.toggle-field label input:checked + span {
+  opacity: 1;
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.form .form-field.toggle-field label input:checked + span::after {
+  left: calc(100% - 1em);
+}
+
+.form .form-field.toggle-field label input:focus-visible + span {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.form .field-help-text {
+  margin: 0;
+  color: var(--dark-color);
+  font-size: var(--body-font-size-xs);
+  line-height: 1.45;
+}
+
+.form .form-status {
+  margin: 0;
+  min-height: 1.25em;
+  font-size: var(--body-font-size-s);
+  font-weight: 500;
+  color: var(--color-brand);
+}
+
+.form .button-wrapper {
+  margin-top: var(--space-xs);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--space-s);
+}
+
+.form .button-wrapper button {
+  width: auto;
+  min-width: fit-content;
+}
+
+@media (width >= 600px) {
+  main .form-container {
+    padding: var(--space-xl) var(--content-padding-inline);
+  }
+
+  .form form,
+  main .form form {
+    padding: var(--space-xl);
+    gap: var(--space-l);
+  }
+
+  .form .form-field.checkbox-field,
+  .form .form-field.radio-field {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25ch 1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form input,
+  .form textarea,
+  .form select,
+  .form .form-field.toggle-field label span,
+  .form .form-field.toggle-field label span::after {
+    transition: none;
+  }
+}

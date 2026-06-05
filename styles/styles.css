@@ -455,26 +455,37 @@ main > .section.divider::after {
    Alignment utils — section metadata or block styles:
    align-center | align-left | align-right
 
-   Section align-*: layout — positions section children on the page axis.
-   Block align-*: content alignment via text-align on the block and direct children.
+   Section align-*: layout for blocks only (not default-content-wrapper).
+   Section align-center: also centers text in default content.
+   Block align-*: text-align on the block and direct children.
    ========================================================================== */
 
-/* section layout */
-main > .section.align-center:not(.hero-container) > div:not(.hero) {
+/* section layout — blocks only */
+main > .section.align-center:not(.hero-container) > div:not(.hero, .default-content-wrapper) {
   width: fit-content;
   max-width: var(--grid-container-width);
   margin-inline: auto;
 }
 
-main > .section.align-left:not(.hero-container) > div:not(.hero) {
+main > .section.align-left:not(.hero-container) > div:not(.hero, .default-content-wrapper) {
   margin-inline: 0;
 }
 
-main > .section.align-right:not(.hero-container) > div:not(.hero) {
+main > .section.align-right:not(.hero-container) > div:not(.hero, .default-content-wrapper) {
   width: fit-content;
   max-width: var(--grid-container-width);
   margin-inline-start: auto;
   margin-inline-end: 0;
+}
+
+/* section default content */
+main > .section.align-center:not(.hero-container) .default-content-wrapper,
+main > .section.align-center:not(.hero-container) .default-content-wrapper > * {
+  text-align: center;
+}
+
+main > .section.align-center:not(.hero-container) .default-content-wrapper a:any-link {
+  margin-inline-start: 0;
 }
 
 /* block content alignment */
