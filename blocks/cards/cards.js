@@ -179,6 +179,26 @@ function optimizeCardImages(ul, featuredSelector = null) {
   });
 }
 
+function wrapBentoCardLink(li) {
+  const linkEl = li.querySelector('.cards-card-body a[href], .cards-card-image a[href]');
+  if (!linkEl) return;
+
+  const wrapper = createTag('a', {
+    href: linkEl.getAttribute('href'),
+    class: 'cards-card-link',
+  });
+  const label = linkEl.textContent.trim();
+  if (label) wrapper.setAttribute('aria-label', label);
+
+  while (li.firstChild) wrapper.append(li.firstChild);
+  li.append(wrapper);
+
+  linkEl.replaceWith(...linkEl.childNodes);
+  li.querySelectorAll('.cards-card-body a[href]').forEach((a) => {
+    a.replaceWith(...a.childNodes);
+  });
+}
+
 function decorateBento(ul) {
   [...ul.children].forEach((li, index) => {
     if (index === 0) li.classList.add('cards-bento-featured');
@@ -213,26 +233,7 @@ function decorateBento(ul) {
       }
     }
 
-    const link = body?.querySelector('a[href]');
-    if (!link) return;
-
-    li.classList.add('cards-bento-linked');
-    li.setAttribute('tabindex', '0');
-    li.setAttribute('role', 'link');
-    li.setAttribute('aria-label', link.textContent.trim());
-    const follow = () => {
-      window.location.href = link.href;
-    };
-    li.addEventListener('click', (event) => {
-      if (event.target.closest('a')) return;
-      follow();
-    });
-    li.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        follow();
-      }
-    });
+    wrapBentoCardLink(li);
   });
 }
 
