@@ -517,14 +517,6 @@ main blockquote {
     --heading-font-size-s: 20px;
     --heading-font-size-xs: 18px;
   }
-
-  main > .section.divider {
-    padding-block: calc(var(--space-xl) * 1.5);
-  }
-
-  main > .section.divider:first-child {
-    padding-block-start: 0;
-  }
 }
 
 @media (width >= 1200px) {
