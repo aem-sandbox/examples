@@ -18,18 +18,6 @@ export function createTag(tag, attributes = {}, content = null) {
   return el;
 }
 
-/** Resolve document vs shadow-root context for blocks that attach global UI. */
-export function getBlockContext(block) {
-  const root = block.getRootNode();
-  const isEmbed = root !== document;
-  return {
-    root,
-    body: isEmbed ? root.querySelector('body') : document.body,
-    eventRoot: isEmbed ? root : document,
-    isEmbed,
-  };
-}
-
 export const QUERY_INDEX_PAGE_SIZE = 500;
 
 export function formatDate(dateValue) {

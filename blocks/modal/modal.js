@@ -2,11 +2,12 @@
  * Modal Block – opens fragment links in a dialog instead of navigating.
  */
 
-import { loadFragment } from '../fragment/fragment.js';
 import { loadCSS } from '../../scripts/aem.js';
-import { createTag, getBlockContext } from '../../scripts/shared.js';
+import { createTag } from '../../scripts/shared.js';
 
 const FRAGMENT_PREFIX = '/fragments/';
+
+let fragmentModalReady = false;
 
 function getFragmentPath(href = '') {
   try {
@@ -18,11 +19,16 @@ function getFragmentPath(href = '') {
   }
 }
 
-export function setupFragmentModal(el) {
-  if (window.__fragmentModalReady) return;
-  window.__fragmentModalReady = true;
+async function decorateModalContent(main) {
+  if (!main?.querySelector('.section[data-tab-id]')) return;
 
-  const { eventRoot } = getBlockContext(el);
+  const { createTabs } = await import('../tabs/tabs.js');
+  await createTabs(main);
+}
+
+export function setupFragmentModal(el) {
+  if (fragmentModalReady) return;
+  fragmentModalReady = true;
 
   loadCSS(`${window.hlx.codeBasePath}/blocks/modal/modal.css`);
 
@@ -56,14 +62,13 @@ export function setupFragmentModal(el) {
     closeBtn.focus();
 
     try {
+      const { loadFragment } = await import('../fragment/fragment.js');
       const fragment = await loadFragment(path);
       if (fragment) {
         const main = createTag('main', { class: 'modal-main' });
         main.append(...fragment.childNodes);
         content.replaceChildren(main);
-        // eslint-disable-next-line import/no-cycle
-        const { default: dynamicBlocks } = await import('../dynamic/index.js');
-        await dynamicBlocks(main);
+        await decorateModalContent(main);
       } else {
         content.textContent = 'Unable to load this content right now.';
       }
@@ -75,11 +80,11 @@ export function setupFragmentModal(el) {
 
   closeBtn.addEventListener('click', close);
   backdrop.addEventListener('click', close);
-  eventRoot.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !modalRoot.hidden) close();
   });
 
-  eventRoot.addEventListener('click', (e) => {
+  document.addEventListener('click', (e) => {
     const link = e.target.closest('main a[href*="/fragments/"]');
     if (!link) return;
     if (link.closest('header, footer, nav, .modal')) return;

@@ -272,6 +272,9 @@ async function loadLazy(doc) {
       if (i === 0 && sampleRUM.enhance) sampleRUM.enhance();
     }
 
+    const { setupFragmentModal } = await import('../blocks/modal/modal.js');
+    setupFragmentModal(main);
+
     const { default: dynamicBlocks } = await import('../blocks/dynamic/index.js');
     await dynamicBlocks(main);
   }
