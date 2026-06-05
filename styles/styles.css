@@ -454,7 +454,7 @@ main > .section.divider::after {
    align-center | align-left | align-right
 
    Section align-*: layout — positions section children on the page axis.
-   Block align-*: typography — text alignment within the block.
+   Block align-*: content alignment via text-align on the block and direct children.
    ========================================================================== */
 
 /* section layout */
@@ -476,16 +476,23 @@ main > .section.align-right:not(.hero-container) > div:not(.hero) {
 }
 
 /* block content alignment */
-.block.align-center {
+.block.align-center,
+.block.align-center > * {
   text-align: center;
 }
 
-.block.align-left {
+.block.align-left,
+.block.align-left > * {
   text-align: start;
 }
 
-.block.align-right {
+.block.align-right,
+.block.align-right > * {
   text-align: end;
+}
+
+.block:is(.align-center, .align-left, .align-right) a:any-link {
+  margin-inline-start: 0;
 }
 
 main blockquote {

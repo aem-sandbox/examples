@@ -26,15 +26,6 @@
   padding: var(--space-l) var(--space-xl);
 }
 
-.teaser > div > div {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-m) var(--space-l);
-  width: 100%;
-}
-
 .teaser :is(h2, h3, h4) {
   margin: 0 0 0.35em;
   font-size: var(--heading-font-size-s);
@@ -42,11 +33,6 @@
 }
 
 .teaser p {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-m) var(--space-l);
   margin: 0;
   font-size: var(--body-font-size-m);
   line-height: 1.55;
@@ -62,8 +48,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-inline-start: auto;
   padding: 10px 22px;
   border-radius: var(--button-radius);
   background-color: var(--color-text);
