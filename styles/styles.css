@@ -448,6 +448,45 @@ main > .section.divider::after {
   border-bottom: 1px solid var(--color-border);
 }
 
+/* ==========================================================================
+   Alignment utils — section metadata or block styles:
+   center-align | left-align | right-align
+
+   Section *-align: layout — positions section children on the page axis.
+   Block *-align: typography — text alignment within the block.
+   ========================================================================== */
+
+/* section layout */
+main > .section.center-align:not(.hero-container) > div:not(.hero) {
+  width: fit-content;
+  max-width: var(--grid-container-width);
+  margin-inline: auto;
+}
+
+main > .section.left-align:not(.hero-container) > div:not(.hero) {
+  margin-inline: 0;
+}
+
+main > .section.right-align:not(.hero-container) > div:not(.hero) {
+  width: fit-content;
+  max-width: var(--grid-container-width);
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+
+/* block content alignment */
+.block.center-align {
+  text-align: center;
+}
+
+.block.left-align {
+  text-align: start;
+}
+
+.block.right-align {
+  text-align: end;
+}
+
 main blockquote {
   margin: var(--space-l) 0;
   padding: var(--space-l) var(--space-xl);
