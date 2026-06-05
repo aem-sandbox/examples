@@ -1,0 +1,192 @@
+/* tabs */
+
+.tabs {
+  color: var(--text-color);
+}
+
+main .section.tabs,
+main .section .tabs {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  box-sizing: border-box;
+}
+
+.tabs a {
+  color: inherit;
+}
+
+.tabs .tabs-wrapper {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding-inline: var(--content-padding-inline);
+}
+
+/* Optional intro above tab list */
+.section.tabs > .default-content-wrapper :is(h2, h3) {
+  margin: 0 0 var(--space-s);
+  font-size: var(--heading-font-size-xl);
+  letter-spacing: var(--heading-letter-spacing);
+  text-align: center;
+}
+
+.section.tabs > .default-content-wrapper p {
+  margin: 0 0 var(--space-l);
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+  text-align: center;
+}
+
+.tabs .tabs-list {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-xs);
+  margin: 0 auto var(--space-l);
+  max-width: 900px;
+  padding: 0 0 var(--space-xs);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabs .tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs .tabs-list button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin: 0;
+  padding: var(--space-m) var(--space-l);
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+  cursor: pointer;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0.72;
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.tabs .tabs-list button.is-active,
+.tabs .tabs-list button[aria-selected='true'] {
+  color: var(--color-brand);
+  opacity: 1;
+  border-bottom-color: var(--color-brand);
+}
+
+.tabs .tabs-list button:hover {
+  opacity: 1;
+  color: var(--color-brand);
+}
+
+.tabs .tabs-list button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
+.tabs .tabs-content {
+  margin-top: var(--space-m);
+  padding-bottom: var(--space-l);
+}
+
+.tabs .tab[role='tabpanel'] {
+  display: none;
+}
+
+.tabs .tab[role='tabpanel'][aria-hidden='false'] {
+  display: block;
+}
+
+.tabs .tab .section {
+  margin: 0;
+  padding: var(--space-l) 0;
+}
+
+.tabs .tab .section :is(h2, h3, h4) {
+  text-align: left;
+  letter-spacing: var(--heading-letter-spacing);
+}
+
+.tabs .tab .section p {
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+  text-align: left;
+  color: var(--text-color);
+}
+
+.tabs .tab .section > :is(.default-content-wrapper, .block) {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+}
+
+.tabs .columns > div {
+  flex-direction: column;
+  gap: var(--space-l);
+}
+
+.tabs .columns > div > div {
+  flex: unset;
+  width: 100%;
+  max-width: 700px;
+}
+
+.tabs .columns .embed {
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 10%), rgb(255 255 255 / 10%));
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+@media (width >= 600px) {
+  .section.tabs > .default-content-wrapper :is(h2, h3) {
+    font-size: var(--heading-font-size-xxl);
+  }
+}
+
+@media (width >= 900px) {
+  .tabs {
+    padding-block: var(--space-xl);
+  }
+
+  .tabs .tabs-list {
+    justify-content: center;
+    overflow-x: visible;
+    gap: var(--space-m);
+    margin-bottom: var(--space-xl);
+  }
+
+  .tabs .tabs-list button {
+    padding: var(--space-m) var(--space-2xl);
+    font-size: var(--body-font-size-m);
+  }
+
+  .tabs .columns > div {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .tabs .columns > div > div {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs .tabs-list {
+    scroll-behavior: auto;
+  }
+
+  .tabs .tabs-list button {
+    transition: none;
+  }
+}

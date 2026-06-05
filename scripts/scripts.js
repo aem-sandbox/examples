@@ -1,5 +1,6 @@
 import {
   buildBlock,
+  decorateBlock,
   loadHeader,
   loadFooter,
   decorateIcons,
@@ -89,6 +90,40 @@ async function loadFonts() {
 /** Hash that opts out of fragment auto-blocking. Links with #_dnb stay as normal links. */
 const DNB_HASH = '#_dnb';
 
+const YOUTUBE_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'youtu.be']);
+
+function isYoutubeLink(url) {
+  return YOUTUBE_HOSTS.has(url.hostname);
+}
+
+function replaceParagraphWithBlock(link, block) {
+  const parent = link.parentElement;
+  if (parent?.tagName === 'P' && parent.children.length === 1) {
+    parent.replaceWith(block);
+  } else {
+    link.replaceWith(block);
+  }
+}
+
+function buildEmbedBlocks(main) {
+  main.querySelectorAll('a[href*="youtube.com"], a[href*="youtu.be"]').forEach((anchor) => {
+    if (anchor.closest('.embed.block')) return;
+    if (anchor.querySelector('.icon')) return;
+
+    let url;
+    try {
+      url = new URL(anchor.href);
+    } catch {
+      return;
+    }
+    if (!isYoutubeLink(url)) return;
+
+    const block = buildBlock('embed', [[anchor.cloneNode(true)]]);
+    replaceParagraphWithBlock(anchor, block);
+    decorateBlock(block);
+  });
+}
+
 /**
  * Inlines fragment links in a section.
  * @param {Element} section The section element
@@ -126,6 +161,7 @@ async function loadFragments(section) {
 function buildAutoBlocks(main) {
   try {
     buildHeroBlock(main);
+    buildEmbedBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
@@ -234,6 +270,9 @@ async function loadLazy(doc) {
       await loadSection(sections[i], loadFragments);
       if (i === 0 && sampleRUM.enhance) sampleRUM.enhance();
     }
+
+    const { default: dynamicBlocks } = await import('../blocks/dynamic/index.js');
+    await dynamicBlocks(main);
   }
 
   const { hash } = window.location;
