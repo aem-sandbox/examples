@@ -1,4 +1,6 @@
-import { buildBlock, decorateBlock, loadBlock, toCamelCase, toClassName } from '../../scripts/aem.js';
+import {
+  buildBlock, decorateBlock, loadBlock, toCamelCase, toClassName,
+} from '../../scripts/aem.js';
 
 function isUE() {
   return window.location.hostname.includes('ue.da') || window.location.host.includes('localhost:4712');
@@ -389,6 +391,7 @@ async function replaceWithThankYou(form, confirmationPath) {
     }
     return false;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Failed to load thank you fragment:', path, error);
     return false;
   } finally {
@@ -432,6 +435,7 @@ async function handleSubmit(form) {
     }
   } catch (error) {
     setStatus('Unable to submit right now. Please try again.');
+    // eslint-disable-next-line no-console
     console.error(error);
   } finally {
     toggleForm(form, false);
@@ -578,12 +582,18 @@ export default function decorate(block) {
             if (!resp.ok) throw new Error(`${resp.status}: ${resp.statusText}`);
             const json = await resp.json();
             const raw = json.data ?? json.fields ?? json;
-            const data = Array.isArray(raw) ? raw : (raw?.fields && Array.isArray(raw.fields) ? raw.fields : null);
-            if (!data || !Array.isArray(data)) throw new Error(`No form fields at ${source}`);
+            let data = null;
+            if (Array.isArray(raw)) {
+              data = raw;
+            } else if (raw?.fields && Array.isArray(raw.fields)) {
+              data = raw.fields;
+            }
+            if (!data) throw new Error(`No form fields at ${source}`);
             const form = buildForm(data, submit);
             block.replaceChildren(form);
             block.removeAttribute('style');
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Could not build form from', source, error);
             block.parentElement.remove();
           }
@@ -594,6 +604,7 @@ export default function decorate(block) {
 
     observer.observe(block);
   } else {
+    // eslint-disable-next-line no-console
     console.error('Unable to create form without source');
     block.parentElement.remove();
   }

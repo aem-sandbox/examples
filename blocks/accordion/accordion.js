@@ -78,6 +78,7 @@ export default async function decorate(block) {
     try {
       await decorateFaqSchema(block);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Could not build accordion from FAQ schema', error);
       showEmpty(block, 'Unable to load accordion content right now.');
       return;

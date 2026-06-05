@@ -21,7 +21,7 @@
   --color-gray-900: #2b2b2b;
   --color-blue-500: #1473e6;
   --color-blue-600: #095aba;
-  --color-blue-400: #5599ff;
+  --color-blue-400: #59f;
   --color-light: #fff;
   --color-dark: #000;
 
@@ -245,6 +245,10 @@ a:hover {
   color: var(--color-brand);
 }
 
+.block:is(.align-center, .align-left, .align-right) a:any-link {
+  margin-inline-start: 0;
+}
+
 main a:any-link:not(.button):hover {
   text-decoration: underline;
   text-underline-offset: 0.22em;
@@ -361,8 +365,6 @@ main img {
   border-radius: var(--radius-m);
 }
 
-main .icon img,
-main img.icon,
 .cards img,
 .hero img {
   border-radius: 0;
@@ -383,6 +385,12 @@ main img.icon,
 .icon img {
   height: 100%;
   width: 100%;
+  border-radius: 0;
+}
+
+main .icon img,
+main img.icon {
+  border-radius: 0;
 }
 
 /* sections */
@@ -474,18 +482,7 @@ main > .section.align-left:not(.hero-container) > div:not(.hero, .default-conten
 main > .section.align-right:not(.hero-container) > div:not(.hero, .default-content-wrapper) {
   width: fit-content;
   max-width: var(--grid-container-width);
-  margin-inline-start: auto;
-  margin-inline-end: 0;
-}
-
-/* section default content */
-main > .section.align-center:not(.hero-container) .default-content-wrapper,
-main > .section.align-center:not(.hero-container) .default-content-wrapper > * {
-  text-align: center;
-}
-
-main > .section.align-center:not(.hero-container) .default-content-wrapper a:any-link {
-  margin-inline-start: 0;
+  margin-inline: auto 0;
 }
 
 /* block content alignment */
@@ -504,7 +501,13 @@ main > .section.align-center:not(.hero-container) .default-content-wrapper a:any
   text-align: end;
 }
 
-.block:is(.align-center, .align-left, .align-right) a:any-link {
+/* section default content */
+main > .section.align-center:not(.hero-container) .default-content-wrapper,
+main > .section.align-center:not(.hero-container) .default-content-wrapper > * {
+  text-align: center;
+}
+
+main > .section.align-center:not(.hero-container) .default-content-wrapper a:any-link {
   margin-inline-start: 0;
 }
 

@@ -65,7 +65,8 @@ function isPageMatch(row, keywordsConfig, excludedConfig) {
   const requested = parseKeywords(keywordsConfig);
   const excluded = parseKeywords(excludedConfig);
   const isRandom = requested.includes('random');
-  if (!isRandom && requested.length && !requested.some((k) => rowMatchesKeyword(row, k))) return false;
+  const matchesKeyword = requested.some((k) => rowMatchesKeyword(row, k));
+  if (!isRandom && requested.length && !matchesKeyword) return false;
   if (excluded.some((k) => rowMatchesKeyword(row, k))) return false;
   return true;
 }
@@ -73,7 +74,7 @@ function isPageMatch(row, keywordsConfig, excludedConfig) {
 function sortAndLimitPages(rows, keywordsConfig, limit) {
   const requested = parseKeywords(keywordsConfig);
   const shouldShuffle = requested.includes('random') || requested.filter((k) => k !== 'random').length > 1;
-  let results = [...rows];
+  const results = [...rows];
 
   if (shouldShuffle) {
     for (let i = results.length - 1; i > 0; i -= 1) {
@@ -98,6 +99,7 @@ async function fetchMatchingPages(keywords, excluded, limit) {
   let hasMore = true;
 
   while (hasMore) {
+    // eslint-disable-next-line no-await-in-loop
     const batch = await fetchQueryIndexPage(offset, QUERY_INDEX_PAGE_SIZE).catch(() => []);
     offset += batch.length;
     hasMore = batch.length === QUERY_INDEX_PAGE_SIZE;
@@ -124,6 +126,7 @@ async function fetchIndexRowsForLinks(links) {
   let hasMore = true;
 
   while (hasMore && found.size < wanted.size) {
+    // eslint-disable-next-line no-await-in-loop
     const batch = await fetchQueryIndexPage(offset, QUERY_INDEX_PAGE_SIZE).catch(() => []);
     offset += batch.length;
     hasMore = batch.length === QUERY_INDEX_PAGE_SIZE;

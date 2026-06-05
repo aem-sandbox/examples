@@ -53,6 +53,15 @@
   z-index: 0;
 }
 
+.hero > div:last-child {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: var(--hero-padding-block) var(--hero-padding-inline);
+}
+
 .hero > div:first-child > div {
   height: 100%;
 }
@@ -76,15 +85,6 @@
 
 .hero:hover picture img {
   transform: scale(1.03);
-}
-
-.hero > div:last-child {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  padding: var(--hero-padding-block) var(--hero-padding-inline);
 }
 
 .hero > div:last-child > div {

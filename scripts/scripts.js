@@ -140,6 +140,7 @@ async function loadFragments(section) {
   });
   if (fragments.length === 0) return;
 
+  // eslint-disable-next-line import/no-cycle
   const { loadFragment } = await import('../blocks/fragment/fragment.js');
   await Promise.all(fragments.map(async (a) => {
     try {
