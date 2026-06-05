@@ -1,0 +1,92 @@
+/* Modal – opens fragment links in a dialog */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-s);
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal .modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: light-dark(rgb(var(--color-brand-rgb) / 18%), rgb(0 0 0 / 55%));
+  backdrop-filter: blur(8px);
+}
+
+.modal .modal-dialog {
+  position: relative;
+  width: min(920px, calc(100vw - var(--space-xl)));
+  max-height: calc(100vh - var(--space-xl));
+  margin: 0;
+  overflow: auto;
+  border-radius: var(--radius-l);
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 12%), rgb(255 255 255 / 12%));
+  background: light-dark(var(--color-light), var(--color-gray-900));
+  box-shadow: var(--shadow-lift);
+  padding: var(--space-l);
+}
+
+.modal .modal-close {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 14%), rgb(255 255 255 / 16%));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--color-light), rgb(24 24 24 / 88%));
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.modal .modal-close:hover {
+  border-color: light-dark(rgb(var(--color-brand-rgb) / 32%), rgb(255 255 255 / 28%));
+  background-color: var(--color-brand-subtle);
+  color: var(--color-brand);
+  transform: scale(1.06);
+}
+
+.modal .modal-close:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.modal .modal-content .modal-main {
+  display: block;
+  min-height: 0;
+  max-width: 100%;
+  padding: 0;
+}
+
+.modal .modal-content .modal-main > div,
+.modal .modal-content .modal-main div[data-status] {
+  display: block;
+}
+
+@media (width >= 600px) {
+  .modal {
+    padding: var(--space-m);
+  }
+
+  .modal .modal-dialog {
+    padding: var(--space-xl);
+  }
+}
