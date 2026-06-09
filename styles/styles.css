@@ -525,21 +525,6 @@ main blockquote {
   background-color: var(--light-color);
 }
 
-/* 404 error page — fallback in 404.html and /fragments/404 content */
-main.error {
-  min-height: calc(100vh - var(--nav-height));
-  display: flex;
-  align-items: center;
-}
-
-main.error .error-number {
-  width: 100%;
-}
-
-main.error .error-number text {
-  font-family: monospace;
-}
-
 @media (width >= 900px) {
   :root {
     --content-padding-inline: var(--space-xl);
