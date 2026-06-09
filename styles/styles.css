@@ -417,6 +417,11 @@ main .section.highlight {
   border-block: 1px solid light-dark(rgb(0 0 0 / 5%), rgb(255 255 255 / 8%));
 }
 
+main > .section[data-background] {
+  margin: 0;
+  padding: var(--section-space) 0;
+}
+
 main > .section.gradient {
   background: var(--gradient-brand);
   color: var(--color-light);

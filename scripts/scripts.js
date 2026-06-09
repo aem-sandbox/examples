@@ -204,6 +204,13 @@ function decorateButtons(main) {
   });
 }
 
+/** Applies data-background on sections as background-color (hex, rgb, named colors). */
+function applySectionBackgrounds(main) {
+  main.querySelectorAll('.section[data-background]').forEach((section) => {
+    section.style.backgroundColor = section.getAttribute('data-background');
+  });
+}
+
 /**
  * Decorates the main element.
  * @param {Element} main The main element
@@ -213,6 +220,7 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
+  applySectionBackgrounds(main);
   decorateBlocks(main);
   decorateButtons(main);
 }
