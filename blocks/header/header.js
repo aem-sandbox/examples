@@ -74,12 +74,9 @@ function setupDropdown(li) {
   }
   syncSubmenuToggle(li, toggleBtn);
 
-  let closeTimer = null;
-
   toggleBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isDesktop.matches) return;
     const expanded = li.getAttribute('aria-expanded') === 'true';
     collapseNav(li.closest('nav'));
     li.setAttribute('aria-expanded', expanded ? 'false' : 'true');
@@ -87,59 +84,39 @@ function setupDropdown(li) {
   });
 
   li.addEventListener('click', (e) => {
+    if (e.target.closest('.nav-submenu-toggle')) return;
+
     if (isDesktop.matches) {
-      if (submenu.contains(e.target) && e.target.closest('a')) collapseNav(li.closest('nav'));
-      return;
-    }
-    const onLink = e.target.closest('a');
-    const onToggle = e.target.closest('.nav-submenu-toggle');
-    if (onToggle || (onLink && !submenu.contains(onLink))) return;
-    if (onLink && submenu.contains(onLink)) {
-      toggleMenu(li.closest('nav'), false);
-      return;
-    }
-    if (submenu) {
+      if (submenu.contains(e.target) && e.target.closest('a')) {
+        collapseNav(li.closest('nav'));
+        return;
+      }
       e.preventDefault();
       const expanded = li.getAttribute('aria-expanded') === 'true';
       collapseNav(li.closest('nav'));
       li.setAttribute('aria-expanded', expanded ? 'false' : 'true');
       syncSubmenuToggle(li, toggleBtn);
+      return;
     }
-  });
 
-  const open = () => {
-    if (closeTimer) {
-      clearTimeout(closeTimer);
-      closeTimer = null;
+    const onLink = e.target.closest('a');
+    if (onLink && !submenu.contains(onLink)) return;
+    if (onLink && submenu.contains(onLink)) {
+      toggleMenu(li.closest('nav'), false);
+      return;
     }
+    e.preventDefault();
+    const expanded = li.getAttribute('aria-expanded') === 'true';
     collapseNav(li.closest('nav'));
-    li.setAttribute('aria-expanded', 'true');
-  };
-
-  const close = () => {
-    if (closeTimer) {
-      clearTimeout(closeTimer);
-      closeTimer = null;
-    }
-    li.setAttribute('aria-expanded', 'false');
-  };
-
-  li.addEventListener('mouseenter', () => {
-    if (!isDesktop.matches) return;
-    open();
-  });
-
-  li.addEventListener('mouseleave', (e) => {
-    if (!isDesktop.matches || li.contains(e.relatedTarget)) return;
-    closeTimer = setTimeout(close, 120);
-  });
-
-  li.addEventListener('focusin', () => {
-    if (isDesktop.matches) open();
+    li.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    syncSubmenuToggle(li, toggleBtn);
   });
 
   li.addEventListener('focusout', (e) => {
-    if (isDesktop.matches && !li.contains(e.relatedTarget)) close();
+    if (!li.contains(e.relatedTarget)) {
+      li.setAttribute('aria-expanded', 'false');
+      syncSubmenuToggle(li, toggleBtn);
+    }
   });
 }
 
@@ -180,7 +157,7 @@ function decorateTools(tools) {
 
   if (loginLink) {
     loginLink.classList.remove('primary', 'secondary', 'accent');
-    loginLink.classList.add('button', 'nav-auth-link');
+    loginLink.classList.add('button', 'nav-auth-link', 'primary');
     loginLink.closest('p')?.classList.remove('button-wrapper');
   }
 
@@ -221,6 +198,11 @@ export default async function decorate(block) {
   nav.querySelector('.nav-brand .button')?.classList.remove('button');
   nav.querySelector('.nav-brand .button-container')?.classList.remove('button-container');
 
+  const brandLabel = document.createElement('span');
+  brandLabel.className = 'nav-brand-label';
+  brandLabel.textContent = 'AEM Examples';
+  nav.querySelector('.nav-brand')?.append(brandLabel);
+
   nav.querySelectorAll(`.nav-sections ${NAV_ITEMS}`).forEach((item) => {
     if (item.querySelector(':scope > ul')) {
       item.classList.add('nav-drop');
@@ -233,9 +215,10 @@ export default async function decorate(block) {
   hamburger.querySelector('button').addEventListener('click', () => toggleMenu(nav));
 
   document.addEventListener('click', (e) => {
-    if (!isDesktop.matches
-      && nav.getAttribute('aria-expanded') === 'true'
-      && !nav.contains(e.target)) {
+    if (nav.contains(e.target)) return;
+    if (isDesktop.matches) {
+      collapseNav(nav);
+    } else if (nav.getAttribute('aria-expanded') === 'true') {
       toggleMenu(nav, false);
     }
   });

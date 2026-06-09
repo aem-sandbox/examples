@@ -6,7 +6,7 @@ header {
   --nav-item-padding: var(--space-m);
   --nav-section-gap: var(--space-l);
   --nav-dropdown-offset: 0;
-  --nav-logo-size: 60px;
+  --nav-logo-size: 27px;
 }
 
 header .nav-wrapper {
@@ -15,9 +15,7 @@ header .nav-wrapper {
   z-index: var(--z-index-nav);
   width: 100%;
   background-color: light-dark(rgb(255 255 255 / 94%), rgb(20 20 20 / 94%));
-  backdrop-filter: blur(12px);
   border-bottom: 1px solid light-dark(rgb(0 0 0 / 6%), rgb(255 255 255 / 8%));
-  box-shadow: var(--shadow-soft);
 }
 
 header nav {
@@ -67,6 +65,13 @@ header nav .nav-hamburger button {
   background: transparent;
   color: inherit;
   cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-hover-surface);
+  border-radius: var(--radius-s);
 }
 
 header nav .nav-hamburger-icon,
@@ -90,7 +95,7 @@ header nav .nav-hamburger-icon::after {
 header nav[aria-expanded='false'] .nav-hamburger-icon,
 header nav[aria-expanded='false'] .nav-hamburger-icon::before,
 header nav[aria-expanded='false'] .nav-hamburger-icon::after {
-  height: 2px;
+  height: 1px;
   border-radius: 2px;
   background: currentcolor;
 }
@@ -110,7 +115,7 @@ header nav[aria-expanded='true'] .nav-hamburger-icon {
 header nav[aria-expanded='true'] .nav-hamburger-icon::before,
 header nav[aria-expanded='true'] .nav-hamburger-icon::after {
   inset: 0;
-  width: 2px;
+  width: 1px;
   height: 20px;
   margin: auto;
 }
@@ -130,6 +135,7 @@ header nav .nav-tools > p {
 header nav .nav-tools .icon {
   width: var(--icon-size-s);
   height: var(--icon-size-s);
+  display: flex;
 }
 
 header nav .nav-tools .icon img {
@@ -164,7 +170,6 @@ header nav .nav-sections ul {
 
 header nav .nav-sections ul > li {
   border-bottom: 1px solid var(--color-border);
-  font-weight: 600;
   font-size: var(--body-font-size-s);
 }
 
@@ -231,8 +236,6 @@ header nav .nav-brand .icon.icon-logo {
   width: var(--nav-logo-size);
   height: var(--nav-logo-size);
   border-radius: var(--radius-m);
-  background-color: var(--background-color);
-  box-shadow: var(--shadow-soft);
 }
 
 header nav .nav-brand .icon.icon-logo img {
@@ -240,6 +243,14 @@ header nav .nav-brand .icon.icon-logo img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  max-width: 27px;
+}
+
+header nav .nav-brand-label {
+  padding-left: var(--space-s);
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 header nav .nav-sections ul > li > ul a:hover,
@@ -263,26 +274,10 @@ header nav .nav-theme-toggle {
   justify-content: center;
   padding: var(--space-s);
   border: 0;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-s);
   background: transparent;
   color: inherit;
   cursor: pointer;
-}
-
-header nav .nav-tools a.button.nav-auth-link:any-link {
-  border: var(--button-border-width) solid var(--color-brand);
-  border-radius: var(--button-radius);
-  padding: 0.5em 1.15em;
-  background: transparent;
-  color: var(--color-brand);
-  font-size: var(--body-font-size-s);
-  font-weight: 600;
-  white-space: nowrap;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast);
 }
 
 header nav .nav-tools a.button.nav-auth-link:any-link:hover,
@@ -290,7 +285,6 @@ header nav .nav-tools a.button.nav-auth-link:any-link:focus-visible {
   border-color: var(--color-blue-600);
   background-color: var(--color-brand-subtle);
   color: var(--color-blue-600);
-  transform: translateY(-1px);
 }
 
 header nav .nav-tool:hover,
@@ -395,7 +389,6 @@ body.dark-scheme header nav .nav-tools .icon img {
 
   header nav .nav-sections > ul {
     display: flex;
-    gap: var(--nav-section-gap);
     align-items: center;
   }
 
@@ -403,7 +396,6 @@ body.dark-scheme header nav .nav-tools .icon img {
     position: relative;
     border-bottom: 0;
     font-size: var(--body-font-size-s);
-    font-weight: 600;
   }
 
   header nav .nav-sections ul > li > p {
@@ -412,36 +404,25 @@ body.dark-scheme header nav .nav-tools .icon img {
   }
 
   header nav .nav-sections ul > li > p > a {
-    padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius-s);
-    transition:
-      color var(--transition-fast),
-      background-color var(--transition-fast),
-      transform var(--transition-fast);
+    font-size: var(--body-font-size-xs);
+    height: var(--nav-height);
+    padding: 0 var(--space-m);
   }
 
   header nav .nav-sections ul > li > p > a:hover,
   header nav .nav-sections ul > li > p > a:focus-visible {
-    color: var(--color-brand);
-    background-color: var(--color-brand-subtle);
-    transform: translateY(-1px);
+    background-color: var(--color-hover-surface);
   }
 
   header nav .nav-sections .nav-submenu-toggle {
     display: none;
   }
 
-  header nav .nav-sections ul > li.nav-drop {
-    padding-right: var(--space-m);
-  }
-
-  header nav .nav-sections ul > li.nav-drop::after {
+  header nav .nav-sections ul > li.nav-drop > p > a::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    right: var(--space-xs);
-    width: 5px;
-    height: 5px;
+    position: relative;
+    width: 4px;
+    height: 4px;
     border: 2px solid currentcolor;
     border-width: 2px 2px 0 0;
     border-radius: 0 1px 0 0;
@@ -449,12 +430,14 @@ body.dark-scheme header nav .nav-tools .icon img {
     transform: translateY(-50%) rotate(135deg);
     transition: transform var(--transition-fast), opacity var(--transition-fast);
     pointer-events: none;
+    margin-left: var(--space-s);
+    margin-top: var(--space-xs);
   }
 
-  header nav .nav-sections ul > li.nav-drop:hover::after,
-  header nav .nav-sections ul > li.nav-drop[aria-expanded='true']::after {
+  header nav .nav-sections ul > li.nav-drop[aria-expanded='true'] > p > a::after {
     transform: translateY(-50%) rotate(-45deg);
     opacity: 1;
+    margin-top: var(--space-s);
   }
 
   header nav .nav-sections ul > li > ul {
@@ -465,7 +448,6 @@ body.dark-scheme header nav .nav-tools .icon img {
     min-width: 180px;
     padding: var(--space-m);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-s);
     background-color: var(--background-color);
     box-shadow: var(--shadow-dropdown);
     visibility: hidden;

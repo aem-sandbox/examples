@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-:root {
+ :root {
   color-scheme: light dark;
 
   /* color palette */
@@ -43,7 +43,7 @@
   --link-hover-color: var(--color-blue-600);
 
   /* fonts */
-  --body-font-family: montserrat, "Trebuchet MS", sans-serif;
+  --body-font-family: adobe-clean, "Trebuchet MS", sans-serif;
   --heading-font-family: var(--body-font-family);
 
   /* spacing */
@@ -68,7 +68,7 @@
   --grid-container-width: 83.4%;
   --content-max-width: 1264px;
   --content-padding-inline: var(--space-m);
-  --nav-height: 72px;
+  --nav-height: 60px;
   --section-space: 56px;
 
   /* interactive surfaces */
@@ -85,10 +85,12 @@
     radial-gradient(ellipse 50% 35% at 92% 88%, light-dark(rgb(0 0 0 / 4%), rgb(255 255 255 / 4%)) 0%, transparent 52%);
 
   /* buttons */
-  --button-padding-block: 12px;
-  --button-padding-inline: 24px;
+  --button-padding-block: 8px;
+  --button-padding-inline: 16px;
   --button-border-width: 2px;
   --button-radius: var(--radius-full);
+  --button-primary-background: var(--color-brand);
+  --button-primary-color: var(--color-light);
 
   /* icons */
   --icon-size-s: 18px;
@@ -272,7 +274,7 @@ button.button {
   border-radius: var(--button-radius);
   padding: var(--button-padding-block) var(--button-padding-inline);
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   text-decoration: none;
   cursor: pointer;
@@ -282,8 +284,8 @@ button.button {
   transition:
     background-color var(--transition-fast),
     border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast);
+    color var(--transition-fast);
+  font-size: var(--body-font-size-xs);
 }
 
 a.button[aria-disabled="true"],
@@ -295,9 +297,9 @@ button.button:disabled {
 /* primary */
 a.button.primary:any-link,
 button.button.primary {
-  color: var(--color-background);
-  background-color: var(--color-text);
-  border-color: var(--color-text);
+  color: var(--button-primary-color);
+  background-color: var(--button-primary-background);
+  border-color: var(--button-primary-background);
   box-shadow: var(--shadow-soft);
 }
 
@@ -309,7 +311,6 @@ button.button.primary:focus-visible {
   border-color: var(--color-gray-600);
   background-color: var(--color-gray-600);
   box-shadow: var(--shadow-lift);
-  transform: translateY(-2px);
 }
 
 a.button.primary[aria-disabled="true"],
