@@ -1,5 +1,4 @@
 footer {
-  margin-top: var(--section-space);
   border-top: 1px solid var(--color-border);
   background-color: var(--light-color);
   font-size: var(--body-font-size-xs);
