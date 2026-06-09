@@ -359,10 +359,6 @@ body.dark-scheme header nav .nav-tools .icon img {
     --nav-gap: var(--space-m);
   }
 
-  header .nav-wrapper {
-    position: relative;
-  }
-
   header nav {
     display: flex;
     align-items: center;
