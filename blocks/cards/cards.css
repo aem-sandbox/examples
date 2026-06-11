@@ -61,33 +61,49 @@
   padding: var(--space-s) var(--space-m) var(--space-m);
   text-align: center;
   gap: var(--space-xs);
+  overflow: hidden;
+}
+
+.cards .cards-card-body > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .cards .cards-card-body :is(h2, h3, h4, strong) {
   margin: 0;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   font-size: var(--heading-font-size-xs);
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: var(--heading-letter-spacing);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.cards .cards-card-body :is(h2, h3, h4, strong):not(:has(a)) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow-wrap: anywhere;
 }
 
 .cards .cards-card-body p {
   margin: 0;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
 }
 
 .cards .cards-card-body :is(h2, h3, h4, strong) a:any-link {
   color: inherit;
   text-decoration: none;
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .cards .cards-card-body :is(h2, h3, h4, strong) a:any-link:hover {
@@ -111,7 +127,11 @@
 
 .cards .cards-card-tag {
   margin: 0;
+  align-self: center;
+  width: fit-content;
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   font-size: var(--body-font-size-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -124,13 +144,18 @@
 
 .cards .cards-card-description {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font-size: var(--body-font-size-s);
   line-height: 1.5;
   color: var(--color-gray-500);
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
 
 .cards .cards-card-body p.button-wrapper {
@@ -186,8 +211,10 @@
   display: grid;
   grid-template-areas: 'stack';
   grid-template-rows: minmax(0, 1fr);
+  min-width: 0;
   min-height: 0;
   height: 100%;
+  overflow: hidden;
   color: inherit;
   text-decoration: none;
 }
@@ -224,11 +251,20 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    transparent 40%,
-    rgb(0 0 0 / 16%) 68%,
-    rgb(0 0 0 / 58%) 100%
+    transparent 32%,
+    rgb(0 0 0 / 22%) 62%,
+    rgb(0 0 0 / 68%) 100%
   );
   pointer-events: none;
+}
+
+.cards.bento > ul > li:not(.cards-bento-featured) .cards-card-image::after {
+  background: linear-gradient(
+    180deg,
+    transparent 20%,
+    rgb(0 0 0 / 30%) 52%,
+    rgb(0 0 0 / 78%) 100%
+  );
 }
 
 .cards.bento > ul > li.cards-bento-featured .cards-card-image::after {
@@ -252,21 +288,42 @@
 }
 
 .cards.bento .cards-card-body {
+  position: relative;
   z-index: 1;
   align-self: end;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: flex-end;
   width: 100%;
+  min-width: 0;
   min-height: 0;
-  max-height: 100%;
-  padding: var(--space-m) var(--space-m) var(--space-s);
-  gap: 2px;
+  max-height: 72%;
+  padding: var(--space-s) var(--space-m) var(--space-m);
+  gap: 6px;
   text-align: start;
   color: var(--color-light);
   overflow: hidden;
   pointer-events: none;
+}
+
+.cards.bento .cards-card-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cards.bento .cards-card-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0%) 0%,
+    rgb(0 0 0 / 42%) 45%,
+    rgb(0 0 0 / 82%) 100%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
 
 .cards.bento .cards-card-body :is(a, button) {
@@ -275,9 +332,14 @@
 
 .cards.bento .cards-card-tag {
   order: -1;
+  align-self: flex-start;
+  flex-shrink: 0;
   margin: 0;
+  width: fit-content;
   max-width: 100%;
-  padding: 5px 12px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   border: 1px solid rgb(255 255 255 / 22%);
   background: rgb(255 255 255 / 12%);
@@ -296,28 +358,32 @@
   margin: 0;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
   font-size: var(--heading-font-size-xs);
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: var(--heading-letter-spacing);
   color: inherit;
   text-shadow: 0 1px 10px rgb(0 0 0 / 35%);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
 }
 
 .cards.bento > ul > li.cards-bento-featured .cards-card-body :is(h2, h3, h4, strong) {
   font-size: var(--heading-font-size-s);
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .cards.bento .cards-card-body :is(h2, h3, h4, strong) a:any-link {
   color: inherit;
   text-decoration: none;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .cards.bento .cards-card-body :is(h2, h3, h4, strong) a:any-link:hover {
@@ -327,28 +393,38 @@
 .cards.bento .cards-card-description {
   margin: 0;
   width: 100%;
-  max-width: 52ch;
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
   font-size: var(--body-font-size-s);
-  line-height: 1.5;
-  color: rgb(255 255 255 / 88%);
-  text-shadow: 0 1px 8px rgb(0 0 0 / 30%);
+  line-height: 1.4;
+  color: rgb(255 255 255 / 90%);
+  text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
 }
 
 .cards.bento > ul > li.cards-bento-featured .cards-card-description {
-  -webkit-line-clamp: 2;
+  max-width: min(52ch, 100%);
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   font-size: var(--body-font-size-m);
+  line-height: 1.5;
 }
 
 .cards.bento .cards-card-date {
   margin: 0;
   width: 100%;
   max-width: 100%;
+  flex-shrink: 0;
   font-size: var(--body-font-size-xs);
-  color: rgb(255 255 255 / 68%);
+  line-height: 1.2;
+  color: rgb(255 255 255 / 72%);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -389,7 +465,7 @@
   }
 
   .cards.bento > ul > li:not(.cards-bento-featured) {
-    min-height: 180px;
+    min-height: 200px;
   }
 }
 
@@ -411,8 +487,8 @@
 
 @media (width >= 1200px) {
   .cards.bento {
-    --bento-row-top: 128px;
-    --bento-row-bottom: 196px;
+    --bento-row-top: 132px;
+    --bento-row-bottom: 252px;
   }
 
   .cards.bento > ul {
@@ -441,6 +517,10 @@
     min-height: 0;
   }
 
+  .cards.bento > ul > li:nth-child(2) .cards-card-description {
+    -webkit-line-clamp: 3;
+  }
+
   .cards.bento > ul > li:nth-child(3) {
     grid-column: 1 / 5;
     grid-row: 3;
@@ -459,6 +539,30 @@
   .cards.bento > ul > li:nth-child(n + 6) {
     grid-column: span 4;
     grid-row: auto;
+  }
+
+  .cards.bento > ul > li:nth-child(n + 3):not(.cards-bento-featured) .cards-card-body {
+    max-height: 78%;
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    gap: 4px;
+  }
+
+  .cards.bento > ul > li:nth-child(n + 3):not(.cards-bento-featured) .cards-card-body :is(h2, h3, h4, strong) {
+    font-size: var(--body-font-size-s);
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .cards.bento > ul > li:nth-child(n + 3):not(.cards-bento-featured) .cards-card-description {
+    font-size: var(--body-font-size-xs);
+    line-height: 1.35;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .cards.bento > ul > li:nth-child(n + 3):not(.cards-bento-featured) .cards-card-date {
+    margin-top: 2px;
   }
 }
 
