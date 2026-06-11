@@ -25,22 +25,40 @@
           </div>
         </div>
       </div>
-      <div class="columns">
-        <div>
-          <div>
-            <p>{{description}}</p>
-            {{#type}}<p>Type : {{type}}</p>{{/type}}
-            <p>Date : {{date}}</p>
-            {{#time}}<p>Time : {{time}}</p>{{/time}}
-          </div>
-        </div>
-      </div>
+    </div>
+    <div>
       <div class="section-metadata">
         <div>
           <div>Style</div>
           <div>divider, align-center</div>
         </div>
       </div>
+      <p>{{description}}</p>
+      <div class="columns events">
+        <div>
+          <div>Date :</div>
+          <div>{{date}}</div>
+        </div>
+        {{#type}}
+        <div>
+          <div>Type :</div>
+          <div>{{type}}</div>
+        </div>
+        {{/type}}
+        {{#time}}
+        <div>
+          <div>Time :</div>
+          <div>{{time}}</div>
+        </div>
+        {{/time}}
+        {{#location}}
+        <div>
+          <div>Location :</div>
+          <div>{{location}}</div>
+        </div>
+        {{/location}}
+      </div>
+      <p><strong><a href="{{#ahref}}{{ahref}}{{/ahref}}{{^ahref}}#{{/ahref}}">Register Now</a></strong></p>
     </div>
     <div>
       <h2 id="other-events">Other Events</h2>
