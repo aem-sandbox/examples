@@ -11,6 +11,7 @@ import {
   loadSection,
   loadCSS,
   sampleRUM,
+  getMetadata,
 } from './aem.js';
 
 const COLOR_SCHEME_KEY = 'color-scheme';
@@ -223,6 +224,19 @@ function applySectionBackgrounds(main) {
   });
 }
 
+async function loadTemplate(doc, template) {
+  try {
+    if (template) {
+      const mod = await import(`../templates/${template}/${template}.js`);
+      loadCSS(`${window.hlx.codeBasePath}/templates/${template}/${template}.css`);
+      if (mod.default) await mod.default(doc);
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Template loading failed', error);
+  }
+}
+
 /**
  * Decorates the main element.
  * @param {Element} main The main element
@@ -278,6 +292,9 @@ async function loadEager(doc) {
  */
 async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
+
+  const templateName = getMetadata('template');
+  if (templateName) await loadTemplate(doc, templateName);
 
   const main = doc.querySelector('main');
   if (main) {

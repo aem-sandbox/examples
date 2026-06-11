@@ -1,0 +1,95 @@
+.events .event-details {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.events .event-description {
+  margin-bottom: var(--space-xl);
+}
+
+.events .event-description p {
+  margin: 0 0 var(--space-m);
+  font-size: var(--body-font-size-m);
+  line-height: 1.65;
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+}
+
+.events .event-description p:last-child {
+  margin-bottom: 0;
+}
+
+.events .event-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-m);
+  margin: 0;
+  padding: var(--space-l);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-l);
+  background: light-dark(var(--color-shaded), rgb(255 255 255 / 4%));
+  box-shadow: var(--shadow-soft);
+}
+
+.events .event-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: var(--space-m);
+  border-radius: var(--radius-m);
+  background: light-dark(var(--color-light), rgb(255 255 255 / 6%));
+}
+
+.events .event-meta dt {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+}
+
+.events .event-meta dd {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.35;
+  color: var(--text-color);
+}
+
+.events .event-meta-badge {
+  display: inline-block;
+  padding: 4px var(--space-m);
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 25%), rgb(var(--color-brand-rgb-light) / 35%));
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-subtle);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+}
+
+.events #other-events {
+  text-align: center;
+  margin-bottom: var(--space-l);
+}
+
+@media (width >= 600px) {
+  .events .event-meta {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .events .event-meta {
+    padding: var(--space-xl);
+  }
+
+  .events .event-description p {
+    font-size: var(--body-font-size-m);
+  }
+}
