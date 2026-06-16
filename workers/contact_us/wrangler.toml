@@ -1,0 +1,11 @@
+name = "examples-bbird-contactus"
+main = "index.js"
+compatibility_date = "2026-02-16"
+account_id = "ac7ee4615628005dc5ba0a22f0aae2a6"
+
+routes = [
+   { pattern = "examples.bbird.live/contact-us/*", zone_name = "bbird.live" },
+]
+
+[observability.logs]
+enabled = true
