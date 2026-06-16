@@ -1,0 +1,15 @@
+name: Deploy Feed Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/feed/**/*.js'
+      - 'workers/feed/wrangler.toml'
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-worker.yaml
+    secrets: inherit
+    with:
+      working-directory: workers/feed
