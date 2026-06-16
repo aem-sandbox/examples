@@ -1,0 +1,28 @@
+name: Deploy Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+        description: Worker directory to deploy (e.g. workers/contact_us)
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ac7ee4615628005dc5ba0a22f0aae2a6
+          workingDirectory: ${{ inputs.working-directory }}
+          wranglerVersion: "4.75.0"
