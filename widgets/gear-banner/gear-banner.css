@@ -1,0 +1,565 @@
+.gear-banner {
+  margin: 0 auto;
+  max-width: 1100px;
+  width: 100%;
+}
+
+.gear-banner-ad {
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgb(15 40 30 / 25%);
+  isolation: isolate;
+  min-height: 320px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* animated scene */
+.gear-banner-scene {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 0;
+}
+
+.gear-banner-sky {
+  animation: gear-banner-sky-shift 12s ease-in-out infinite alternate;
+  background: linear-gradient(
+    180deg,
+    #ff7b3a 0%,
+    #ff9a56 18%,
+    #4a90c2 45%,
+    #2c5282 100%
+  );
+  inset: 0;
+  position: absolute;
+}
+
+@keyframes gear-banner-sky-shift {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(8deg) brightness(1.05); }
+}
+
+.gear-banner-sun {
+  animation: gear-banner-sun-pulse 4s ease-in-out infinite;
+  background: radial-gradient(circle, #ffe066 0%, rgb(255 224 102 / 0%) 70%);
+  height: 120px;
+  position: absolute;
+  right: 12%;
+  top: 8%;
+  width: 120px;
+}
+
+@keyframes gear-banner-sun-pulse {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+.gear-banner-cloud {
+  animation: gear-banner-cloud-drift linear infinite;
+  background: rgb(255 255 255 / 55%);
+  border-radius: 999px;
+  filter: blur(1px);
+  height: 28px;
+  position: absolute;
+}
+
+.gear-banner-cloud::before,
+.gear-banner-cloud::after {
+  background: rgb(255 255 255 / 55%);
+  border-radius: 50%;
+  content: "";
+  position: absolute;
+}
+
+.gear-banner-cloud-1 {
+  animation-duration: 38s;
+  top: 14%;
+  width: 90px;
+}
+
+.gear-banner-cloud-1::before {
+  height: 36px;
+  left: 12px;
+  top: -16px;
+  width: 36px;
+}
+
+.gear-banner-cloud-1::after {
+  height: 28px;
+  right: 8px;
+  top: -10px;
+  width: 28px;
+}
+
+.gear-banner-cloud-2 {
+  animation-duration: 52s;
+  animation-delay: -12s;
+  height: 22px;
+  top: 22%;
+  width: 70px;
+}
+
+.gear-banner-cloud-2::before {
+  height: 28px;
+  left: 8px;
+  top: -12px;
+  width: 28px;
+}
+
+.gear-banner-cloud-2::after {
+  height: 22px;
+  right: 6px;
+  top: -8px;
+  width: 22px;
+}
+
+.gear-banner-cloud-3 {
+  animation-duration: 44s;
+  animation-delay: -24s;
+  height: 20px;
+  opacity: 0.7;
+  top: 10%;
+  width: 55px;
+}
+
+.gear-banner-cloud-3::before {
+  height: 24px;
+  left: 6px;
+  top: -10px;
+  width: 24px;
+}
+
+@keyframes gear-banner-cloud-drift {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(calc(100vw + 120%)); }
+}
+
+.gear-banner-mountain {
+  bottom: 0;
+  clip-path: polygon(0 100%, 0 40%, 100% 100%);
+  position: absolute;
+  width: 100%;
+}
+
+.gear-banner-mountain-back {
+  animation: gear-banner-parallax-back 20s ease-in-out infinite alternate;
+  background: linear-gradient(180deg, #4a6741 0%, #3d5536 100%);
+  clip-path: polygon(0 100%, 0 55%, 25% 30%, 45% 50%, 65% 25%, 85% 45%, 100% 35%, 100% 100%);
+  height: 55%;
+  opacity: 0.6;
+}
+
+.gear-banner-mountain-mid {
+  animation: gear-banner-parallax-mid 14s ease-in-out infinite alternate;
+  background: linear-gradient(180deg, #2d5016 0%, #1e3a0f 100%);
+  clip-path: polygon(0 100%, 0 65%, 20% 45%, 40% 60%, 55% 38%, 75% 55%, 100% 42%, 100% 100%);
+  height: 45%;
+  opacity: 0.85;
+}
+
+.gear-banner-mountain-front {
+  animation: gear-banner-parallax-front 10s ease-in-out infinite alternate;
+  background: linear-gradient(180deg, #1a3d12 0%, #0f2810 100%);
+  clip-path: polygon(0 100%, 0 75%, 30% 55%, 50% 68%, 70% 50%, 100% 62%, 100% 100%);
+  height: 32%;
+}
+
+@keyframes gear-banner-parallax-back {
+  from { transform: translateX(0); }
+  to { transform: translateX(-8px); }
+}
+
+@keyframes gear-banner-parallax-mid {
+  from { transform: translateX(0); }
+  to { transform: translateX(-14px); }
+}
+
+@keyframes gear-banner-parallax-front {
+  from { transform: translateX(0); }
+  to { transform: translateX(-20px); }
+}
+
+.gear-banner-trees {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 18px,
+    #0a1f08 18px,
+    #0a1f08 22px
+  );
+  bottom: 0;
+  clip-path: polygon(0 100%, 0 60%, 5% 40%, 8% 60%, 12% 35%, 15% 60%, 20% 45%, 25% 100%);
+  height: 18%;
+  mask-image: linear-gradient(90deg, #000 0%, #000 40%, transparent 100%);
+  opacity: 0.5;
+  position: absolute;
+  width: 50%;
+}
+
+.gear-banner-particles {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.gear-banner-particle {
+  animation: gear-banner-particle-float var(--duration, 8s) ease-in-out var(--delay, 0s) infinite;
+  background: rgb(255 255 255 / 45%);
+  border-radius: 50%;
+  height: var(--size, 3px);
+  left: var(--x, 50%);
+  position: absolute;
+  top: 100%;
+  width: var(--size, 3px);
+}
+
+@keyframes gear-banner-particle-float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+
+  10% { opacity: 0.8; }
+  90% { opacity: 0.6; }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-110vh) translateX(var(--drift, 0));
+  }
+}
+
+/* content layout */
+.gear-banner-content {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  min-height: 320px;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+@media (width >= 768px) {
+  .gear-banner-content {
+    align-items: center;
+    grid-template-columns: 1.2fr 0.8fr;
+    min-height: 360px;
+    padding: 2.5rem;
+  }
+}
+
+@media (width >= 1024px) {
+  .gear-banner-content {
+    min-height: 400px;
+    padding: 3rem 3.5rem;
+  }
+}
+
+.gear-banner-copy {
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
+}
+
+.gear-banner-eyebrow {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  color: #ffe066;
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.gear-banner-headline {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+  font-family: var(--heading-font-family);
+  font-size: clamp(1.75rem, 5vw, var(--heading-font-size-l));
+  line-height: 1.05;
+  margin: 0 0 0.65rem;
+}
+
+.gear-banner-subhead {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  font-size: clamp(0.9rem, 2.5vw, var(--body-font-size-s));
+  line-height: 1.45;
+  margin: 0 0 1rem;
+  max-width: 36rem;
+  opacity: 0.92;
+}
+
+.gear-banner-includes {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.gear-banner-includes li {
+  backdrop-filter: blur(6px);
+  background: rgb(255 255 255 / 15%);
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 999px;
+  font-size: var(--body-font-size-xs);
+  padding: 0.25rem 0.75rem;
+}
+
+.gear-banner-code-line {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+  font-size: var(--body-font-size-xs);
+  margin: 0 0 1rem;
+}
+
+.gear-banner-code {
+  animation: gear-banner-code-flash 2.5s ease-in-out 1.5s infinite;
+  background: rgb(0 0 0 / 30%);
+  border-radius: 6px;
+  display: inline-block;
+  font-family: monospace;
+  font-size: 1.05em;
+  letter-spacing: 0.15em;
+  margin-left: 0.35rem;
+  padding: 0.15rem 0.5rem;
+}
+
+@keyframes gear-banner-code-flash {
+  0%, 100% { background: rgb(0 0 0 / 30%); }
+  50% { background: rgb(255 224 102 / 35%); }
+}
+
+.gear-banner-copy .button-wrapper {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  margin: 0 0 0.75rem;
+}
+
+.gear-banner-cta {
+  animation: gear-banner-cta-shimmer 3s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes gear-banner-cta-shimmer {
+  0%, 100% { box-shadow: 0 4px 20px rgb(255 123 58 / 40%); }
+  50% { box-shadow: 0 4px 32px rgb(255 224 102 / 55%); }
+}
+
+.gear-banner-fine-print {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
+  font-size: 0.75rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+@keyframes gear-banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* offer badge */
+.gear-banner-offer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.gear-banner-badge {
+  animation: gear-banner-badge-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both,
+    gear-banner-badge-glow 3s ease-in-out 1.5s infinite;
+  aspect-ratio: 1;
+  backdrop-filter: blur(8px);
+  background: rgb(255 255 255 / 12%);
+  border: 3px solid rgb(255 255 255 / 45%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgb(255 224 102 / 50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+  max-width: 200px;
+  padding: 1.25rem;
+  position: relative;
+  width: min(52vw, 200px);
+}
+
+.gear-banner-badge::before {
+  animation: gear-banner-ring-pulse 2.5s ease-out infinite;
+  border: 2px solid rgb(255 224 102 / 60%);
+  border-radius: 50%;
+  content: "";
+  inset: -8px;
+  position: absolute;
+}
+
+@keyframes gear-banner-badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-15deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes gear-banner-badge-glow {
+  0%, 100% { box-shadow: 0 0 30px rgb(255 224 102 / 25%); }
+  50% { box-shadow: 0 0 50px rgb(255 224 102 / 45%); }
+}
+
+@keyframes gear-banner-ring-pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+.gear-banner-percent {
+  color: #ffe066;
+  font-family: var(--heading-font-family);
+  font-size: clamp(2.75rem, 12vw, 4rem);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.gear-banner-percent-sign {
+  color: #ffe066;
+  font-family: var(--heading-font-family);
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  font-weight: 700;
+  margin-top: -0.15em;
+}
+
+.gear-banner-off-label {
+  color: #fff;
+  font-family: var(--heading-font-family);
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-top: 0.15rem;
+}
+
+.gear-banner-category {
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+  color: rgb(255 255 255 / 85%);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+}
+
+.gear-banner-icons {
+  display: flex;
+  gap: 0.65rem;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.gear-banner-gear-icon {
+  animation: gear-banner-icon-bob 3s ease-in-out var(--float-delay, 0s) infinite;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 30%));
+}
+
+@keyframes gear-banner-icon-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.gear-banner-urgency {
+  align-items: center;
+  animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
+  color: rgb(255 255 255 / 80%);
+  display: flex;
+  font-size: 0.75rem;
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 0;
+}
+
+.gear-banner-urgency-dot {
+  animation: gear-banner-dot-blink 1.2s ease-in-out infinite;
+  background: #ff6b6b;
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 8px;
+  width: 8px;
+}
+
+@keyframes gear-banner-dot-blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+}
+
+/* active state — triggered on scroll into view */
+.gear-banner:not(.gear-banner-active) .gear-banner-percent {
+  opacity: 0;
+}
+
+.gear-banner-active .gear-banner-scene .gear-banner-cloud {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear-banner-sky,
+  .gear-banner-sun,
+  .gear-banner-cloud,
+  .gear-banner-mountain-back,
+  .gear-banner-mountain-mid,
+  .gear-banner-mountain-front,
+  .gear-banner-particle,
+  .gear-banner-gear-icon,
+  .gear-banner-badge,
+  .gear-banner-badge::before,
+  .gear-banner-urgency-dot,
+  .gear-banner-code,
+  .gear-banner-cta,
+  .gear-banner-eyebrow,
+  .gear-banner-headline,
+  .gear-banner-subhead,
+  .gear-banner-includes,
+  .gear-banner-code-line,
+  .gear-banner-copy .button-wrapper,
+  .gear-banner-fine-print,
+  .gear-banner-category,
+  .gear-banner-urgency {
+    animation: none;
+  }
+
+  .gear-banner-percent {
+    opacity: 1;
+  }
+}

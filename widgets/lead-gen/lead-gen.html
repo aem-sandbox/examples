@@ -1,0 +1,87 @@
+<form class="lead-gen-form" novalidate>
+  <section class="lead-gen-panel lead-gen-intro" data-panel="intro">
+    <p class="lead-gen-eyebrow"></p>
+    <h2 class="lead-gen-headline"></h2>
+    <p class="lead-gen-description"></p>
+    <ul class="lead-gen-perks" aria-label=""></ul>
+    <p class="lead-gen-time"></p>
+  </section>
+
+  <section class="lead-gen-panel lead-gen-step" data-panel="company-size" hidden>
+    <p class="lead-gen-step-label"></p>
+    <h2 class="lead-gen-step-title" id="lead-gen-company-size-title"></h2>
+    <p class="lead-gen-step-subtitle"></p>
+    <div class="lead-gen-options" role="radiogroup" aria-labelledby="lead-gen-company-size-title"></div>
+  </section>
+
+  <section class="lead-gen-panel lead-gen-step" data-panel="challenges" hidden>
+    <p class="lead-gen-step-label"></p>
+    <h2 class="lead-gen-step-title" id="lead-gen-challenges-title"></h2>
+    <p class="lead-gen-step-subtitle"></p>
+    <div class="lead-gen-options lead-gen-options-multi" role="group" aria-labelledby="lead-gen-challenges-title"></div>
+  </section>
+
+  <section class="lead-gen-panel lead-gen-step" data-panel="priority" hidden>
+    <p class="lead-gen-step-label"></p>
+    <h2 class="lead-gen-step-title" id="lead-gen-priority-title"></h2>
+    <p class="lead-gen-step-subtitle"></p>
+    <div class="lead-gen-options" role="radiogroup" aria-labelledby="lead-gen-priority-title"></div>
+  </section>
+
+  <section class="lead-gen-panel lead-gen-step" data-panel="contact" hidden>
+    <p class="lead-gen-step-label"></p>
+    <h2 class="lead-gen-step-title"></h2>
+    <p class="lead-gen-step-subtitle"></p>
+    <div class="lead-gen-fields">
+      <div class="lead-gen-field">
+        <label for="lead-gen-first-name"><span class="label-text"></span><span class="required" aria-hidden="true">*</span></label>
+        <input id="lead-gen-first-name" type="text" name="firstName" required autocomplete="given-name">
+      </div>
+      <div class="lead-gen-field">
+        <label for="lead-gen-last-name"><span class="label-text"></span><span class="required" aria-hidden="true">*</span></label>
+        <input id="lead-gen-last-name" type="text" name="lastName" required autocomplete="family-name">
+      </div>
+      <div class="lead-gen-field">
+        <label for="lead-gen-email"><span class="label-text"></span><span class="required" aria-hidden="true">*</span></label>
+        <input id="lead-gen-email" type="email" name="email" required autocomplete="email">
+      </div>
+      <div class="lead-gen-field">
+        <label for="lead-gen-company"><span class="label-text"></span><span class="required" aria-hidden="true">*</span></label>
+        <input id="lead-gen-company" type="text" name="company" required autocomplete="organization">
+      </div>
+      <div class="lead-gen-field">
+        <label for="lead-gen-role"><span class="label-text"></span><span class="required" aria-hidden="true">*</span></label>
+        <select id="lead-gen-role" name="role" required></select>
+      </div>
+      <div class="lead-gen-field">
+        <label for="lead-gen-phone"><span class="label-text"></span></label>
+        <input id="lead-gen-phone" type="tel" name="phone" autocomplete="tel">
+      </div>
+    </div>
+    <p class="lead-gen-consent"></p>
+  </section>
+
+  <section class="lead-gen-panel lead-gen-success" data-panel="success" hidden>
+    <p class="lead-gen-success-icon" aria-hidden="true"></p>
+    <h2 class="lead-gen-headline"></h2>
+    <p class="lead-gen-description"></p>
+    <p class="lead-gen-personalized"></p>
+    <p class="button-wrapper">
+      <button type="button" class="button primary lead-gen-restart"></button>
+    </p>
+  </section>
+
+  <footer class="lead-gen-footer">
+    <progress class="lead-gen-progress" max="4" value="0"></progress>
+    <div class="lead-gen-footer-intro">
+      <button type="button" class="button accent lead-gen-start"></button>
+    </div>
+    <div class="lead-gen-footer-steps" hidden>
+      <p class="lead-gen-progress-text"></p>
+      <div class="button-wrapper lead-gen-nav">
+        <button type="button" class="button secondary lead-gen-back" hidden></button>
+        <button type="button" class="button primary lead-gen-next" disabled></button>
+      </div>
+    </div>
+  </footer>
+</form>

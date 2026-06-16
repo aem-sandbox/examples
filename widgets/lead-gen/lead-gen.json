@@ -1,0 +1,410 @@
+{
+  "en": {
+    "formAriaLabel": "Enterprise software lead generation",
+    "intro": {
+      "eyebrow": "2-minute matchmaker",
+      "headline": "Find your perfect enterprise stack",
+      "description": "Answer a few quick questions and we'll connect you with the right solutions for your team — no spam, no endless sales calls.",
+      "perksLabel": "What you'll get",
+      "perks": [
+        "Personalized platform recommendations",
+        "ROI snapshot tailored to your goals",
+        "Priority access to a solutions architect"
+      ],
+      "timeEstimate": "Takes about 2 minutes · 4 quick steps",
+      "cta": "Let's go"
+    },
+    "steps": {
+      "companySize": {
+        "label": "Step 1 of 4",
+        "title": "How big is your crew?",
+        "subtitle": "Pick the team size that best describes your organization today."
+      },
+      "challenges": {
+        "label": "Step 2 of 4",
+        "title": "What's slowing you down?",
+        "subtitle": "Select all that apply — we won't judge the legacy ERP."
+      },
+      "priority": {
+        "label": "Step 3 of 4",
+        "title": "If you could wave a magic wand…",
+        "subtitle": "Choose the outcome that would make your quarter."
+      },
+      "contact": {
+        "label": "Step 4 of 4",
+        "title": "Almost there — who should we send your match to?",
+        "subtitle": "We'll tailor your recommendations and reach out within one business day.",
+        "consent": "By submitting, you agree to receive product updates from Geometrixx. Unsubscribe anytime."
+      }
+    },
+    "labels": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Work email",
+      "company": "Company",
+      "role": "Your role",
+      "phone": "Phone (optional)",
+      "selectRole": "Select your role"
+    },
+    "nav": {
+      "back": "Back",
+      "next": "Continue",
+      "submit": "Get my match",
+      "sending": "Sending…",
+      "progressLabel": "Lead form progress",
+      "stepOf": "Step {current} of {total}"
+    },
+    "success": {
+      "icon": "🎉",
+      "headline": "You're on the list!",
+      "description": "Thanks for sharing your stack story. A solutions architect will review your answers and follow up shortly.",
+      "personalized": "Based on your selections, we're already lining up resources for {companySize} teams focused on {priority}.",
+      "restart": "Start over"
+    },
+    "companySizeOptions": [
+      { "value": "startup", "icon": "🚀", "label": "Startup squad", "hint": "1–50 people" },
+      { "value": "growth", "icon": "📈", "label": "Growth crew", "hint": "51–500 people" },
+      { "value": "enterprise", "icon": "🏢", "label": "Enterprise fleet", "hint": "501–5,000 people" },
+      { "value": "global", "icon": "🌍", "label": "Global force", "hint": "5,000+ people" }
+    ],
+    "challengeOptions": [
+      { "value": "legacy", "icon": "🦕", "label": "Legacy systems", "hint": "Still feeding the mainframe" },
+      { "value": "silos", "icon": "🧱", "label": "Siloed data", "hint": "CRM ≠ ERP ≠ reality" },
+      { "value": "velocity", "icon": "🐢", "label": "Slow releases", "hint": "Quarterly isn't fast enough" },
+      { "value": "security", "icon": "🔐", "label": "Security & compliance", "hint": "Auditors are lurking" },
+      { "value": "experience", "icon": "✨", "label": "Customer experience gaps", "hint": "Users expect more" }
+    ],
+    "priorityOptions": [
+      { "value": "transform", "icon": "⚡", "label": "Accelerate digital transformation", "hint": "Modernize without chaos" },
+      { "value": "unify", "icon": "🔗", "label": "Unify customer data", "hint": "One truth, many channels" },
+      { "value": "automate", "icon": "🤖", "label": "Automate workflows", "hint": "Less swivel chair, more strategy" },
+      { "value": "scale", "icon": "🌐", "label": "Scale globally", "hint": "Launch in new markets faster" }
+    ],
+    "roleOptions": [
+      { "value": "cto", "label": "CTO / VP Engineering" },
+      { "value": "cio", "label": "CIO / IT Director" },
+      { "value": "cmo", "label": "CMO / Marketing Leader" },
+      { "value": "ops", "label": "Operations / COO" },
+      { "value": "product", "label": "Product Leader" },
+      { "value": "other", "label": "Other" }
+    ],
+    "priorityLabels": {
+      "transform": "digital transformation",
+      "unify": "unified customer data",
+      "automate": "workflow automation",
+      "scale": "global scale"
+    },
+    "companySizeLabels": {
+      "startup": "startup",
+      "growth": "growth-stage",
+      "enterprise": "enterprise",
+      "global": "global"
+    }
+  },
+  "fr": {
+    "formAriaLabel": "Formulaire de génération de leads logiciels d'entreprise",
+    "intro": {
+      "eyebrow": "Matchmaker en 2 minutes",
+      "headline": "Trouvez votre stack d'entreprise idéale",
+      "description": "Répondez à quelques questions rapides et nous vous mettrons en relation avec les bonnes solutions pour votre équipe — pas de spam, pas d'appels interminables.",
+      "perksLabel": "Ce que vous obtiendrez",
+      "perks": [
+        "Recommandations de plateforme personnalisées",
+        "Aperçu du ROI adapté à vos objectifs",
+        "Accès prioritaire à un architecte solutions"
+      ],
+      "timeEstimate": "Environ 2 minutes · 4 étapes rapides",
+      "cta": "C'est parti"
+    },
+    "steps": {
+      "companySize": {
+        "label": "Étape 1 sur 4",
+        "title": "Quelle est la taille de votre équipe ?",
+        "subtitle": "Choisissez la taille qui décrit le mieux votre organisation aujourd'hui."
+      },
+      "challenges": {
+        "label": "Étape 2 sur 4",
+        "title": "Qu'est-ce qui vous freine ?",
+        "subtitle": "Sélectionnez tout ce qui s'applique — nous ne jugerons pas l'ERP legacy."
+      },
+      "priority": {
+        "label": "Étape 3 sur 4",
+        "title": "Si vous aviez une baguette magique…",
+        "subtitle": "Choisissez le résultat qui sauverait votre trimestre."
+      },
+      "contact": {
+        "label": "Étape 4 sur 4",
+        "title": "Presque fini — à qui envoyer votre match ?",
+        "subtitle": "Nous personnaliserons vos recommandations et vous contacterons sous un jour ouvré.",
+        "consent": "En soumettant, vous acceptez de recevoir des mises à jour produit de Geometrixx. Désabonnement à tout moment."
+      }
+    },
+    "labels": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "E-mail professionnel",
+      "company": "Entreprise",
+      "role": "Votre rôle",
+      "phone": "Téléphone (optionnel)",
+      "selectRole": "Sélectionnez votre rôle"
+    },
+    "nav": {
+      "back": "Retour",
+      "next": "Continuer",
+      "submit": "Obtenir mon match",
+      "sending": "Envoi…",
+      "progressLabel": "Progression du formulaire",
+      "stepOf": "Étape {current} sur {total}"
+    },
+    "success": {
+      "icon": "🎉",
+      "headline": "Vous êtes inscrit !",
+      "description": "Merci d'avoir partagé votre histoire stack. Un architecte solutions examinera vos réponses et vous recontactera rapidement.",
+      "personalized": "D'après vos sélections, nous préparons déjà des ressources pour les équipes {companySize} axées sur {priority}.",
+      "restart": "Recommencer"
+    },
+    "companySizeOptions": [
+      { "value": "startup", "icon": "🚀", "label": "Équipe startup", "hint": "1–50 personnes" },
+      { "value": "growth", "icon": "📈", "label": "Équipe en croissance", "hint": "51–500 personnes" },
+      { "value": "enterprise", "icon": "🏢", "label": "Flotte entreprise", "hint": "501–5 000 personnes" },
+      { "value": "global", "icon": "🌍", "label": "Force globale", "hint": "Plus de 5 000 personnes" }
+    ],
+    "challengeOptions": [
+      { "value": "legacy", "icon": "🦕", "label": "Systèmes legacy", "hint": "On nourrit encore le mainframe" },
+      { "value": "silos", "icon": "🧱", "label": "Données en silos", "hint": "CRM ≠ ERP ≠ réalité" },
+      { "value": "velocity", "icon": "🐢", "label": "Lancements lents", "hint": "Trimestriel, ce n'est pas assez rapide" },
+      { "value": "security", "icon": "🔐", "label": "Sécurité et conformité", "hint": "Les auditeurs rôdent" },
+      { "value": "experience", "icon": "✨", "label": "Lacunes expérience client", "hint": "Les utilisateurs exigent plus" }
+    ],
+    "priorityOptions": [
+      { "value": "transform", "icon": "⚡", "label": "Accélérer la transformation numérique", "hint": "Moderniser sans chaos" },
+      { "value": "unify", "icon": "🔗", "label": "Unifier les données client", "hint": "Une vérité, plusieurs canaux" },
+      { "value": "automate", "icon": "🤖", "label": "Automatiser les workflows", "hint": "Moins de pivot, plus de stratégie" },
+      { "value": "scale", "icon": "🌐", "label": "Passer à l'échelle mondiale", "hint": "Lancer sur de nouveaux marchés plus vite" }
+    ],
+    "roleOptions": [
+      { "value": "cto", "label": "CTO / VP Ingénierie" },
+      { "value": "cio", "label": "CIO / Directeur IT" },
+      { "value": "cmo", "label": "CMO / Responsable marketing" },
+      { "value": "ops", "label": "Opérations / COO" },
+      { "value": "product", "label": "Responsable produit" },
+      { "value": "other", "label": "Autre" }
+    ],
+    "priorityLabels": {
+      "transform": "la transformation numérique",
+      "unify": "l'unification des données client",
+      "automate": "l'automatisation des workflows",
+      "scale": "l'échelle mondiale"
+    },
+    "companySizeLabels": {
+      "startup": "startup",
+      "growth": "en croissance",
+      "enterprise": "entreprise",
+      "global": "mondiales"
+    }
+  },
+  "de": {
+    "formAriaLabel": "Lead-Generierung für Unternehmenssoftware",
+    "intro": {
+      "eyebrow": "2-Minuten-Matchmaker",
+      "headline": "Finden Sie Ihren perfekten Enterprise-Stack",
+      "description": "Beantworten Sie ein paar kurze Fragen und wir verbinden Sie mit den richtigen Lösungen für Ihr Team — kein Spam, keine endlosen Verkaufsgespräche.",
+      "perksLabel": "Das erhalten Sie",
+      "perks": [
+        "Personalisierte Plattform-Empfehlungen",
+        "ROI-Snapshot passend zu Ihren Zielen",
+        "Prioritätszugang zu einem Solutions Architect"
+      ],
+      "timeEstimate": "Dauert etwa 2 Minuten · 4 schnelle Schritte",
+      "cta": "Los geht's"
+    },
+    "steps": {
+      "companySize": {
+        "label": "Schritt 1 von 4",
+        "title": "Wie groß ist Ihr Team?",
+        "subtitle": "Wählen Sie die Teamgröße, die Ihre Organisation heute am besten beschreibt."
+      },
+      "challenges": {
+        "label": "Schritt 2 von 4",
+        "title": "Was bremst Sie aus?",
+        "subtitle": "Wählen Sie alles Zutreffende — wir urteilen nicht über das Legacy-ERP."
+      },
+      "priority": {
+        "label": "Schritt 3 von 4",
+        "title": "Wenn Sie einen Zauberstab hätten…",
+        "subtitle": "Wählen Sie das Ergebnis, das Ihr Quartal retten würde."
+      },
+      "contact": {
+        "label": "Schritt 4 von 4",
+        "title": "Fast geschafft — wem sollen wir Ihren Match schicken?",
+        "subtitle": "Wir passen Ihre Empfehlungen an und melden uns innerhalb eines Werktags.",
+        "consent": "Mit dem Absenden stimmen Sie Produktupdates von Geometrixx zu. Abmeldung jederzeit möglich."
+      }
+    },
+    "labels": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "Geschäftliche E-Mail",
+      "company": "Unternehmen",
+      "role": "Ihre Rolle",
+      "phone": "Telefon (optional)",
+      "selectRole": "Rolle auswählen"
+    },
+    "nav": {
+      "back": "Zurück",
+      "next": "Weiter",
+      "submit": "Match erhalten",
+      "sending": "Wird gesendet…",
+      "progressLabel": "Formularfortschritt",
+      "stepOf": "Schritt {current} von {total}"
+    },
+    "success": {
+      "icon": "🎉",
+      "headline": "Sie stehen auf der Liste!",
+      "description": "Danke, dass Sie Ihre Stack-Geschichte geteilt haben. Ein Solutions Architect prüft Ihre Antworten und meldet sich in Kürze.",
+      "personalized": "Basierend auf Ihrer Auswahl bereiten wir bereits Ressourcen für {companySize}-Teams mit Fokus auf {priority} vor.",
+      "restart": "Neu starten"
+    },
+    "companySizeOptions": [
+      { "value": "startup", "icon": "🚀", "label": "Startup-Team", "hint": "1–50 Personen" },
+      { "value": "growth", "icon": "📈", "label": "Wachstumsteam", "hint": "51–500 Personen" },
+      { "value": "enterprise", "icon": "🏢", "label": "Enterprise-Flotte", "hint": "501–5.000 Personen" },
+      { "value": "global", "icon": "🌍", "label": "Globale Macht", "hint": "Über 5.000 Personen" }
+    ],
+    "challengeOptions": [
+      { "value": "legacy", "icon": "🦕", "label": "Legacy-Systeme", "hint": "Wir füttern noch den Mainframe" },
+      { "value": "silos", "icon": "🧱", "label": "Datensilos", "hint": "CRM ≠ ERP ≠ Realität" },
+      { "value": "velocity", "icon": "🐢", "label": "Langsame Releases", "hint": "Vierteljährlich ist nicht schnell genug" },
+      { "value": "security", "icon": "🔐", "label": "Sicherheit & Compliance", "hint": "Auditor:innen lauern" },
+      { "value": "experience", "icon": "✨", "label": "CX-Lücken", "hint": "Nutzer erwarten mehr" }
+    ],
+    "priorityOptions": [
+      { "value": "transform", "icon": "⚡", "label": "Digitale Transformation beschleunigen", "hint": "Modernisieren ohne Chaos" },
+      { "value": "unify", "icon": "🔗", "label": "Kundendaten vereinheitlichen", "hint": "Eine Wahrheit, viele Kanäle" },
+      { "value": "automate", "icon": "🤖", "label": "Workflows automatisieren", "hint": "Weniger Schreibtisch-Hopping, mehr Strategie" },
+      { "value": "scale", "icon": "🌐", "label": "Global skalieren", "hint": "Schneller in neue Märkte" }
+    ],
+    "roleOptions": [
+      { "value": "cto", "label": "CTO / VP Engineering" },
+      { "value": "cio", "label": "CIO / IT-Leiter" },
+      { "value": "cmo", "label": "CMO / Marketing-Leiter" },
+      { "value": "ops", "label": "Operations / COO" },
+      { "value": "product", "label": "Produktleiter" },
+      { "value": "other", "label": "Sonstiges" }
+    ],
+    "priorityLabels": {
+      "transform": "digitale Transformation",
+      "unify": "vereinheitlichte Kundendaten",
+      "automate": "Workflow-Automatisierung",
+      "scale": "globale Skalierung"
+    },
+    "companySizeLabels": {
+      "startup": "Startup",
+      "growth": "Wachstums",
+      "enterprise": "Enterprise",
+      "global": "globalen"
+    }
+  },
+  "es": {
+    "formAriaLabel": "Formulario de generación de leads de software empresarial",
+    "intro": {
+      "eyebrow": "Matchmaker en 2 minutos",
+      "headline": "Encuentra tu stack empresarial perfecto",
+      "description": "Responde unas preguntas rápidas y te conectaremos con las soluciones adecuadas para tu equipo — sin spam ni llamadas interminables.",
+      "perksLabel": "Lo que obtendrás",
+      "perks": [
+        "Recomendaciones de plataforma personalizadas",
+        "Instantánea de ROI adaptada a tus objetivos",
+        "Acceso prioritario a un arquitecto de soluciones"
+      ],
+      "timeEstimate": "Toma unos 2 minutos · 4 pasos rápidos",
+      "cta": "Empecemos"
+    },
+    "steps": {
+      "companySize": {
+        "label": "Paso 1 de 4",
+        "title": "¿Qué tan grande es tu equipo?",
+        "subtitle": "Elige el tamaño que mejor describa tu organización hoy."
+      },
+      "challenges": {
+        "label": "Paso 2 de 4",
+        "title": "¿Qué te está frenando?",
+        "subtitle": "Selecciona todo lo que aplique — no juzgaremos el ERP legacy."
+      },
+      "priority": {
+        "label": "Paso 3 de 4",
+        "title": "Si tuvieras una varita mágica…",
+        "subtitle": "Elige el resultado que salvaría tu trimestre."
+      },
+      "contact": {
+        "label": "Paso 4 de 4",
+        "title": "Casi listo — ¿a quién enviamos tu match?",
+        "subtitle": "Personalizaremos tus recomendaciones y te contactaremos en un día hábil.",
+        "consent": "Al enviar, aceptas recibir actualizaciones de producto de Geometrixx. Cancela cuando quieras."
+      }
+    },
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo corporativo",
+      "company": "Empresa",
+      "role": "Tu rol",
+      "phone": "Teléfono (opcional)",
+      "selectRole": "Selecciona tu rol"
+    },
+    "nav": {
+      "back": "Atrás",
+      "next": "Continuar",
+      "submit": "Obtener mi match",
+      "sending": "Enviando…",
+      "progressLabel": "Progreso del formulario",
+      "stepOf": "Paso {current} de {total}"
+    },
+    "success": {
+      "icon": "🎉",
+      "headline": "¡Estás en la lista!",
+      "description": "Gracias por compartir tu historia de stack. Un arquitecto de soluciones revisará tus respuestas y se pondrá en contacto pronto.",
+      "personalized": "Según tus selecciones, ya estamos preparando recursos para equipos {companySize} enfocados en {priority}.",
+      "restart": "Empezar de nuevo"
+    },
+    "companySizeOptions": [
+      { "value": "startup", "icon": "🚀", "label": "Equipo startup", "hint": "1–50 personas" },
+      { "value": "growth", "icon": "📈", "label": "Equipo en crecimiento", "hint": "51–500 personas" },
+      { "value": "enterprise", "icon": "🏢", "label": "Flota empresarial", "hint": "501–5.000 personas" },
+      { "value": "global", "icon": "🌍", "label": "Fuerza global", "hint": "Más de 5.000 personas" }
+    ],
+    "challengeOptions": [
+      { "value": "legacy", "icon": "🦕", "label": "Sistemas legacy", "hint": "Aún alimentamos el mainframe" },
+      { "value": "silos", "icon": "🧱", "label": "Datos en silos", "hint": "CRM ≠ ERP ≠ realidad" },
+      { "value": "velocity", "icon": "🐢", "label": "Lanzamientos lentos", "hint": "Trimestral no es suficiente" },
+      { "value": "security", "icon": "🔐", "label": "Seguridad y cumplimiento", "hint": "Los auditores acechan" },
+      { "value": "experience", "icon": "✨", "label": "Brechas en experiencia", "hint": "Los usuarios exigen más" }
+    ],
+    "priorityOptions": [
+      { "value": "transform", "icon": "⚡", "label": "Acelerar la transformación digital", "hint": "Modernizar sin caos" },
+      { "value": "unify", "icon": "🔗", "label": "Unificar datos de clientes", "hint": "Una verdad, muchos canales" },
+      { "value": "automate", "icon": "🤖", "label": "Automatizar flujos de trabajo", "hint": "Menos silla giratoria, más estrategia" },
+      { "value": "scale", "icon": "🌐", "label": "Escalar globalmente", "hint": "Lanzar en nuevos mercados más rápido" }
+    ],
+    "roleOptions": [
+      { "value": "cto", "label": "CTO / VP de Ingeniería" },
+      { "value": "cio", "label": "CIO / Director de TI" },
+      { "value": "cmo", "label": "CMO / Líder de marketing" },
+      { "value": "ops", "label": "Operaciones / COO" },
+      { "value": "product", "label": "Líder de producto" },
+      { "value": "other", "label": "Otro" }
+    ],
+    "priorityLabels": {
+      "transform": "transformación digital",
+      "unify": "datos unificados de clientes",
+      "automate": "automatización de flujos",
+      "scale": "escala global"
+    },
+    "companySizeLabels": {
+      "startup": "startup",
+      "growth": "en crecimiento",
+      "enterprise": "empresariales",
+      "global": "globales"
+    }
+  }
+}

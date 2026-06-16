@@ -1,0 +1,117 @@
+/* break out of section max-width to full viewport */
+.viewer-3d-wrapper,
+.viewer-3d-container,
+.viewer-3d {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  max-width: none;
+  width: 100vw;
+}
+
+.viewer-3d [hidden] {
+  display: none !important;
+}
+
+.viewer-3d-shell {
+  background: transparent;
+}
+
+.viewer-3d-stage {
+  height: 100dvh;
+  min-height: 480px;
+  position: relative;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+.viewer-3d-viewport {
+  background: transparent;
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+.viewer-3d-model {
+  --progress-bar-color: var(--link-color);
+  --progress-bar-height: 3px;
+
+  background-color: transparent;
+  display: block;
+  height: 100%;
+  outline: none;
+  width: 100%;
+}
+
+.viewer-3d-chrome {
+  align-items: flex-end;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.viewer-3d-chrome button {
+  pointer-events: auto;
+}
+
+.viewer-3d-loader {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.viewer-3d-spinner {
+  animation: viewer-3d-spin 0.9s linear infinite;
+  border: 3px solid rgb(0 0 0 / 10%);
+  border-radius: 50%;
+  border-top-color: var(--link-color);
+  height: 40px;
+  width: 40px;
+}
+
+@keyframes viewer-3d-spin {
+  to { transform: rotate(360deg); }
+}
+
+.viewer-3d-ready .viewer-3d-model {
+  animation: viewer-3d-fade-in 0.6s ease both;
+}
+
+@keyframes viewer-3d-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.viewer-3d-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
+  padding: 0 1.25rem max(1rem, env(safe-area-inset-bottom));
+}
+
+.viewer-3d-toolbar .button {
+  backdrop-filter: blur(6px);
+  background: rgb(255 255 255 / 75%);
+  font-size: var(--body-font-size-xs);
+  min-width: 8rem;
+}
+
+@media (width >= 768px) {
+  .viewer-3d-toolbar {
+    padding: 0 2rem max(1.25rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewer-3d-spinner,
+  .viewer-3d-ready .viewer-3d-model {
+    animation: none;
+  }
+}
