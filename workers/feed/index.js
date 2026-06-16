@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const FEED_TITLE = 'Example Articles';
 const FEED_DESCRIPTION = 'Latest reference article updates';
 const FEED_LANGUAGE = 'en-ca';
