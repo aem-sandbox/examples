@@ -1,0 +1,26 @@
+name: Deploy Contact Us Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/contact_us/**/*.js'
+      - 'workers/contact_us/wrangler.toml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ac7ee4615628005dc5ba0a22f0aae2a6
+          workingDirectory: workers/contact_us
+          wranglerVersion: "4.75.0"
+          secrets: |
+            SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
