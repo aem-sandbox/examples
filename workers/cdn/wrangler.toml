@@ -1,0 +1,15 @@
+name = "examples-bbird-cdn"
+main = "index.js"
+compatibility_date = "2026-03-13"
+account_id = "ac7ee4615628005dc5ba0a22f0aae2a6"
+
+routes = [
+   { pattern = "examples.bbird.live/*", zone_name = "bbird.live" },
+]
+
+[vars]
+ORIGIN_HOSTNAME = "main--examples--aem-sandbox.aem.live"
+PUSH_INVALIDATION = "enabled"
+
+[observability.logs]
+enabled = true
