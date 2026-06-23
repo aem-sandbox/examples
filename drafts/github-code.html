@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Code Block — Test</title>
+  <link rel="stylesheet" href="/styles/fonts.css">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <script type="module" src="/scripts/scripts.js"></script>
+</head>
+<body>
+  <header></header>
+  <main>
+    <div>
+      <h1>GitHub Code Block</h1>
+      <p>The block fetches a file from GitHub and renders it as a syntax-highlighted code block.</p>
+    </div>
+
+    <!-- Full file (no line range) -->
+    <div>
+      <h2>Full file</h2>
+      <div class="github-code block" data-block-name="github-code">
+        <div><div><a href="https://github.com/adobe/aem-boilerplate/blob/main/head.html">https://github.com/adobe/aem-boilerplate/blob/main/head.html</a></div></div>
+      </div>
+    </div>
+
+    <!-- Line range via two cells -->
+    <div>
+      <h2>Lines 1–40 of aem.js (two-cell range)</h2>
+      <div class="github-code block" data-block-name="github-code">
+        <div><div><a href="https://github.com/adobe/aem-boilerplate/blob/main/scripts/aem.js">https://github.com/adobe/aem-boilerplate/blob/main/scripts/aem.js</a></div></div>
+        <div><div>1</div><div>40</div></div>
+      </div>
+    </div>
+
+    <!-- Line range via single cell "start-end" notation -->
+    <div>
+      <h2>Lines 200–230 of aem.js (single-cell range)</h2>
+      <div class="github-code block" data-block-name="github-code">
+        <div><div><a href="https://github.com/adobe/aem-boilerplate/blob/main/scripts/aem.js">https://github.com/adobe/aem-boilerplate/blob/main/scripts/aem.js</a></div></div>
+        <div><div>200-230</div></div>
+      </div>
+    </div>
+
+    <!-- CSS file -->
+    <div>
+      <h2>CSS snippet</h2>
+      <div class="github-code block" data-block-name="github-code">
+        <div><div><a href="https://github.com/adobe/aem-boilerplate/blob/main/styles/styles.css">https://github.com/adobe/aem-boilerplate/blob/main/styles/styles.css</a></div></div>
+        <div><div>1</div><div>50</div></div>
+      </div>
+    </div>
+
+    <!-- Error: invalid URL -->
+    <div>
+      <h2>Error: invalid URL</h2>
+      <div class="github-code block" data-block-name="github-code">
+        <div><div>not-a-github-url</div></div>
+      </div>
+    </div>
+  </main>
+  <footer></footer>
+</body>
+</html>

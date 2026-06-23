@@ -1,0 +1,177 @@
+/* github-code */
+
+.github-code {
+  margin: var(--space-xl) auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+
+.github-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-m);
+  padding: var(--space-s) var(--space-m);
+  background: light-dark(var(--color-gray-100), #161b22);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.github-code-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  min-width: 0;
+}
+
+.github-code-filename {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.github-code-range {
+  font-size: 0.75rem;
+  padding: 1px var(--space-s);
+  border-radius: var(--radius-full);
+  background: light-dark(rgb(var(--color-brand-rgb) / 12%), rgb(var(--color-brand-rgb) / 22%));
+  color: light-dark(var(--color-blue-600), var(--color-blue-400));
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.github-code-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  flex-shrink: 0;
+}
+
+.github-code-copy {
+  font-size: 0.75rem;
+  padding: 3px var(--space-s);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-s);
+  background: var(--color-background);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  line-height: 1.5;
+}
+
+.github-code-copy:hover {
+  border-color: var(--color-brand);
+  background: var(--color-brand-subtle);
+}
+
+.github-code-view {
+  font-size: 0.75rem;
+  color: var(--color-brand);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.github-code-view:hover {
+  text-decoration: underline;
+}
+
+/* ── Code area ───────────────────────────────────────────── */
+
+.github-code-pre {
+  margin: 0;
+  overflow-x: auto;
+  background: light-dark(#fff, #0d1117);
+  counter-reset: line calc(var(--github-code-start, 1) - 1);
+}
+
+.github-code-pre .hljs {
+  padding: var(--space-m) 0;
+  background: transparent;
+}
+
+.github-code .line {
+  display: table-row;
+}
+
+.github-code .line::before {
+  display: table-cell;
+  counter-increment: line;
+  content: counter(line);
+  padding: 0 var(--space-m) 0 var(--space-l);
+  text-align: right;
+  min-width: 3ch;
+  color: light-dark(var(--color-gray-500), #484f58);
+  user-select: none;
+  border-right: 1px solid light-dark(var(--color-gray-200), #30363d);
+}
+
+.github-code .line:last-child::before {
+  /* prevent phantom row at trailing newline */
+  content: counter(line);
+}
+
+/* code text column */
+.github-code .line > * {
+  display: table-cell;
+  padding: 0 var(--space-l) 0 var(--space-m);
+  white-space: pre;
+}
+
+/* plain-text fallback when hljs hasn't run yet (no child spans) */
+.github-code .line:not(:has(*)) {
+  white-space: pre;
+  display: block;
+  padding-left: 4ch;
+}
+
+/* ── Loading state ───────────────────────────────────────── */
+
+.github-code-loading {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: light-dark(#fff, #0d1117);
+}
+
+.github-code-loading::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  animation: github-code-spin 0.7s linear infinite;
+}
+
+@keyframes github-code-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error state ─────────────────────────────────────────── */
+
+.github-code-error {
+  margin: 0;
+  padding: var(--space-m) var(--space-l);
+  color: light-dark(#cf222e, #f85149);
+  background: light-dark(#fff1f0, #160c0c);
+  font-size: 0.875rem;
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .github-code-loading::after {
+    animation: none;
+    border-style: dashed;
+  }
+}
