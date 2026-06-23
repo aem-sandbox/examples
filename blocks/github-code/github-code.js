@@ -88,23 +88,26 @@ function parseBlock(block) {
   return { url, startLine, endLine };
 }
 
-function wrapLines(code, startLine) {
-  const rawHtml = code.innerHTML;
-  // Trim a single trailing newline that hljs sometimes adds
-  const trimmed = rawHtml.endsWith('\n') ? rawHtml.slice(0, -1) : rawHtml;
-  const lines = trimmed.split('\n');
-  code.innerHTML = lines
-    .map((line, i) => `<span class="line" data-line="${startLine + i}">${line || ' '}</span>`)
-    .join('\n');
+function buildLineNums(start, count) {
+  const nums = document.createElement('span');
+  nums.className = 'github-code-nums';
+  nums.setAttribute('aria-hidden', 'true');
+  nums.textContent = Array.from({ length: count }, (_, i) => start + i).join('\n');
+  return nums;
 }
 
+let hljsReady = null;
+
 async function loadHighlighter(code) {
-  const isDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-  const theme = isDark ? 'github-dark' : 'github';
-  await Promise.all([
-    loadCSS(`${HLJS_BASE}/styles/${theme}.min.css`),
-    loadScript(`${HLJS_BASE}/highlight.min.js`),
-  ]);
+  if (!hljsReady) {
+    const isDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+    const theme = isDark ? 'github-dark' : 'github';
+    hljsReady = Promise.all([
+      loadCSS(`${HLJS_BASE}/styles/${theme}.min.css`),
+      loadScript(`${HLJS_BASE}/highlight.min.js`),
+    ]);
+  }
+  await hljsReady;
   window.hljs?.highlightElement(code);
 }
 
@@ -182,12 +185,12 @@ async function renderCode(block, url, startLine, endLine) {
 
     const pre = document.createElement('pre');
     pre.className = 'github-code-pre';
-    pre.style.setProperty('--github-code-start', start);
 
+    const nums = buildLineNums(start, slice.length);
     const code = document.createElement('code');
     code.className = `language-${lang}`;
     code.textContent = slice.join('\n');
-    pre.append(code);
+    pre.append(nums, code);
 
     block.replaceChildren(header, pre);
 
@@ -203,7 +206,6 @@ async function renderCode(block, url, startLine, endLine) {
     });
 
     await loadHighlighter(code);
-    wrapLines(code, start);
   } catch (err) {
     block.replaceChildren(
       Object.assign(document.createElement('p'), {

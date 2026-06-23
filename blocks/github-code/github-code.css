@@ -88,49 +88,36 @@
 
 .github-code-pre {
   margin: 0;
+  display: flex;
+  align-items: flex-start;
   overflow-x: auto;
   background: light-dark(#fff, #0d1117);
-  counter-reset: line calc(var(--github-code-start, 1) - 1);
 }
 
-.github-code-pre .hljs {
-  padding: var(--space-m) 0;
-  background: transparent;
-}
-
-.github-code .line {
-  display: table-row;
-}
-
-.github-code .line::before {
-  display: table-cell;
-  counter-increment: line;
-  content: counter(line);
-  padding: 0 var(--space-m) 0 var(--space-l);
+.github-code-nums {
+  position: sticky;
+  left: 0;
+  flex-shrink: 0;
+  padding: var(--space-m) var(--space-m) var(--space-m) var(--space-l);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre;
   text-align: right;
-  min-width: 3ch;
+  min-width: 2ch;
   color: light-dark(var(--color-gray-500), #484f58);
-  user-select: none;
+  background: light-dark(#fff, #0d1117);
   border-right: 1px solid light-dark(var(--color-gray-200), #30363d);
+  user-select: none;
 }
 
-.github-code .line:last-child::before {
-  /* prevent phantom row at trailing newline */
-  content: counter(line);
-}
-
-/* code text column */
-.github-code .line > * {
-  display: table-cell;
-  padding: 0 var(--space-l) 0 var(--space-m);
-  white-space: pre;
-}
-
-/* plain-text fallback when hljs hasn't run yet (no child spans) */
-.github-code .line:not(:has(*)) {
-  white-space: pre;
-  display: block;
-  padding-left: 4ch;
+.github-code-pre code.hljs {
+  flex: 1;
+  min-width: max-content;
+  padding: var(--space-m) var(--space-l) var(--space-m) var(--space-m);
+  background: transparent;
+  overflow-x: visible;
+  line-height: 1.6;
 }
 
 /* ── Loading state ───────────────────────────────────────── */
