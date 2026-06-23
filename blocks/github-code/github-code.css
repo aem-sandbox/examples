@@ -92,6 +92,11 @@
   align-items: flex-start;
   overflow-x: auto;
   background: light-dark(#fff, #0d1117);
+
+  /* Single source of truth for font metrics shared by nums + code */
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
 }
 
 .github-code-nums {
@@ -99,9 +104,6 @@
   left: 0;
   flex-shrink: 0;
   padding: var(--space-m) var(--space-m) var(--space-m) var(--space-l);
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
   white-space: pre;
   text-align: right;
   min-width: 2ch;
@@ -112,12 +114,15 @@
 }
 
 .github-code-pre code.hljs {
+  /* Override UA font defaults so metrics exactly match the nums column */
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
   flex: 1;
   min-width: max-content;
   padding: var(--space-m) var(--space-l) var(--space-m) var(--space-m);
   background: transparent;
   overflow-x: visible;
-  line-height: 1.6;
 }
 
 /* ── Loading state ───────────────────────────────────────── */
