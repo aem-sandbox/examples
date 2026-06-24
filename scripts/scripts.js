@@ -14,6 +14,8 @@ import {
   getMetadata,
 } from './aem.js';
 
+import { getLocale } from './shared.js';
+
 const COLOR_SCHEME_KEY = 'color-scheme';
 
 /**
@@ -144,8 +146,8 @@ async function loadFragments(section) {
   const { loadFragment } = await import('../blocks/fragment/fragment.js');
   await Promise.all(fragments.map(async (a) => {
     try {
-      const { pathname } = new URL(a.href);
-      const frag = await loadFragment(pathname);
+      const { pathname, hash } = new URL(a.href);
+      const frag = await loadFragment(`${pathname}${hash}`);
       if (!frag) return;
       a.parentElement.replaceWith(...frag.children);
     } catch (error) {
@@ -256,7 +258,7 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  getLocale();
   decorateTemplateAndTheme();
   try {
     if (!localStorage.getItem(COLOR_SCHEME_KEY)) {
