@@ -36,8 +36,6 @@ export async function loadFragment(path) {
     let resp = await fetch(`${localizedPath}.plain.html`);
     let resolvedPath = localizedPath;
     if (!resp.ok && prefix && !dnt) {
-      // eslint-disable-next-line no-console
-      console.log('Fragment not found for localized path: %s', localizedPath);
       resp = await fetch(`${cleanPath}.plain.html`);
       resolvedPath = cleanPath;
     }
