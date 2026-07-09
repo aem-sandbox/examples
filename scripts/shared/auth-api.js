@@ -37,8 +37,8 @@ const AUTH_ORIGIN = 'https://examples.bbird.live';
  * These are relative to AUTH_ORIGIN
  */
 const AUTH_PATHS = {
-  login: '/auth/login',    // Initiates login flow
-  logout: '/auth/logout',  // Logs out user
+  login: '/auth/login', // Initiates login flow
+  logout: '/auth/logout', // Logs out user
   session: '/auth/session', // Returns current auth state
 };
 
@@ -146,7 +146,7 @@ export async function getSessionState() {
     const response = await fetch(authUrl(AUTH_PATHS.session), {
       method: 'GET',
       credentials: 'include', // Send cookies (required for auth)
-      redirect: 'manual',      // Don't follow redirects to login pages
+      redirect: 'manual', // Don't follow redirects to login pages
       headers: { Accept: 'application/json' },
     });
 
