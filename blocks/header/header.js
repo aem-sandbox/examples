@@ -1,5 +1,11 @@
 import { decorateIcons, getMetadata } from '../../scripts/aem.js';
 import { toggleColorScheme } from '../../scripts/scripts.js';
+import {
+  getLoginUrl,
+  getLogoutUrl,
+  getDefaultAuthLabel,
+  getSessionState,
+} from '../../scripts/shared/auth-api.js';
 
 /** Matches styles.css desktop breakpoint. */
 const DESKTOP_BP = '(min-width: 900px)';
@@ -146,6 +152,100 @@ function initThemeToggle(tools) {
   return btn;
 }
 
+/**
+ * Cookie helper functions for auth state detection
+ */
+function hasCookieStartingWith(prefix) {
+  return document.cookie
+    .split(';')
+    .map((entry) => decodeURIComponent(entry.split('=')[0] || '').trim())
+    .some((cookieName) => cookieName.startsWith(prefix));
+}
+
+function isLoggedIn() {
+  return hasCookieStartingWith('CF_Authorization');
+}
+
+/**
+ * Resolves authentication state by checking session API
+ * Falls back to cookie check if API fails
+ */
+async function resolveAuthState() {
+  try {
+    const session = await getSessionState();
+    return {
+      authenticated: Boolean(session?.authenticated),
+      email: session?.email || '',
+    };
+  } catch (e) {
+    return {
+      authenticated: isLoggedIn(),
+      email: '',
+    };
+  }
+}
+
+/**
+ * Sets user info badge on auth link
+ * The badge appears as a small circle with 'i' next to the button text
+ */
+function setAuthUserInfo(link, email) {
+  link.querySelector('.nav-auth-info')?.remove();
+  link.removeAttribute('title');
+  link.removeAttribute('data-auth-email');
+
+  if (!email) return;
+
+  link.dataset.authEmail = email;
+  link.setAttribute('title', email);
+  const info = document.createElement('span');
+  info.className = 'nav-auth-info';
+  info.setAttribute('aria-hidden', 'true');
+  info.setAttribute('title', email);
+  info.textContent = 'ⓘ';
+  link.append(info);
+}
+
+/**
+ * Initialize authentication - make login/logout button functional
+ */
+async function initAuth(tools) {
+  if (!tools) return;
+
+  const loginLabel = getDefaultAuthLabel('login');
+  const logoutLabel = getDefaultAuthLabel('logout');
+
+  // Find existing login link or create new one
+  const loginCandidate = tools.querySelector('a[href*="login" i], a[data-auth-link]');
+  const shouldCreateLink = !loginCandidate;
+
+  const authLink = loginCandidate || document.createElement('a');
+  if (shouldCreateLink) {
+    authLink.href = getLoginUrl();
+    authLink.className = 'button nav-auth-link primary';
+    tools.append(authLink);
+  }
+
+  authLink.dataset.authLink = 'true';
+  if (!authLink.classList.contains('button')) authLink.classList.add('button');
+  authLink.classList.add('nav-auth-link');
+
+  // Get current auth state
+  const { authenticated, email } = await resolveAuthState();
+
+  if (authenticated) {
+    // User is logged in - show logout button
+    authLink.textContent = logoutLabel;
+    authLink.href = getLogoutUrl();
+    setAuthUserInfo(authLink, email);
+  } else {
+    // User is anonymous - show login button
+    authLink.textContent = loginLabel;
+    authLink.href = getLoginUrl();
+    setAuthUserInfo(authLink, '');
+  }
+}
+
 function decorateTools(tools) {
   if (!tools) return;
 
@@ -229,8 +329,12 @@ export default async function decorate(block) {
   wrapper.append(nav);
   block.append(wrapper);
 
-  decorateTools(nav.querySelector('.nav-tools'));
+  const tools = nav.querySelector('.nav-tools');
+  decorateTools(tools);
   decorateIcons(nav);
+
+  // Initialize authentication after decoration
+  await initAuth(tools);
 
   toggleMenu(nav, false);
   isDesktop.addEventListener('change', () => toggleMenu(nav, false));
