@@ -11,4 +11,5 @@ jobs:
       with:
         node-version: 24
     - run: npm ci
+    - run: npm install --prefix workers/cdn
     - run: npm run lint
