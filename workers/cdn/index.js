@@ -12,6 +12,8 @@
 
 /* eslint-disable strict, prefer-template, no-restricted-syntax */
 
+import { applyGatingIfNeeded } from './handlers/gating.js';
+
 const getExtension = (path) => {
   const basename = path.split('/').pop();
   const pos = basename.lastIndexOf('.');
@@ -38,6 +40,7 @@ const buildHTML2JSONURL = (requestURL) => {
 // html2json - end
 
 const handleRequest = async (request, env) => {
+  const requestURL = new URL(request.url);
   const url = new URL(request.url);
   if (url.port) {
     // Cloudflare opens a couple more ports than 443, so we redirect visitors
@@ -126,6 +129,8 @@ const handleRequest = async (request, env) => {
     }
   }
   // html2json - end
+
+  resp = await applyGatingIfNeeded(request, requestURL, resp);
 
   resp = new Response(resp.body, resp);
   if (resp.status === 301 && savedSearch) {

@@ -451,6 +451,13 @@ main > .section.gradient button.button:hover {
   background-color: rgb(255 255 255 / 14%);
 }
 
+/* The platform converts section-metadata into data attributes on the section
+   before the page reaches the browser; hide it defensively so raw markup
+   (e.g. local plain.html testing) never renders as visible text. */
+main .section-metadata {
+  display: none;
+}
+
 /* section-metadata style=divider — content-width border below section */
 main > .section.divider {
   position: relative;

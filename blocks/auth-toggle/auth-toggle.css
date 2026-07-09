@@ -1,0 +1,168 @@
+/* Author-only auth-state switcher — bottom-end (common pattern for floating tools) */
+
+/* overflow must stay visible so the .auth-handle (positioned outside the box) is not clipped */
+
+.auth-toggle {
+  position: fixed;
+  inset: auto -14rem calc(var(--space-l) + env(safe-area-inset-bottom, 0px)) auto;
+  transform: none;
+  z-index: 10050;
+  width: min(13rem, calc(100vw - 1.5rem));
+  padding: var(--space-m);
+  overflow: visible;
+  border: 1px solid var(--color-border);
+  border-right: 0;
+  border-radius: var(--radius-s) 0 0 var(--radius-s);
+  background: var(--background-color);
+  color: var(--text-color);
+  box-shadow: var(--shadow-lift);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 1.4;
+  opacity: 0;
+  transition: right 0.3s ease, opacity 0.2s ease;
+}
+
+.auth-toggle.visible {
+  opacity: 1;
+}
+
+.auth-toggle.expanded {
+  right: max(var(--space-m), env(safe-area-inset-right, 0px));
+}
+
+.auth-toggle-body {
+  max-height: min(70vh, calc(100dvh - 5rem));
+  overflow: visible auto;
+}
+
+.auth-handle {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: -2.5rem;
+  transform: translateY(-50%);
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+  border: 1px solid var(--color-brand);
+  border-right: 0;
+  border-radius: var(--radius-s) 0 0 var(--radius-s);
+  background: var(--color-brand);
+  color: var(--color-light);
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  transition: left 0.2s ease, opacity 0.2s ease;
+}
+
+.auth-handle:hover {
+  left: -2.75rem;
+}
+
+.auth-handle.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-handle-icon {
+  color: inherit;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: 0.025rem;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-s);
+  color: inherit;
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auth-close {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.8;
+}
+
+.auth-close:hover {
+  opacity: 1;
+}
+
+.auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+.auth-option-button {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: light-dark(var(--color-light), var(--color-gray-600));
+  color: var(--text-color);
+  cursor: pointer;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.auth-option-button:hover {
+  border-color: var(--color-brand);
+  background: var(--color-hover-surface);
+}
+
+.auth-option-button.current-state {
+  border-color: light-dark(#2e7d32, #7ed321);
+  background: light-dark(rgb(46 125 50 / 12%), rgb(126 211 33 / 18%));
+  color: light-dark(#1e5e22, #9ae663);
+  cursor: default;
+  pointer-events: none;
+}
+
+.auth-option-button.current-state:hover {
+  border-color: light-dark(#2e7d32, #7ed321);
+  background: light-dark(rgb(46 125 50 / 12%), rgb(126 211 33 / 18%));
+}
+
+.auth-handle.bounce {
+  animation: auth-handle-bounce 0.4s ease-in-out;
+}
+
+@keyframes auth-handle-bounce {
+  0%,
+  100% {
+    left: -2.5rem;
+    transform: translateY(-50%);
+  }
+
+  50% {
+    left: -2.75rem;
+    transform: translateY(-50%);
+  }
+}
