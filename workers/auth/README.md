@@ -99,9 +99,9 @@ Returns current authentication state as JSON.
 ## For This Examples Site
 
 **This site uses:**
-- Auth endpoint: `https://demo-bbird-auth.aem-poc-lab.workers.dev`
+- Auth endpoint: `https://examples.bbird.live/auth`
 - Auth provider: Cloudflare Access
-- Policy: Allow `@adobe.com` emails
+- Policy: Allow any email (open for community)
 - Authentication method: One-time PIN via email
 
 **Configured in:**
@@ -203,12 +203,12 @@ You might not even need this worker! Many OAuth providers offer client-side SDKs
 ### 2. Visit the login endpoint
 
 ```
-https://demo-bbird-auth.aem-poc-lab.workers.dev/auth/login?returnTo=https://main--examples--aem-sandbox.aem.live/
+https://examples.bbird.live/auth/login?returnTo=https://examples.bbird.live/
 ```
 
 ### 3. Complete authentication
 
-- Enter email (must match policy: `@adobe.com`)
+- Enter any email address
 - Get PIN via email
 - Enter PIN
 - Redirected back to examples site
@@ -217,7 +217,7 @@ https://demo-bbird-auth.aem-poc-lab.workers.dev/auth/login?returnTo=https://main
 
 Visit:
 ```
-https://demo-bbird-auth.aem-poc-lab.workers.dev/auth/session
+https://examples.bbird.live/auth/session
 ```
 
 Should show `authenticated: true` with your email.
