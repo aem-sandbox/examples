@@ -1,0 +1,16 @@
+name = "examples-auth"
+main = "index.js"
+compatibility_date = "2026-03-13"
+workers_dev = true
+account_id = "ac7ee4615628005dc5ba0a22f0aae2a6"
+
+# Custom domain routes for auth endpoints
+# This makes the worker available at both:
+# - examples-auth.aem-poc-lab.workers.dev (for development)
+# - examples.bbird.live/auth/* (for production, matches demo pattern)
+routes = [
+   { pattern = "examples.bbird.live/auth/*", zone_name = "bbird.live" },
+]
+
+[observability.logs]
+enabled = true

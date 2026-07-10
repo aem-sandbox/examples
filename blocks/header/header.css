@@ -287,6 +287,12 @@ header nav .nav-tools a.button.nav-auth-link:any-link:focus-visible {
   color: var(--color-blue-600);
 }
 
+header nav .nav-tools .nav-auth-info {
+  margin-left: 0.5em;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
 header nav .nav-tool:hover,
 header nav .nav-tool:focus-visible,
 header nav .nav-theme-toggle:hover,
