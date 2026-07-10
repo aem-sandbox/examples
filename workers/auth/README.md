@@ -222,13 +222,6 @@ https://examples.bbird.live/auth/session
 
 Should show `authenticated: true` with your email.
 
-## Documentation
-
-For complete understanding of how this works, see:
-- [Code walkthrough](../../docs/login-flow.md) (TODO: create this)
-- [Cloudflare Access docs](https://developers.cloudflare.com/cloudflare-one/applications/)
-- [Worker code comments](./index.js) - fully commented for learning
-
 ## Key Takeaways
 
 1. **Worker doesn't do authentication** - auth provider does
