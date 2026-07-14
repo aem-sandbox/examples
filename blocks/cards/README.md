@@ -2,17 +2,17 @@
 
 Renders a list of cards. Content is either authored directly, or resolved at render time from `query-index.json`. Layout is chosen independently via variant classes, and variants combine freely with either content mode.
 
-## Content modes
+## Content Modes
 
 ### Static (default)
 
-Author each card as a row: an image cell (optional) and a body cell (heading, text, links). This is the standard content model — nothing else to configure.
+Author each card as a row: an image cell (optional) and a body cell (heading, text, links). This is the standard content model; nothing else to configure.
 
 ### Dynamic
 
 Add the `dynamic` class. The block then ignores its authored rows for layout and instead pulls cards from `query-index.json`.
 
-**Curated links** — author a plain list of links, no config table:
+**Curated links**. Author a plain list of links, no config table:
 
 ```
 | Cards (dynamic) |
@@ -23,17 +23,17 @@ Add the `dynamic` class. The block then ignores its authored rows for layout and
 
 Each link's title, description, image, date, and keywords are looked up by path; the authored link text is used as a fallback title if the page isn't found in the index.
 
-**Query match** — author a two-column config table instead:
+**Query match**. Author a two-column config table instead:
 
-| Key | Value |
-| --- | --- |
-| `keywords` | comma-separated list, or `random` |
-| `excluded keywords` | comma-separated list |
-| `limit` | number (default `5`) |
+| Key                 | Value |
+|---------------------| --- |
+| `keywords`          | comma-separated list, or `random` |
+| `excluded-keywords` | comma-separated list |
+| `limit`             | number (default `5`) |
 
 Omitting `keywords` pulls the most recent pages site-wide. Including `random` (alone or with other keywords) shuffles the results instead of sorting by date. Pages missing a `title`, or flagged `noindex` in `robots`, are skipped automatically. If the fetch fails or nothing matches, the block renders a single "No articles found." / "Unable to load articles right now." message instead of leaving stale markup.
 
-## Layout variants
+## Layout Variants
 
 Add either of these classes on top of either content mode:
 
@@ -44,8 +44,3 @@ Add either of these classes on top of either content mode:
 | Bento | `bento` | Asymmetric grid with the first card larger/featured; image-backed cards with a gradient text overlay. Statically-authored bento cards without a heading get one promoted automatically from a button or sole paragraph. |
 
 Variants combine with either content mode, e.g. `cards dynamic bento` or `cards dynamic carousel`.
-
-## Implementation notes
-
-- Dynamic content is rebuilt through the same row/column pipeline as static content (`buildBlock` + the standard image/body decoration), so every layout variant works identically regardless of where the content came from.
-- Images are optimized via `createOptimizedPicture`; bento's featured card gets a higher-resolution image (1200px) than the rest (750px).

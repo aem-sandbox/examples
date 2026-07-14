@@ -12,6 +12,11 @@ import {
 
 const DEFAULT_LIMIT = 5;
 
+/**
+ * Extracts a normalized pathname from an href, resolved against the current origin.
+ * @param {string} href
+ * @returns {string} the pathname, or '' if href can't be parsed as a URL
+ */
 function pathFromHref(href) {
   try {
     const u = new URL(href, window.location.origin);
@@ -21,6 +26,13 @@ function pathFromHref(href) {
   }
 }
 
+/**
+ * Reads curated links authored directly in a dynamic block (plain anchors, no config
+ * rows). Returns an empty array when the block has config rows instead, signaling
+ * query-driven mode.
+ * @param {Element} block
+ * @returns {{path: string, title: string}[]}
+ */
 function getAuthoredLinks(block) {
   const rows = block.querySelectorAll(':scope > div');
   const hasConfigRows = [...rows].some((row) => row.children.length >= 2);
@@ -38,6 +50,14 @@ function getAuthoredLinks(block) {
   }).filter((item) => item.path && item.path !== '/');
 }
 
+/**
+ * Merges curated links with their matching query-index rows, filling in title,
+ * description, image, date, and keywords. Falls back to the authored link text,
+ * then a slug derived from the path, when a link has no matching row.
+ * @param {{path: string, title: string}[]} links
+ * @param {Array<Object>} indexRows rows fetched from query-index.json
+ * @returns {Array<Object>} page objects ready for card rendering
+ */
 function resolvePagesFromIndex(links, indexRows) {
   return links.map(({ path, title: linkTitle }) => {
     const norm = normalizePath(path);
@@ -55,11 +75,25 @@ function resolvePagesFromIndex(links, indexRows) {
   });
 }
 
+/**
+ * @param {Object} row a query-index row
+ * @param {string} keyword a single, already-normalized keyword
+ * @returns {boolean} true if the row's keywords column matches or contains keyword
+ */
 function rowMatchesKeyword(row, keyword) {
   const rowKeywords = parseKeywords(row.keywords ?? '');
   return rowKeywords.some((rk) => rk === keyword || rk.includes(keyword));
 }
 
+/**
+ * Decides whether a query-index row qualifies for query-driven mode: it must be
+ * queryable, match the requested keywords (or `random`/no keywords), and match
+ * none of the excluded keywords.
+ * @param {Object} row a query-index row
+ * @param {string} keywordsConfig the authored `keywords` config value
+ * @param {string} excludedConfig the authored `excluded-keywords` config value
+ * @returns {boolean}
+ */
 function isPageMatch(row, keywordsConfig, excludedConfig) {
   if (!isQueryableRow(row)) return false;
   const requested = parseKeywords(keywordsConfig);
@@ -71,6 +105,14 @@ function isPageMatch(row, keywordsConfig, excludedConfig) {
   return true;
 }
 
+/**
+ * Shuffles the rows when `random` was requested or more than one keyword was given;
+ * otherwise sorts them newest-first. Either way, trims to `limit`.
+ * @param {Array<Object>} rows matching query-index rows
+ * @param {string} keywordsConfig the authored `keywords` config value
+ * @param {number} limit
+ * @returns {Array<Object>}
+ */
 function sortAndLimitPages(rows, keywordsConfig, limit) {
   const requested = parseKeywords(keywordsConfig);
   const shouldShuffle = requested.includes('random') || requested.filter((k) => k !== 'random').length > 1;
@@ -89,7 +131,15 @@ function sortAndLimitPages(rows, keywordsConfig, limit) {
     .slice(0, limit);
 }
 
-/** Paginate query-index until enough matches (search block pattern). */
+/**
+ * Paginates query-index until enough matches are found (search block pattern), or
+ * until the full index has been read when `random` was requested or no keywords
+ * were given.
+ * @param {string} keywords the authored `keywords` config value
+ * @param {string} excluded the authored `excluded-keywords` config value
+ * @param {number} limit
+ * @returns {Promise<Array<Object>>}
+ */
 async function fetchMatchingPages(keywords, excluded, limit) {
   const requested = parseKeywords(keywords);
   const needsFullIndex = requested.includes('random') || !requested.length;
@@ -117,7 +167,11 @@ async function fetchMatchingPages(keywords, excluded, limit) {
   return sortAndLimitPages(rows, keywords, limit);
 }
 
-/** Paginate query-index until authored link paths are resolved. */
+/**
+ * Paginates query-index until every authored link path has been resolved to a row.
+ * @param {{path: string}[]} links
+ * @returns {Promise<Array<Object>>} the matching query-index rows
+ */
 async function fetchIndexRowsForLinks(links) {
   const wanted = new Set(links.map(({ path }) => normalizePath(path)));
   const rows = [];
@@ -143,6 +197,12 @@ async function fetchIndexRowsForLinks(links) {
   return rows;
 }
 
+/**
+ * Builds the column elements for one dynamic card, in the same shape `buildBlock`
+ * expects: an optional image column followed by a body column (tag, title, date).
+ * @param {Object} page a resolved page object (see resolvePagesFromIndex)
+ * @returns {Element[]}
+ */
 function buildCardRow(page) {
   const href = normalizePath(page.path);
   const cols = [];
@@ -170,6 +230,13 @@ function buildCardRow(page) {
   return cols;
 }
 
+/**
+ * Replaces card `<img>` elements with an optimized `<picture>`. Images inside
+ * `featuredSelector` render at a higher resolution (bento's featured card).
+ * @param {Element} ul
+ * @param {string|null} [featuredSelector]
+ * @returns {void}
+ */
 function optimizeCardImages(ul, featuredSelector = null) {
   ul.querySelectorAll('.cards-card-image img').forEach((img) => {
     const isFeatured = featuredSelector && img.closest(featuredSelector);
@@ -179,6 +246,13 @@ function optimizeCardImages(ul, featuredSelector = null) {
   });
 }
 
+/**
+ * Wraps an entire bento card in a single anchor, taken from the first link found
+ * in its body or image, and unwraps any now-redundant inner links. No-ops if the
+ * card has no link.
+ * @param {Element} li
+ * @returns {void}
+ */
 function wrapBentoCardLink(li) {
   const linkEl = li.querySelector('.cards-card-body a[href], .cards-card-image a[href]');
   if (!linkEl) return;
@@ -199,6 +273,13 @@ function wrapBentoCardLink(li) {
   });
 }
 
+/**
+ * Marks the first card as featured, promotes a heading from a button or sole
+ * paragraph when a card body has no heading of its own, then wraps each card in
+ * a single link.
+ * @param {Element} ul
+ * @returns {void}
+ */
 function decorateBento(ul) {
   [...ul.children].forEach((li, index) => {
     if (index === 0) li.classList.add('cards-bento-featured');
@@ -237,6 +318,12 @@ function decorateBento(ul) {
   });
 }
 
+/**
+ * Wraps a card list in a horizontally-scrollable carousel with prev/next controls
+ * that auto-hide once every card fits on screen.
+ * @param {Element} ul
+ * @returns {Element} wrapper div containing the list and its controls
+ */
 function decorateCarousel(ul) {
   const prevBtn = createTag('button', {
     type: 'button',
@@ -288,6 +375,12 @@ function decorateCarousel(ul) {
   return wrapper;
 }
 
+/**
+ * Converts authored rows into a ul/li card list, classifying each row's columns as
+ * image or body, then applies the bento and/or carousel layout if requested.
+ * @param {Element} block
+ * @returns {void}
+ */
 function decorateCards(block) {
   /* change to ul, li */
   const ul = document.createElement('ul');
@@ -314,7 +407,12 @@ function decorateCards(block) {
   }
 }
 
-// Variants: cards (grid), cards carousel, cards bento, cards dynamic, cards dynamic links
+/**
+ * Loads and decorates the cards block. Supports the grid (default), carousel, and
+ * bento layouts, combined with either static (hand-authored) or dynamic content
+ * (curated links or a keyword/random query against query-index.json).
+ * @param {Element} block The block element
+ */
 export default async function decorate(block) {
   if (block.classList.contains('dynamic')) {
     try {
