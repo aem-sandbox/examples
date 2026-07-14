@@ -1,4 +1,6 @@
 /* cards */
+/* stylelint-disable no-descending-specificity -- layout variants (grid/carousel/bento/slider) are
+   grouped into readable sections rather than ordered by selector specificity */
 
 .cards {
   --cards-col-width: 240px;
@@ -176,6 +178,27 @@
 .cards.dynamic .cards-empty {
   margin: var(--space-m) 0 0;
   color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+/* ----- slider variant (text-forward carousel, no images) ----- */
+.cards.slider .cards-card-image {
+  display: none;
+}
+
+.cards.slider .cards-carousel > ul > li::before {
+  block-size: var(--space-s);
+}
+
+.cards.slider .cards-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cards.slider .cards-card-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+  border-radius: var(--radius-m);
 }
 
 /* ----- bento variant ----- */
@@ -567,7 +590,7 @@
 }
 
 /* ----- default grid ----- */
-.cards:not(.bento, .carousel) > ul {
+.cards:not(.bento, .carousel, .slider) > ul {
   display: grid;
   grid-template-columns: minmax(0, var(--cards-col-width));
   justify-content: center;
@@ -575,7 +598,7 @@
 }
 
 @media (width >= 600px) {
-  .cards:not(.bento, .carousel) > ul {
+  .cards:not(.bento, .carousel, .slider) > ul {
     grid-template-columns: repeat(2, var(--cards-col-width));
     max-width: calc(var(--cards-col-width) * 2 + var(--cards-gap));
     margin-inline: auto;
@@ -588,7 +611,7 @@
     --cards-gap: var(--space-l);
   }
 
-  .cards:not(.bento, .carousel) > ul {
+  .cards:not(.bento, .carousel, .slider) > ul {
     grid-template-columns: repeat(4, var(--cards-col-width));
     max-width: calc(var(--cards-col-width) * 4 + var(--cards-gap) * 3);
     margin-inline: auto;
@@ -600,17 +623,18 @@
 }
 
 /* ----- carousel variant ----- */
-.cards.carousel {
+.cards.carousel,
+.cards.slider {
   --cards-visible: 1;
   --cards-peek: 0.2;
   --cards-gaps: 1;
 }
 
-.cards.carousel .cards-carousel {
+.cards:is(.carousel, .slider) .cards-carousel {
   position: relative;
 }
 
-.cards.carousel .cards-carousel > ul {
+.cards:is(.carousel, .slider) .cards-carousel > ul {
   display: flex;
   align-items: stretch;
   gap: var(--cards-gap);
@@ -624,11 +648,11 @@
   scrollbar-width: none;
 }
 
-.cards.carousel .cards-carousel > ul::-webkit-scrollbar {
+.cards:is(.carousel, .slider) .cards-carousel > ul::-webkit-scrollbar {
   display: none;
 }
 
-.cards.carousel .cards-carousel > ul > li {
+.cards:is(.carousel, .slider) .cards-carousel > ul > li {
   flex: 0 0 calc(
     (100% - var(--cards-gaps) * var(--cards-gap))
     / (var(--cards-visible) + var(--cards-peek))
@@ -638,7 +662,7 @@
   scroll-snap-align: start;
 }
 
-.cards.carousel .cards-carousel > ul > li::before {
+.cards:is(.carousel, .slider) .cards-carousel > ul > li::before {
   content: '';
   display: block;
   block-size: 3px;
@@ -646,12 +670,13 @@
   flex-shrink: 0;
 }
 
-.cards.carousel .cards-card-body {
+.cards.carousel .cards-card-body,
+.cards.slider .cards-card-body {
   align-items: stretch;
   text-align: start;
 }
 
-.cards.carousel .cards-carousel-controls {
+.cards:is(.carousel, .slider) .cards-carousel-controls {
   display: flex;
   justify-content: space-between;
   position: absolute;
@@ -661,12 +686,13 @@
   z-index: 2;
 }
 
-.cards.carousel .cards-carousel-controls.is-hidden {
+.cards:is(.carousel, .slider) .cards-carousel-controls.is-hidden {
   display: none;
 }
 
 @media (width >= 600px) {
-  .cards.carousel {
+  .cards.carousel,
+  .cards.slider {
     --cards-visible: 2;
     --cards-peek: 0.35;
     --cards-gaps: 2;
@@ -674,14 +700,15 @@
 }
 
 @media (width >= 900px) {
-  .cards.carousel {
+  .cards.carousel,
+  .cards.slider {
     --cards-visible: 3;
     --cards-peek: 0.5;
     --cards-gaps: 3;
   }
 }
 
-.cards.carousel .cards-carousel-arrow {
+.cards:is(.carousel, .slider) .cards-carousel-arrow {
   border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 14%), rgb(255 255 255 / 16%));
   background: light-dark(rgb(255 255 255 / 92%), rgb(24 24 24 / 88%));
   color: inherit;
@@ -702,23 +729,23 @@
     border-color var(--transition-fast);
 }
 
-.cards.carousel .cards-carousel-arrow:focus-visible {
+.cards:is(.carousel, .slider) .cards-carousel-arrow:focus-visible {
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
-.cards.carousel .cards-carousel-arrow:disabled {
+.cards:is(.carousel, .slider) .cards-carousel-arrow:disabled {
   opacity: 0.35;
   cursor: default;
 }
 
-.cards.carousel .cards-carousel-arrow:hover:not(:disabled) {
+.cards:is(.carousel, .slider) .cards-carousel-arrow:hover:not(:disabled) {
   border-color: light-dark(rgb(var(--color-brand-rgb) / 32%), rgb(255 255 255 / 28%));
   color: var(--color-brand);
   transform: scale(1.06);
 }
 
-.cards.carousel .cards-carousel-arrow.is-hidden {
+.cards:is(.carousel, .slider) .cards-carousel-arrow.is-hidden {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -734,14 +761,14 @@
 }
 
 .cards:not(.bento) > ul > li:hover,
-.cards.carousel .cards-carousel > ul > li:hover {
+.cards:is(.carousel, .slider) .cards-carousel > ul > li:hover {
   border-color: light-dark(rgb(var(--color-brand-rgb) / 18%), rgb(255 255 255 / 16%));
   box-shadow: var(--shadow-lift);
   transform: translateY(-3px);
 }
 
 .cards:not(.bento) > ul > li:hover .cards-card-image img,
-.cards.carousel .cards-carousel > ul > li:hover .cards-card-image img {
+.cards:is(.carousel, .slider) .cards-carousel > ul > li:hover .cards-card-image img {
   transform: scale(1.04);
 }
 
@@ -749,23 +776,23 @@
   .cards > ul > li,
   .cards .cards-carousel > ul > li,
   .cards .cards-card-image img,
-  .cards.carousel .cards-carousel-arrow {
+  .cards:is(.carousel, .slider) .cards-carousel-arrow {
     transition: none;
   }
 
   .cards.bento > ul > li:hover,
   .cards:not(.bento) > ul > li:hover,
-  .cards.carousel .cards-carousel > ul > li:hover {
+  .cards:is(.carousel, .slider) .cards-carousel > ul > li:hover {
     transform: none;
   }
 
   .cards.bento > ul > li:hover .cards-card-image img,
   .cards:not(.bento) > ul > li:hover .cards-card-image img,
-  .cards.carousel .cards-carousel > ul > li:hover .cards-card-image img {
+  .cards:is(.carousel, .slider) .cards-carousel > ul > li:hover .cards-card-image img {
     transform: none;
   }
 
-  .cards.carousel .cards-carousel-arrow:hover:not(:disabled) {
+  .cards:is(.carousel, .slider) .cards-carousel-arrow:hover:not(:disabled) {
     transform: none;
   }
 }

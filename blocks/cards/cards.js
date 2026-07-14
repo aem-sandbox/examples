@@ -179,7 +179,7 @@ function optimizeCardImages(ul, featuredSelector = null) {
   });
 }
 
-function wrapBentoCardLink(li) {
+function wrapCardLink(li) {
   const linkEl = li.querySelector('.cards-card-body a[href], .cards-card-image a[href]');
   if (!linkEl) return;
 
@@ -233,8 +233,13 @@ function decorateBento(ul) {
       }
     }
 
-    wrapBentoCardLink(li);
+    wrapCardLink(li);
   });
+}
+
+/** Text-forward carousel variant: no image, whole card is a single link. */
+function decorateSlider(ul) {
+  [...ul.children].forEach((li) => wrapCardLink(li));
 }
 
 function decorateCarousel(ul) {
@@ -303,18 +308,20 @@ function decorateCards(block) {
 
   if (block.classList.contains('bento')) {
     decorateBento(ul);
+  } else if (block.classList.contains('slider')) {
+    decorateSlider(ul);
   }
 
   optimizeCardImages(ul, block.classList.contains('bento') ? '.cards-bento-featured' : null);
 
-  if (block.classList.contains('carousel')) {
+  if (block.classList.contains('carousel') || block.classList.contains('slider')) {
     block.replaceChildren(decorateCarousel(ul));
   } else {
     block.replaceChildren(ul);
   }
 }
 
-// Variants: cards (grid), cards carousel, cards bento, cards dynamic, cards dynamic links
+// Variants: cards (grid), carousel, bento, slider, dynamic, dynamic links
 export default async function decorate(block) {
   if (block.classList.contains('dynamic')) {
     try {
