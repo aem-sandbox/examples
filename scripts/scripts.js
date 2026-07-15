@@ -51,8 +51,12 @@ export function toggleColorScheme() {
 applyColorScheme();
 
 /**
- * Builds hero block and prepends to main in a new section.
+ * Auto-blocking: if the page's first `h1` is immediately preceded by a `picture`, builds
+ * a `hero` block from that picture plus the `h1` and any immediately-following, non-button
+ * paragraphs, and prepends it to `main` in a new section. The section(s) those elements
+ * were moved out of are removed if that leaves them empty, left alone otherwise.
  * @param {Element} main The container element
+ * @returns {void}
  */
 function buildHeroBlock(main) {
   const h1 = main.querySelector('h1');
@@ -62,6 +66,7 @@ function buildHeroBlock(main) {
     if (h1.closest('.hero') || picture.closest('.hero')) {
       return;
     }
+    const originalParents = new Set([h1.parentElement, picture.parentElement]);
     const textElems = [h1];
     let sibling = h1.nextElementSibling;
     while (sibling?.tagName === 'P' && !sibling.classList.contains('button-wrapper')) {
@@ -74,6 +79,9 @@ function buildHeroBlock(main) {
       [{ elems: textElems }],
     ]));
     main.prepend(section);
+    originalParents.forEach((parent) => {
+      if (parent && !parent.children.length) parent.remove();
+    });
   }
 }
 
@@ -94,10 +102,21 @@ const DNB_HASH = '#_dnb';
 
 const YOUTUBE_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'youtu.be']);
 
+/**
+ * @param {URL} url
+ * @returns {boolean} true if url's hostname is a recognized YouTube domain
+ */
 function isYoutubeLink(url) {
   return YOUTUBE_HOSTS.has(url.hostname);
 }
 
+/**
+ * Replaces `link` with `block`, removing the wrapping paragraph too if `link` was its
+ * only content.
+ * @param {Element} link
+ * @param {Element} block
+ * @returns {void}
+ */
 function replaceParagraphWithBlock(link, block) {
   const parent = link.parentElement;
   if (parent?.tagName === 'P' && parent.children.length === 1) {
@@ -107,6 +126,12 @@ function replaceParagraphWithBlock(link, block) {
   }
 }
 
+/**
+ * Auto-blocking: wraps every YouTube link in `main` (not already inside an embed block,
+ * and not an icon link) into an `embed` block, in place of its paragraph.
+ * @param {Element} main The container element
+ * @returns {void}
+ */
 function buildEmbedBlocks(main) {
   main.querySelectorAll('a[href*="youtube.com"], a[href*="youtu.be"]').forEach((anchor) => {
     if (anchor.closest('.embed.block')) return;
