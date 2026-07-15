@@ -1,6 +1,7 @@
 name = "examples-bbird-cdn"
 main = "index.js"
 compatibility_date = "2026-03-13"
+compatibility_flags = ["nodejs_compat"]
 account_id = "ac7ee4615628005dc5ba0a22f0aae2a6"
 
 routes = [

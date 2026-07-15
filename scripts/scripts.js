@@ -324,6 +324,8 @@ async function loadLazy(doc) {
   if (templateName) await loadTemplate(doc, templateName);
 
   const main = doc.querySelector('main');
+  const { initContentProtection, applyContentProtection } = await import('./utils/gated-content.js');
+  await initContentProtection();
   if (main) {
     const sections = [...main.querySelectorAll('.section')];
     for (let i = 0; i < sections.length; i += 1) {
@@ -334,6 +336,7 @@ async function loadLazy(doc) {
 
     const { default: dynamicBlocks } = await import('../blocks/dynamic/index.js');
     await dynamicBlocks(main);
+    await applyContentProtection();
   }
 
   const { hash } = window.location;

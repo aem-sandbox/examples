@@ -160,3 +160,38 @@ export async function getSessionState() {
     return { ...ANONYMOUS_SESSION, path: AUTH_PATHS.session };
   }
 }
+
+/**
+ * Checks whether any cookie name starts with the given prefix (e.g. Cloudflare Access's
+ * CF_Authorization cookie).
+ * @param {string} prefix
+ * @returns {boolean}
+ */
+function hasCookieStartingWith(prefix) {
+  return document.cookie
+    .split(';')
+    .map((entry) => decodeURIComponent(entry.split('=')[0] || '').trim())
+    .some((cookieName) => cookieName.startsWith(prefix));
+}
+
+/**
+ * Resolves the real authentication state: tries the session API first, falling back to
+ * a CF_Authorization cookie check if that fails. This is the single source of truth for
+ * "is the current visitor logged in?" — used by both the header (login/logout button)
+ * and the gated-content author preview, so the two can never disagree.
+ * @returns {Promise<{authenticated: boolean, email: string}>}
+ */
+export async function resolveAuthState() {
+  try {
+    const session = await getSessionState();
+    return {
+      authenticated: Boolean(session?.authenticated),
+      email: session?.email || '',
+    };
+  } catch {
+    return {
+      authenticated: hasCookieStartingWith('CF_Authorization'),
+      email: '',
+    };
+  }
+}

@@ -1,3 +1,5 @@
+import { getMetadata } from './aem.js';
+
 export const LOCALES = {
   '': { lang: 'en' },
   '/de': { lang: 'de' },
@@ -23,6 +25,15 @@ export function getLocale(locales = LOCALES) {
 
   document.documentElement.lang = locale?.lang || 'en';
   return { prefix, ...locale };
+}
+
+/**
+ * A page opts into gated content with `<meta name="gated" content="true">`.
+ * Same signal the CDN gating worker looks for; author preview uses it too.
+ * @returns {boolean}
+ */
+export function isGatedPage() {
+  return String(getMetadata('gated') || '').trim().toLowerCase() === 'true';
 }
 
 /** Shared utilities for query-index driven blocks. */

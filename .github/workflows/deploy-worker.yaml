@@ -20,6 +20,9 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - uses: actions/checkout@v6
+      - name: Install worker dependencies (if any)
+        working-directory: ${{ inputs.working-directory }}
+        run: '[ -f package.json ] && npm install || echo "no package.json, skipping"'
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
