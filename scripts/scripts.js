@@ -12,9 +12,6 @@ import {
   loadCSS,
   sampleRUM,
   getMetadata,
-  readBlockConfig,
-  toCamelCase,
-  toClassName,
 } from './aem.js';
 
 import { getLocale } from './shared.js';
@@ -222,29 +219,6 @@ function decorateButtons(main) {
   });
 }
 
-/**
- * Reads each section's `section-metadata` block (if authored) and applies its rows to
- * the section: a `style` row becomes one or more classes, every other row becomes a
- * `data-*` attribute (e.g. `Tab Id` becomes `data-tab-id`). Removes the block afterward
- * so it isn't decorated as a regular block.
- * @param {Element} main The main element
- */
-function decorateSectionMetadata(main) {
-  main.querySelectorAll('.section > div > .section-metadata').forEach((metaBlock) => {
-    const section = metaBlock.closest('.section');
-    const config = readBlockConfig(metaBlock);
-    Object.keys(config).forEach((key) => {
-      if (key === 'style') {
-        String(config.style).split(',').map((s) => toClassName(s.trim())).filter(Boolean)
-          .forEach((style) => section.classList.add(style));
-      } else {
-        section.dataset[toCamelCase(key)] = config[key];
-      }
-    });
-    metaBlock.remove();
-  });
-}
-
 /** Applies data-background on sections as background-color (hex, rgb, named colors). */
 function applySectionBackgrounds(main) {
   main.querySelectorAll('.section[data-background]').forEach((section) => {
@@ -274,7 +248,6 @@ export function decorateMain(main) {
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
-  decorateSectionMetadata(main);
   applySectionBackgrounds(main);
   decorateBlocks(main);
   decorateButtons(main);

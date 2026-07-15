@@ -29,9 +29,9 @@ The block only collects sections that are directly, consecutively adjacent to it
 - Loading a page with a matching hash (e.g. `#pricing`) selects that tab on load and scrolls it into view, so tabs are deep-linkable and shareable.
 - Tab buttons and panels carry the standard `tablist`/`tab`/`tabpanel` ARIA roles.
 
-## Dependency: Section Metadata
+## Section Metadata
 
-This block depends on `decorateSectionMetadata` in `scripts/scripts.js`, which reads each section's `Section Metadata` block and applies its rows to the section: a `Style` row becomes one or more classes, every other row (including `Tab Id`/`Tab Title`) becomes a `data-*` attribute. Without it, `Tab Id`/`Tab Title` are never applied to the section and the block renders nothing (see Implementation Notes).
+`Tab Id`/`Tab Title` reach the section as `data-tab-id`/`data-tab-title` through the standard Edge Delivery Services rendering pipeline: it converts a `Section Metadata` block's rows into `data-*` attributes on the section (a `Style` row becomes classes instead) before the page is served, and removes the block. No project code is involved. This only happens for content that goes through the real preview/publish pipeline, so a static local test fixture (e.g. an `.plain.html` file served via `--html-folder`) won't show this conversion and will render the metadata block as literal text instead.
 
 ## Implementation Notes
 
