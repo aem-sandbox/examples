@@ -4,6 +4,8 @@
  */
 import { loadCSS } from '../../scripts/aem.js';
 import { createTag, isGatedPage } from '../../scripts/shared.js';
+// eslint-disable-next-line import/no-cycle
+import { getAuthState } from '../../scripts/utils/gated-content.js';
 
 const CSS_CLASSES = {
   TOGGLE: 'auth-toggle',
@@ -23,24 +25,16 @@ const CSS_CLASSES = {
 };
 
 /**
- * @returns {boolean} true when auth=true query param is set
- */
-function getAuthState() {
-  const authValue = new URLSearchParams(window.location.search).get('auth');
-  return authValue === 'true';
-}
-
-/**
  * @param {Element} block
- * @returns {Element}
+ * @returns {Promise<Element>}
  */
-export default function decorate(block) {
+export default async function decorate(block) {
   if (!isGatedPage()) {
     block.remove();
     return block;
   }
 
-  const currentState = getAuthState();
+  const currentState = await getAuthState();
   let isExpanded = false;
 
   block.innerHTML = '';

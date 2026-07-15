@@ -4,7 +4,7 @@ import {
   getLoginUrl,
   getLogoutUrl,
   getDefaultAuthLabel,
-  getSessionState,
+  resolveAuthState,
 } from '../../scripts/shared/auth-api.js';
 
 /** Matches styles.css desktop breakpoint. */
@@ -150,39 +150,6 @@ function initThemeToggle(tools) {
 
   updateLabel();
   return btn;
-}
-
-/**
- * Cookie helper functions for auth state detection
- */
-function hasCookieStartingWith(prefix) {
-  return document.cookie
-    .split(';')
-    .map((entry) => decodeURIComponent(entry.split('=')[0] || '').trim())
-    .some((cookieName) => cookieName.startsWith(prefix));
-}
-
-function isLoggedIn() {
-  return hasCookieStartingWith('CF_Authorization');
-}
-
-/**
- * Resolves authentication state by checking session API
- * Falls back to cookie check if API fails
- */
-async function resolveAuthState() {
-  try {
-    const session = await getSessionState();
-    return {
-      authenticated: Boolean(session?.authenticated),
-      email: session?.email || '',
-    };
-  } catch (e) {
-    return {
-      authenticated: isLoggedIn(),
-      email: '',
-    };
-  }
 }
 
 /**
