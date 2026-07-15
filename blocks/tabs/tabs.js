@@ -2,6 +2,13 @@ import { toClassName, loadCSS } from '../../scripts/aem.js';
 
 let tabsStyleLoaded;
 
+/**
+ * Builds a tab definition from a section's `data-tab-id`/`data-tab-title` (set by the
+ * Edge Delivery Services pipeline from an authored Section Metadata block).
+ * @param {Element} section
+ * @param {number} [fallbackIdx] used to generate an id/title when they're missing
+ * @returns {{id: string, title: string, section: Element}|null} null if untagged
+ */
 function getTabDefinition(section, fallbackIdx = 0) {
   const tabId = String(section.dataset?.tabId || '').trim();
   if (!tabId) return null;
@@ -14,6 +21,12 @@ function getTabDefinition(section, fallbackIdx = 0) {
   };
 }
 
+/**
+ * Walks sibling sections directly following `currSection`, collecting tab definitions
+ * until a section without a `Tab Id` (or without the `.section` class) ends the group.
+ * @param {Element} currSection the section containing the Tabs block
+ * @returns {{id: string, title: string, section: Element}[]}
+ */
 function collectTabSections(currSection) {
   const tabDefs = [];
   let next = currSection.nextElementSibling;
@@ -28,12 +41,26 @@ function collectTabSections(currSection) {
   return tabDefs;
 }
 
+/**
+ * Finds every tagged section in `main` not already inside a rendered tabs wrapper, for
+ * `createTabs`'s whole-page auto-detection (all matches are treated as one group).
+ * @param {Element} main
+ * @returns {Element[][]} zero or one group of sections
+ */
 function findTabGroups(main) {
   const sections = [...main.querySelectorAll('.section[data-tab-id]')]
     .filter((s) => !s.closest('.tabs-wrapper'));
   return sections.length ? [sections] : [];
 }
 
+/**
+ * Marks `selectedId`'s button/panel as active and every other tab as inactive.
+ * @param {{id: string}[]} tabDefs
+ * @param {string} selectedId
+ * @param {Object<string, Element>} tabButtons keyed by tab id
+ * @param {Object<string, Element>} tabPanels keyed by tab id
+ * @returns {void}
+ */
 function updateTabState(tabDefs, selectedId, tabButtons, tabPanels) {
   tabDefs.forEach((tabDef) => {
     const isSelected = tabDef.id === selectedId;
@@ -51,6 +78,12 @@ function updateTabState(tabDefs, selectedId, tabButtons, tabPanels) {
   });
 }
 
+/**
+ * Scrolls `tabList` so `button` is roughly centered, for when the tab list overflows.
+ * @param {Element} button
+ * @param {Element} tabList
+ * @returns {void}
+ */
 function scrollActiveTab(button, tabList) {
   const listRect = tabList.getBoundingClientRect();
   const btnRect = button.getBoundingClientRect();
@@ -59,6 +92,14 @@ function scrollActiveTab(button, tabList) {
   tabList.scrollLeft = Math.max(0, offset);
 }
 
+/**
+ * Builds the tab list and panels, selecting the tab matching the URL hash (falling back
+ * to the first tab), and wires up click handling (switch tab, scroll into view, push the
+ * tab id onto the URL hash).
+ * @param {{id: string, title: string, section: Element}[]} tabDefs
+ * @param {string} [sectionId] disambiguates element ids when multiple tab groups exist
+ * @returns {Element} the tabs-wrapper element (tab list + panels)
+ */
 function buildTabsUI(tabDefs, sectionId = '') {
   const hash = window.location.hash.replace('#', '').toLowerCase();
   const selectedId = tabDefs.find((tabDef) => tabDef.id === hash)?.id || tabDefs[0]?.id;
@@ -123,6 +164,12 @@ function buildTabsUI(tabDefs, sectionId = '') {
   return tabsWrapper;
 }
 
+/**
+ * Inserts a new `.section.tabs` wrapper before the first of `tabSections` and fills it
+ * with the built tab list/panels, for `createTabs`'s whole-page auto-detection path.
+ * @param {Element[]} tabSections
+ * @returns {void}
+ */
 function buildTabsFromSections(tabSections) {
   if (!tabSections.length) return;
   const first = tabSections[0];
@@ -143,6 +190,12 @@ function buildTabsFromSections(tabSections) {
   tabsContainer.append(buildTabsUI(tabDefs, first.id || ''));
 }
 
+/**
+ * Loads and decorates the tabs block: collects the sections directly following the
+ * block's own section that carry a `Tab Id`, and replaces the block's content with the
+ * built tab list and panels. No-ops if no tagged sections follow.
+ * @param {Element} block The block element
+ */
 export default function decorate(block) {
   const currSection = block.closest('.section');
   if (!currSection) return;
@@ -156,6 +209,14 @@ export default function decorate(block) {
   block.replaceChildren(buildTabsUI(tabDefs, currSection.id || ''));
 }
 
+/**
+ * Alternate entry point, called from `blocks/dynamic/index.js` (not through the normal
+ * block-decoration pipeline): scans an entire page for `data-tab-id` sections not
+ * already inside a rendered tabs group and builds tab groups without requiring a placed
+ * Tabs block. Lazily loads tabs.css since it isn't guaranteed to be loaded otherwise.
+ * @param {Element} main
+ * @returns {Promise<void>}
+ */
 export async function createTabs(main) {
   if (!main) return;
   if (!tabsStyleLoaded) {
