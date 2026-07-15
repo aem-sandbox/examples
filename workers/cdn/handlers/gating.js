@@ -46,7 +46,8 @@ function transformGatedHtml(html, loggedIn) {
     }
     if (!removeEls.has(el)) {
       if (loggedIn) $s.find('[class*="logged-out"]').remove();
-      else $s.find('[class*="logged-in"]').remove();
+      if (loggedIn) $s.find('.logged-out').remove();
+      else $s.find('.logged-in').remove();
     }
   });
   removeEls.forEach((node) => $(node).remove());
