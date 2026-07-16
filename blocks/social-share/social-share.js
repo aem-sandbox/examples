@@ -1,4 +1,5 @@
-import { createTag, fetchPlaceholders, getLocale } from '../../scripts/shared.js';
+import { createTag, getLocale } from '../../scripts/shared.js';
+import { fetchPlaceholders } from '../../scripts/placeholders.js';
 
 const FEEDBACK_RESET_MS = 2000;
 
@@ -227,7 +228,7 @@ async function buildAction(action, shareData, block, placeholders) {
  */
 export default async function decorate(block) {
   const { prefix } = getLocale();
-  const placeholders = await fetchPlaceholders(prefix);
+  const placeholders = await fetchPlaceholders(prefix || 'default');
   const shareData = getShareData();
   const dock = createTag('nav', {
     class: 'social-share-dock',
