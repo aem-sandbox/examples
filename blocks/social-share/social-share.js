@@ -1,6 +1,5 @@
 import { createTag } from '../../scripts/shared.js';
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
 const FEEDBACK_RESET_MS = 2000;
 
 const ACTIONS = [
@@ -40,76 +39,40 @@ const ACTIONS = [
   },
 ];
 
-const ICON_PATHS = {
-  copy: [
-    { d: 'M9 9.75A2.25 2.25 0 0 1 11.25 7.5h7.5A2.25 2.25 0 0 1 21 9.75v7.5a2.25 2.25 0 0 1-2.25 2.25h-7.5A2.25 2.25 0 0 1 9 17.25v-7.5Z' },
-    { d: 'M15 7.5v-.75A2.25 2.25 0 0 0 12.75 4.5h-7.5A2.25 2.25 0 0 0 3 6.75v7.5a2.25 2.25 0 0 0 2.25 2.25H6' },
-  ],
-  share: [
-    { d: 'M7 14a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' },
-    { d: 'M17.5 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' },
-    { d: 'M17.5 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' },
-    { d: 'm9.6 9.85 5.3-3.05' },
-    { d: 'm9.6 14.15 5.3 3.05' },
-  ],
-  x: [
-    {
-      d: 'M18.244 2.25H21.55L14.323 10.51L22.827 21.75H16.17L10.956 14.933L4.99 21.75H1.68L9.41 12.915L1.254 2.25H8.08L12.793 8.481L18.244 2.25ZM17.083 19.77H18.915L7.084 4.126H5.117L17.083 19.77Z',
-      fill: 'currentColor',
-      stroke: 'none',
-    },
-  ],
-  linkedin: [
-    {
-      d: 'M22.225 0H1.771C0.792 0 0 0.774 0 1.729V22.27C0 23.227 0.792 24 1.771 24H22.222C23.2 24 24 23.227 24 22.271V1.729C24 0.774 23.2 0 22.222 0H22.225ZM7.119 20.452H3.555V9H7.119V20.452ZM5.337 7.433C4.194 7.433 3.274 6.509 3.274 5.37C3.274 4.231 4.194 3.307 5.337 3.307C6.476 3.307 7.4 4.231 7.4 5.37C7.4 6.509 6.476 7.433 5.337 7.433ZM20.452 20.452H16.9V14.882C16.9 13.554 16.873 11.845 15.046 11.845C13.192 11.845 12.91 13.29 12.91 14.786V20.452H9.358V9H12.77V10.561H12.817C13.294 9.661 14.454 8.711 16.187 8.711C19.788 8.711 20.452 11.082 20.452 14.166V20.452Z',
-      fill: 'currentColor',
-      stroke: 'none',
-    },
-  ],
-  email: [
-    { d: 'M3.75 7.5h16.5A1.5 1.5 0 0 1 21.75 9v10.5a1.5 1.5 0 0 1-1.5 1.5H3.75A1.5 1.5 0 0 1 2.25 19.5V9a1.5 1.5 0 0 1 1.5-1.5Z' },
-    { d: 'm3 9 9 6.75L21 9' },
-  ],
-  check: [
-    { d: 'm5.25 12.75 4.5 4.5 9-9' },
-  ],
-};
+const iconCache = new Map();
 
 /**
- * Builds an inline SVG icon from ICON_PATHS, so the block has no external icon
- * dependency.
- * @param {string} name key into ICON_PATHS
- * @returns {SVGElement}
+ * Fetches an icon's SVG markup from /icons/social-share-{name}.svg and parses out its
+ * root <svg> element. Cached per name so each icon is only ever fetched once; concurrent
+ * requests for the same name share the same in-flight promise.
+ * @param {string} name
+ * @returns {Promise<SVGElement|null>} null if the icon couldn't be fetched or parsed
  */
-function createIcon(name) {
-  const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('focusable', 'false');
+async function loadIcon(name) {
+  if (!iconCache.has(name)) {
+    iconCache.set(name, (async () => {
+      try {
+        const resp = await fetch(`${window.hlx.codeBasePath}/icons/social-share-${name}.svg`);
+        if (!resp.ok) return null;
+        const template = document.createElement('template');
+        template.innerHTML = (await resp.text()).trim();
+        return template.content.querySelector('svg');
+      } catch {
+        return null;
+      }
+    })());
+  }
+  return iconCache.get(name);
+}
 
-  (ICON_PATHS[name] || []).forEach((definition) => {
-    const path = document.createElementNS(SVG_NS, 'path');
-    const {
-      d,
-      fill = 'none',
-      stroke = 'currentColor',
-      strokeWidth = '1.75',
-      strokeLinecap = 'round',
-      strokeLinejoin = 'round',
-    } = typeof definition === 'string' ? { d: definition } : definition;
-
-    path.setAttribute('d', d);
-    path.setAttribute('fill', fill);
-    path.setAttribute('stroke', stroke);
-    if (stroke !== 'none') {
-      path.setAttribute('stroke-linecap', strokeLinecap);
-      path.setAttribute('stroke-linejoin', strokeLinejoin);
-      path.setAttribute('stroke-width', strokeWidth);
-    }
-    svg.append(path);
-  });
-
-  return svg;
+/**
+ * @param {string} name
+ * @returns {Promise<Element>} a fresh clone of the cached icon, so each caller can own
+ * and mutate its own copy; an empty span if the icon couldn't be loaded
+ */
+async function createIcon(name) {
+  const svg = await loadIcon(name);
+  return svg ? svg.cloneNode(true) : document.createElement('span');
 }
 
 /**
@@ -157,9 +120,9 @@ async function copyToClipboard(text) {
  * @param {Element} button the copy button
  * @param {string} message
  * @param {string} iconName 'check' on success, 'copy' on error
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function setCopyFeedback(block, button, message, iconName) {
+async function setCopyFeedback(block, button, message, iconName) {
   const status = block.querySelector('.social-share-status');
   const icon = button.querySelector('.social-share-icon');
 
@@ -167,13 +130,13 @@ function setCopyFeedback(block, button, message, iconName) {
   block.classList.add(iconName === 'check' ? 'is-copied' : 'is-copy-error');
   button.setAttribute('aria-label', message);
   status.textContent = message;
-  icon.replaceChildren(createIcon(iconName));
+  icon.replaceChildren(await createIcon(iconName));
 
-  window.setTimeout(() => {
+  window.setTimeout(async () => {
     block.classList.remove('is-copied', 'is-copy-error');
     button.setAttribute('aria-label', 'Copy page link');
     status.textContent = '';
-    icon.replaceChildren(createIcon('copy'));
+    icon.replaceChildren(await createIcon('copy'));
   }, FEEDBACK_RESET_MS);
 }
 
@@ -182,11 +145,11 @@ function setCopyFeedback(block, button, message, iconName) {
  * @param {Object} action an entry from ACTIONS
  * @param {{url: string, title: string}} shareData
  * @param {Element} block
- * @returns {Element} an <li> containing the action
+ * @returns {Promise<Element>} an <li> containing the action
  */
-function buildAction(action, shareData, block) {
+async function buildAction(action, shareData, block) {
   const item = createTag('li', { class: 'social-share-item' });
-  const icon = createTag('span', { class: 'social-share-icon' }, createIcon(action.icon));
+  const icon = createTag('span', { class: 'social-share-icon' }, await createIcon(action.icon));
   const label = createTag('span', { class: 'social-share-sr-only' }, action.label);
 
   if (action.type === 'button') {
@@ -201,9 +164,9 @@ function buildAction(action, shareData, block) {
       button.addEventListener('click', async () => {
         try {
           await copyToClipboard(shareData.url);
-          setCopyFeedback(block, button, 'Page link copied', 'check');
+          await setCopyFeedback(block, button, 'Page link copied', 'check');
         } catch {
-          setCopyFeedback(block, button, 'Unable to copy page link', 'copy');
+          await setCopyFeedback(block, button, 'Unable to copy page link', 'copy');
         }
       });
     }
@@ -239,9 +202,9 @@ function buildAction(action, shareData, block) {
  * Loads and decorates the social-share block: replaces any authored content with a
  * floating share dock (copy link, native share when available, X, LinkedIn, email).
  * @param {Element} block
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export default function decorate(block) {
+export default async function decorate(block) {
   const shareData = getShareData();
   const dock = createTag('nav', {
     class: 'social-share-dock',
@@ -254,11 +217,12 @@ export default function decorate(block) {
     'aria-live': 'polite',
   });
 
-  ACTIONS
-    .filter((action) => !action.isAvailable || action.isAvailable())
-    .forEach((action) => {
-      list.append(buildAction(action, shareData, block));
-    });
+  const items = await Promise.all(
+    ACTIONS
+      .filter((action) => !action.isAvailable || action.isAvailable())
+      .map((action) => buildAction(action, shareData, block)),
+  );
+  items.forEach((item) => list.append(item));
 
   dock.append(list, status);
   block.replaceChildren(dock);
