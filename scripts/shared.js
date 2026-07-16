@@ -1,4 +1,4 @@
-import { getMetadata } from './aem.js';
+import { getMetadata, toCamelCase } from './aem.js';
 
 export const LOCALES = {
   '': { lang: 'en' },
@@ -34,6 +34,51 @@ export function getLocale(locales = LOCALES) {
  */
 export function isGatedPage() {
   return String(getMetadata('gated') || '').trim().toLowerCase() === 'true';
+}
+
+const placeholdersCache = new Map();
+
+/**
+ * Fetches placeholders.json for the given locale prefix, falling back to the root file
+ * (same locale-then-root fallback used for fragments) if a locale-specific one doesn't
+ * exist or fails to load. Cached per prefix; concurrent calls for the same prefix share
+ * the same in-flight promise. Keys are read from a `Key`/`Value` sheet and converted to
+ * camelCase (e.g. `Social Share Copy Label` becomes `socialShareCopyLabel`).
+ * @param {string} [prefix] locale prefix from getLocale() (e.g. '/de'), '' for default
+ * @returns {Promise<Object<string, string>>} placeholder values keyed by camelCase key;
+ *   empty object if no placeholders.json could be loaded
+ */
+export async function fetchPlaceholders(prefix = '') {
+  if (!placeholdersCache.has(prefix)) {
+    placeholdersCache.set(prefix, (async () => {
+      const paths = prefix ? [`${prefix}/placeholders.json`, '/placeholders.json'] : ['/placeholders.json'];
+      const placeholders = {};
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const path of paths) {
+        let json = null;
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const resp = await fetch(path);
+          // eslint-disable-next-line no-await-in-loop
+          if (resp.ok) json = await resp.json();
+        } catch {
+          json = null;
+        }
+
+        if (json) {
+          (json?.data || []).forEach((row) => {
+            const key = toCamelCase(String(row.Key ?? row.key ?? '').trim());
+            if (key) placeholders[key] = String(row.Value ?? row.value ?? '');
+          });
+          break;
+        }
+      }
+
+      return placeholders;
+    })());
+  }
+  return placeholdersCache.get(prefix);
 }
 
 /** Shared utilities for query-index driven blocks. */

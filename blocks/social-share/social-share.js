@@ -1,38 +1,43 @@
-import { createTag } from '../../scripts/shared.js';
+import { createTag, fetchPlaceholders, getLocale } from '../../scripts/shared.js';
 
 const FEEDBACK_RESET_MS = 2000;
 
 const ACTIONS = [
   {
     id: 'copy',
-    label: 'Copy page link',
+    labelKey: 'socialShareCopyLabel',
+    fallbackLabel: 'Copy page link',
     type: 'button',
     icon: 'copy',
   },
   {
     id: 'native',
-    label: 'Share this page',
+    labelKey: 'socialShareNativeLabel',
+    fallbackLabel: 'Share this page',
     type: 'button',
     icon: 'share',
     isAvailable: () => typeof navigator.share === 'function',
   },
   {
     id: 'x',
-    label: 'Share on X',
+    labelKey: 'socialShareXLabel',
+    fallbackLabel: 'Share on X',
     type: 'link',
     icon: 'x',
     getHref: ({ url, title }) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
   },
   {
     id: 'linkedin',
-    label: 'Share on LinkedIn',
+    labelKey: 'socialShareLinkedinLabel',
+    fallbackLabel: 'Share on LinkedIn',
     type: 'link',
     icon: 'linkedin',
     getHref: ({ url }) => `https://www.linkedin.com/feed/?shareActive=true&url=${encodeURIComponent(url)}`,
   },
   {
     id: 'email',
-    label: 'Share by email',
+    labelKey: 'socialShareEmailLabel',
+    fallbackLabel: 'Share by email',
     type: 'link',
     icon: 'email',
     getHref: ({ url, title }) => `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${title}\n\n${url}`)}`,
@@ -115,14 +120,15 @@ async function copyToClipboard(text) {
 
 /**
  * Shows temporary success/error feedback on the copy button (icon + status text),
- * reverting after FEEDBACK_RESET_MS.
+ * reverting to resetLabel after FEEDBACK_RESET_MS.
  * @param {Element} block
  * @param {Element} button the copy button
  * @param {string} message
  * @param {string} iconName 'check' on success, 'copy' on error
+ * @param {string} resetLabel the copy button's normal (localized) label
  * @returns {Promise<void>}
  */
-async function setCopyFeedback(block, button, message, iconName) {
+async function setCopyFeedback(block, button, message, iconName, resetLabel) {
   const status = block.querySelector('.social-share-status');
   const icon = button.querySelector('.social-share-icon');
 
@@ -134,7 +140,7 @@ async function setCopyFeedback(block, button, message, iconName) {
 
   window.setTimeout(async () => {
     block.classList.remove('is-copied', 'is-copy-error');
-    button.setAttribute('aria-label', 'Copy page link');
+    button.setAttribute('aria-label', resetLabel);
     status.textContent = '';
     icon.replaceChildren(await createIcon('copy'));
   }, FEEDBACK_RESET_MS);
@@ -145,28 +151,42 @@ async function setCopyFeedback(block, button, message, iconName) {
  * @param {Object} action an entry from ACTIONS
  * @param {{url: string, title: string}} shareData
  * @param {Element} block
+ * @param {Object<string, string>} placeholders localized strings, keyed by camelCase key
  * @returns {Promise<Element>} an <li> containing the action
  */
-async function buildAction(action, shareData, block) {
+async function buildAction(action, shareData, block, placeholders) {
+  const label = placeholders[action.labelKey] || action.fallbackLabel;
   const item = createTag('li', { class: 'social-share-item' });
   const icon = createTag('span', { class: 'social-share-icon' }, await createIcon(action.icon));
-  const label = createTag('span', { class: 'social-share-sr-only' }, action.label);
+  const labelSpan = createTag('span', { class: 'social-share-sr-only' }, label);
 
   if (action.type === 'button') {
     const button = createTag('button', {
       class: `social-share-action social-share-action-${action.id}`,
       type: 'button',
-      'aria-label': action.label,
-      title: action.label,
-    }, [icon, label]);
+      'aria-label': label,
+      title: label,
+    }, [icon, labelSpan]);
 
     if (action.id === 'copy') {
       button.addEventListener('click', async () => {
         try {
           await copyToClipboard(shareData.url);
-          await setCopyFeedback(block, button, 'Page link copied', 'check');
+          await setCopyFeedback(
+            block,
+            button,
+            placeholders.socialShareCopySuccess || 'Page link copied',
+            'check',
+            label,
+          );
         } catch {
-          await setCopyFeedback(block, button, 'Unable to copy page link', 'copy');
+          await setCopyFeedback(
+            block,
+            button,
+            placeholders.socialShareCopyError || 'Unable to copy page link',
+            'copy',
+            label,
+          );
         }
       });
     }
@@ -190,9 +210,9 @@ async function buildAction(action, shareData, block) {
     href: action.getHref(shareData),
     target: '_blank',
     rel: 'noopener noreferrer',
-    'aria-label': action.label,
-    title: action.label,
-  }, [icon, label]);
+    'aria-label': label,
+    title: label,
+  }, [icon, labelSpan]);
 
   item.append(link);
   return item;
@@ -201,14 +221,17 @@ async function buildAction(action, shareData, block) {
 /**
  * Loads and decorates the social-share block: replaces any authored content with a
  * floating share dock (copy link, native share when available, X, LinkedIn, email).
+ * Labels come from placeholders.json for the current locale, falling back to English.
  * @param {Element} block
  * @returns {Promise<void>}
  */
 export default async function decorate(block) {
+  const { prefix } = getLocale();
+  const placeholders = await fetchPlaceholders(prefix);
   const shareData = getShareData();
   const dock = createTag('nav', {
     class: 'social-share-dock',
-    'aria-label': 'Share this page',
+    'aria-label': placeholders.socialShareDockLabel || 'Share this page',
   });
   const list = createTag('ul', { class: 'social-share-list' });
   const status = createTag('span', {
@@ -220,7 +243,7 @@ export default async function decorate(block) {
   const items = await Promise.all(
     ACTIONS
       .filter((action) => !action.isAvailable || action.isAvailable())
-      .map((action) => buildAction(action, shareData, block)),
+      .map((action) => buildAction(action, shareData, block, placeholders)),
   );
   items.forEach((item) => list.append(item));
 
