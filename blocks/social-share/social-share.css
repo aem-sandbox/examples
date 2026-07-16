@@ -1,6 +1,6 @@
 /* social-share */
 
-main .social-share {
+.social-share {
   position: fixed;
   inset-block-start: 50%;
   inset-inline-end: clamp(10px, 1.8vw, 24px);
@@ -12,17 +12,17 @@ main .social-share {
     opacity 0.35s ease;
 }
 
-main .social-share:hover {
+.social-share:hover {
   transform: translateY(-50%) translateX(-3px);
   opacity: 1;
 }
 
-main .social-share .social-share-dock {
+.social-share .social-share-dock {
   position: relative;
   isolation: isolate;
 }
 
-main .social-share .social-share-dock::before {
+.social-share .social-share-dock::before {
   content: '';
   position: absolute;
   inset: -10px;
@@ -36,7 +36,7 @@ main .social-share .social-share-dock::before {
   pointer-events: none;
 }
 
-main .social-share .social-share-list {
+.social-share .social-share-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-s);
@@ -57,11 +57,11 @@ main .social-share .social-share-list {
   backdrop-filter: blur(18px) saturate(150%);
 }
 
-main .social-share .social-share-item {
+.social-share .social-share-item {
   display: flex;
 }
 
-main .social-share .social-share-action {
+.social-share .social-share-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -91,8 +91,8 @@ main .social-share .social-share-action {
   backdrop-filter: blur(10px);
 }
 
-main .social-share .social-share-action:hover,
-main .social-share .social-share-action:focus-visible {
+.social-share .social-share-action:hover,
+.social-share .social-share-action:focus-visible {
   color: var(--color-brand);
   border-color: light-dark(rgb(var(--color-brand-rgb) / 22%), rgb(var(--color-brand-rgb-light) / 28%));
   transform: translateX(-2px) scale(1.04);
@@ -102,25 +102,25 @@ main .social-share .social-share-action:focus-visible {
     0 18px 24px -18px rgb(var(--color-brand-rgb) / 55%);
 }
 
-main .social-share .social-share-action svg {
+.social-share .social-share-action svg {
   inline-size: 1.05rem;
   block-size: 1.05rem;
 }
 
-main .social-share .social-share-action-copy {
+.social-share .social-share-action-copy {
   color: var(--color-brand);
 }
 
-main .social-share.is-copied .social-share-action-copy {
+.social-share.is-copied .social-share-action-copy {
   color: light-dark(#1e7e34, #4caf50);
   background: linear-gradient(180deg, rgb(225 245 227 / 88%), rgb(163 225 168 / 42%));
 }
 
-main .social-share.is-copy-error .social-share-action-copy {
+.social-share.is-copy-error .social-share-action-copy {
   color: light-dark(#c62828, #ef5350);
 }
 
-main .social-share .social-share-sr-only {
+.social-share .social-share-sr-only {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -133,46 +133,46 @@ main .social-share .social-share-sr-only {
 }
 
 @media (width < 900px) {
-  main .social-share {
+  .social-share {
     inset-inline: 50% auto;
     inset-block: auto calc(env(safe-area-inset-bottom, 0px) + 12px);
     transform: translateX(-50%);
   }
 
-  main .social-share:hover {
+  .social-share:hover {
     transform: translateX(-50%);
   }
 
-  main .social-share .social-share-dock::before {
+  .social-share .social-share-dock::before {
     inset: -6px;
   }
 
-  main .social-share .social-share-list {
+  .social-share .social-share-list {
     flex-direction: row;
     gap: var(--space-xs);
     padding: 0.45rem;
   }
 
-  main .social-share .social-share-action {
+  .social-share .social-share-action {
     inline-size: 2.55rem;
     block-size: 2.55rem;
   }
 
-  main .social-share .social-share-action:hover,
-  main .social-share .social-share-action:focus-visible {
+  .social-share .social-share-action:hover,
+  .social-share .social-share-action:focus-visible {
     transform: translateY(-2px) scale(1.03);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  main .social-share,
-  main .social-share .social-share-action {
+  .social-share,
+  .social-share .social-share-action {
     transition: none;
   }
 
-  main .social-share:hover,
-  main .social-share .social-share-action:hover,
-  main .social-share .social-share-action:focus-visible {
+  .social-share:hover,
+  .social-share .social-share-action:hover,
+  .social-share .social-share-action:focus-visible {
     transform: none;
   }
 }
