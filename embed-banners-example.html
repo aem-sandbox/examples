@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AEM Embed - Banner Examples</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/scripts/aem-embed.js" type="module"></script>
+    <style>
+        body {
+            background-color: #ddd;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 2rem;
+        }
+
+        aem-embed {
+            display: block;
+            border: 3px dotted red;
+        }
+
+        aem-embed.banner {
+            min-height: 280px;
+        }
+
+        @media (min-width: 900px) {
+            aem-embed.banner {
+                min-height: 166px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Banner Examples</h1>
+    <h2>Banner 1</h2>
+    <aem-embed class="banner" url="https://main--embed-example--aemsites.aem.page/banners/banner1"></aem-embed>
+    <h2>Banner 2</h2>
+    <aem-embed class="banner" url="https://main--embed-example--aemsites.aem.page/banners/banner2"></aem-embed>
+    <h2>Banner 3</h2>
+    <aem-embed class="banner" url="https://main--embed-example--aemsites.aem.page/banners/banner3"></aem-embed>
+</body>
+</html>
