@@ -15,24 +15,25 @@ export class AEMEmbed extends HTMLElement {
 
     // Keep track if we have rendered the fragment yet.
     this.initialized = false;
-  
+
     window.hlx = window.hlx || {};
     window.hlx.suppressLoadPage = true;
     [window.hlx.codeBasePath] = new URL(import.meta.url).pathname.split('/scripts/');
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async loadBlock(body, block, blockName, origin) {
     const blockCss = `${origin}${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.css`;
     if (!body.querySelector(`link[href="${blockCss}"]`)) {
       const link = document.createElement('link');
       link.setAttribute('rel', 'stylesheet');
       link.setAttribute('href', blockCss);
-  
+
       const cssLoaded = new Promise((resolve) => {
         link.onload = resolve;
         link.onerror = resolve;
       });
-  
+
       body.appendChild(link);
       // eslint-disable-next-line no-await-in-loop
       await cssLoaded;
@@ -54,7 +55,7 @@ export class AEMEmbed extends HTMLElement {
 
   async handleHeader(htmlText, body, origin) {
     await this.pseudoDecorateMain(htmlText, body, origin);
-    
+
     const main = body.querySelector('main');
     const header = document.createElement('header');
     body.append(header);
@@ -78,7 +79,7 @@ export class AEMEmbed extends HTMLElement {
 
   async handleFooter(htmlText, body, origin) {
     await this.pseudoDecorateMain(htmlText, body, origin);
-    
+
     const main = body.querySelector('main');
     const footer = document.createElement('footer');
     body.append(footer);
@@ -121,20 +122,20 @@ export class AEMEmbed extends HTMLElement {
       for (let i = 0; i < blockElements.length; i += 1) {
         const blockName = blocks[i];
         const block = blockElements[i];
+        // eslint-disable-next-line no-await-in-loop
         await this.loadBlock(body, block, blockName, origin);
       }
     }
-  
+
     const sections = main.querySelectorAll('.section');
     sections.forEach((s) => {
       s.dataset.sectionStatus = 'loaded';
       s.style = '';
     });
-    
   }
 
   async handleMain(htmlText, body, origin) {
-    await this.pseudoDecorateMain(htmlText, body, origin)
+    await this.pseudoDecorateMain(htmlText, body, origin);
     body.classList.add('appear');
   }
 
@@ -181,7 +182,7 @@ export class AEMEmbed extends HTMLElement {
 
         // Set initialized to true so we don't run through this again
         this.initialized = true;
- 
+
         if (type === 'main') await this.handleMain(htmlText, body, origin);
         if (type === 'header') await this.handleHeader(htmlText, body, origin);
         if (type === 'footer') await this.handleFooter(htmlText, body, origin);
