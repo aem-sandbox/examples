@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AEM Embed - Header and Footer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/scripts/aem-embed.js" type="module"></script>
+    <style>
+        body {
+            background-color: #ddd;
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        aem-embed {
+            display: block;
+            border: 3px dotted red;
+        }
+
+        aem-embed.header {
+            min-height: 64px;
+        }
+
+        aem-embed.footer {
+            min-height: 281px;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <aem-embed class="header" url="https://main--embed-example--aemsites.aem.page/nav" type="header"></aem-embed>
+    <main>
+        <h1>Header and Footer</h1>
+        <p>The header and footer on this page are embedded from another AEM site.</p>
+    </main>
+    <aem-embed class="footer" url="https://main--embed-example--aemsites.aem.page/footer" type="footer"></aem-embed>
+</body>
+</html>
