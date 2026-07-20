@@ -14,7 +14,6 @@ const fullRecord = {
   path: '/extras/usgs-quakes/us7000t1tp',
   title: 'M 5.5 - 81 km SW of Puerto Madero, Mexico',
   mag: '5.5',
-  magClass: 'm5',
   magDisplay: '5.5 (mww)',
   place: '81 km SW of Puerto Madero, Mexico',
   timeISO: '2026-07-19T17:45:16.923Z',
@@ -37,7 +36,6 @@ const minimalRecord = {
   path: '/extras/usgs-quakes/us7000t1py',
   title: 'M 5.3',
   mag: '5.3',
-  magClass: 'm5',
   magDisplay: '5.3 (mb)',
   place: null,
   timeISO: '2026-07-19T00:39:39.917Z',
@@ -72,12 +70,13 @@ describe('overview template', () => {
     expect(html).not.toContain('&#x2F;');
   });
 
-  it('renders a magnitude badge, place, and meta line for each row', () => {
-    expect(html).toContain('class="quake-mag m5"');
-    expect(html).toContain('M 5.5');
-    expect(html).toContain('<span class="quake-title">81 km SW of Puerto Madero, Mexico</span>');
-    expect(html).toContain('class="quake-meta"');
-    expect(html).toContain('2026-07-19 17:45 UTC · 35 km');
+  it('renders pipeline-safe badge, place, and meta markup for each row', () => {
+    // the EDS pipeline strips spans and classes from default content; strong/em
+    // survive, and the space after the badge must be inside the rendered text
+    expect(html).toContain('<strong>M 5.5</strong> 81 km SW of Puerto Madero, Mexico</a>');
+    expect(html).toContain('<em>2026-07-19 17:45 UTC · 35 km</em>');
+    expect(html).not.toContain('<span');
+    expect(html).not.toContain('quake-mag');
   });
 
   it('shows a placeholder title when a quake has no place', () => {
@@ -112,11 +111,10 @@ describe('overview template', () => {
 });
 
 describe('detail template', () => {
-  it('links back to the overview above the facts', () => {
+  it('links back to the overview above the facts, without pipeline-stripped classes', () => {
     const html = Mustache.render(detailTpl, fullRecord);
-    expect(html).toContain('class="backlink"');
-    expect(html).toContain('href="/extras/usgs-quakes"');
-    expect(html).toContain('All recent earthquakes');
+    expect(html).toContain('<p><a href="/extras/usgs-quakes">All recent earthquakes</a></p>');
+    expect(html).not.toContain('backlink');
   });
 
   it('renders the quake-map block with coordinate, magnitude, and alert rows', () => {

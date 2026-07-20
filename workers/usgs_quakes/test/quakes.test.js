@@ -67,7 +67,6 @@ describe('reshape', () => {
       path: '/extras/usgs-quakes/us7000t1tp',
       title: 'M 5.5 - 81 km SW of Puerto Madero, Mexico',
       mag: '5.5',
-      magClass: 'm5',
       magDisplay: '5.5 (mww)',
       place: '81 km SW of Puerto Madero, Mexico',
       timeISO: '2026-07-19T17:45:16.923Z',
@@ -149,13 +148,8 @@ describe('reshape', () => {
     expect(south.lon).toBe('-75.3013');
   });
 
-  it('derives magClass by flooring and clamping the magnitude to m5..m7', () => {
-    expect(reshape(featureById(feed, 'us7000t1tp')).magClass).toBe('m5');
-    expect(reshape(featureById(feed, 'us7000t0d0')).magClass).toBe('m6');
-    expect(reshape(featureById(feed, 'us7000t1bu')).magClass).toBe('m7');
-    expect(reshape(makeFeature({ mag: 8.1 })).magClass).toBe('m7');
-    expect(reshape(makeFeature({ mag: 5.9 })).magClass).toBe('m5');
-    expect(reshape(makeFeature({ mag: 4.8 })).magClass).toBe('m5');
+  it('emits no magClass field; the badge tier is derived client-side', () => {
+    expect('magClass' in reshape(featureById(feed, 'us7000t1tp'))).toBe(false);
   });
 
   it('drops features with empty id, null magnitude, bad geometry, or illegal id', () => {
