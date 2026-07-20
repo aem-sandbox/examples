@@ -14,12 +14,9 @@ SITE_BRANCH = "main"
 [observability.logs]
 enabled = true
 
-# Staging deploy: cron and KV disabled until the namespace exists.
-# To enable the cron: create the namespace (wrangler kv namespace create QUAKES_KV),
-# paste its id below, uncomment both blocks, set the ADMIN_API_KEY secret, redeploy.
-# [triggers]
-# crons = ["17 * * * *"]
+[triggers]
+crons = ["17 * * * *"]
 
-# [[kv_namespaces]]
-# binding = "QUAKES_KV"
-# id = "REPLACE_WITH_KV_NAMESPACE_ID"
+[[kv_namespaces]]
+binding = "QUAKES_KV"
+id = "250645afa0814e8eb6b04779ccbf2556"
