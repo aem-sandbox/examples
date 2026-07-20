@@ -15,9 +15,9 @@
   top: 50%;
   left: 50%;
   display: grid;
-  grid-template-columns: repeat(3, 256px);
-  grid-template-rows: repeat(2, 256px);
-  width: 768px;
+  grid-template-columns: repeat(5, 256px);
+  grid-template-rows: repeat(3, 256px);
+  width: 1280px;
   height: 512px;
 }
 

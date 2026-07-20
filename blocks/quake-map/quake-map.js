@@ -48,8 +48,8 @@ export function mapGeometry(lat, lon, widthPx = REF_WIDTH) {
   const yf = ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n;
   const xc = Math.floor(xf);
   const yc = Math.floor(yf);
-  const cols = [xc - 1, xc, xc + 1];
-  const rows = yf - yc < 0.5 ? [yc - 1, yc] : [yc, yc + 1];
+  const cols = [xc - 2, xc - 1, xc, xc + 1, xc + 2];
+  const rows = [yc - 1, yc, yc + 1];
   const wrapX = (x) => ((x % n) + n) % n;
   const clampY = (y) => clamp(y, 0, n - 1);
   const tiles = [];
@@ -61,7 +61,7 @@ export function mapGeometry(lat, lon, widthPx = REF_WIDTH) {
     });
   });
   const originPx = {
-    x: (xf - (xc - 1)) * TILE,
+    x: (xf - (xc - 2)) * TILE,
     y: (yf - clampY(rows[0])) * TILE,
   };
   return { z, tiles, originPx };
