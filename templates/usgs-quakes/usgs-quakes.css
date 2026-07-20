@@ -1,0 +1,68 @@
+/* Overview list */
+.usgs-quakes main .quake-list {
+  max-width: 720px;
+  margin: var(--space-l) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usgs-quakes main .quake-list li {
+  padding: var(--space-s) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.usgs-quakes main .quake-list li a {
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+}
+
+.usgs-quakes main .quake-list li span {
+  display: block;
+  margin-top: var(--space-xs);
+  font-size: var(--body-font-size-xs);
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+}
+
+.usgs-quakes main .generated {
+  font-size: var(--body-font-size-xs);
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+}
+
+/* Detail fact rows */
+.usgs-quakes .columns.usgs-quakes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-l) 0;
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--color-border);
+}
+
+.usgs-quakes .columns.usgs-quakes > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-l);
+  align-items: baseline;
+  min-width: 0;
+}
+
+.usgs-quakes .columns.usgs-quakes > div > div:first-child {
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+}
+
+.usgs-quakes .columns.usgs-quakes > div > div:last-child {
+  font-size: var(--body-font-size-m);
+  color: var(--text-color);
+}
+
+@media (width >= 900px) {
+  .usgs-quakes .columns.usgs-quakes {
+    gap: var(--space-m) var(--space-l);
+  }
+}

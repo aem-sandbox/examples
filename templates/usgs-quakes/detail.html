@@ -1,0 +1,81 @@
+<head>
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <meta name="date" content="{{timeISO}}">
+  <meta name="keywords" content="usgs-quakes">
+  <meta name="template" content="usgs-quakes">
+</head>
+<body>
+  <header></header>
+  <main>
+    <div>
+      <h1 id="{{id}}">{{title}}</h1>
+    </div>
+    <div>
+      <div class="columns usgs-quakes">
+        <div>
+          <div>Magnitude</div>
+          <div>{{magDisplay}}</div>
+        </div>
+        <div>
+          <div>Time</div>
+          <div>{{timeUTC}}</div>
+        </div>
+        <div>
+          <div>Coordinates</div>
+          <div>{{coords}}</div>
+        </div>
+        <div>
+          <div>Depth</div>
+          <div>{{depthKm}}</div>
+        </div>
+        {{#place}}
+        <div>
+          <div>Location</div>
+          <div>{{place}}</div>
+        </div>
+        {{/place}}
+        {{#alert}}
+        <div>
+          <div>PAGER alert</div>
+          <div>{{alert}}</div>
+        </div>
+        {{/alert}}
+        {{#felt}}
+        <div>
+          <div>Felt</div>
+          <div>{{felt}}</div>
+        </div>
+        {{/felt}}
+        {{#tsunami}}
+        <div>
+          <div>Tsunami</div>
+          <div>flagged - see tsunami.gov</div>
+        </div>
+        {{/tsunami}}
+        <div>
+          <div>Status</div>
+          <div>{{status}}</div>
+        </div>
+      </div>
+      <p><strong><a href="{{{usgsUrl}}}">View on USGS</a></strong></p>
+    </div>
+    <div>
+      <h2 id="more-earthquakes">More earthquakes</h2>
+      <div class="cards dynamic carousel">
+        <div>
+          <div>keywords</div>
+          <div>usgs-quakes</div>
+        </div>
+        <div>
+          <div>excluded-keywords</div>
+          <div>noindex</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p>Data: <a href="https://www.usgs.gov/programs/earthquake-hazards">U.S. Geological Survey</a></p>
+    </div>
+  </main>
+  <footer></footer>
+</body>
