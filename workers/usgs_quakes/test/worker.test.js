@@ -55,22 +55,27 @@ function fakeKv(initial) {
   };
 }
 
-function schedulerFetch({ usgs = twoFeed, adminStatus = () => 200 } = {}) {
+function schedulerFetch({
+  usgs = twoFeed, adminStatus = () => 200, adminThrow = () => false,
+} = {}) {
   const calls = [];
+  const usgsInits = [];
   const fn = vi.fn(async (input, init) => {
     const url = typeof input === 'string' ? input : input.url;
     if (url.includes('earthquake.usgs.gov')) {
+      usgsInits.push(init);
       if (usgs === 'error') return new Response('err', { status: 500 });
       if (usgs === 'throw') throw new Error('network down');
       return jsonResponse(usgs);
     }
+    if (adminThrow(url)) throw new TypeError('fetch failed: connection reset');
     const method = (init && init.method) || 'GET';
     const status = adminStatus(url);
     calls.push({ url, method, status });
     const headers = status >= 400 ? { 'x-error': 'denied' } : {};
     return new Response(null, { status, headers });
   });
-  return { fn, calls };
+  return { fn, calls, usgsInits };
 }
 
 let logSpy;
@@ -120,6 +125,17 @@ describe('fetch handler', () => {
     vi.stubGlobal('fetch', vi.fn(async () => jsonResponse(feed)));
     const res = await worker.fetch(new Request('https://worker.dev/'), {});
     expect(res.headers.get('Access-Control-Allow-Origin')).toBeNull();
+  });
+
+  it('sends the USGS request with identifying UA, edge caching, and a timeout signal', async () => {
+    const { fn, usgsInits } = schedulerFetch();
+    vi.stubGlobal('fetch', fn);
+    await worker.fetch(new Request('https://worker.dev/'), {});
+    expect(usgsInits).toHaveLength(1);
+    const init = usgsInits[0];
+    expect(init.headers['User-Agent']).toContain('examples-bbird-usgs-quakes');
+    expect(init.cf).toEqual({ cacheTtl: 60, cacheEverything: true });
+    expect(init.signal).toBeInstanceOf(AbortSignal);
   });
 });
 
@@ -196,6 +212,53 @@ describe('scheduled handler', () => {
     const kv = fakeKv({ pages: {} });
     await worker.scheduled({}, { ADMIN_API_KEY: 'tok', QUAKES_KV: kv });
     expect(kv.put).not.toHaveBeenCalled();
+  });
+
+  it('does not publish the overview when its preview fails', async () => {
+    const { fn, calls } = schedulerFetch({
+      adminStatus: (url) => (url.includes('/preview/') && url.endsWith('/extras/usgs-quakes') ? 503 : 200),
+    });
+    vi.stubGlobal('fetch', fn);
+    const kv = fakeKv({ pages: {} });
+    await worker.scheduled({}, { ADMIN_API_KEY: 'tok', QUAKES_KV: kv });
+
+    const overviewCalls = calls.filter((c) => c.url.endsWith('/extras/usgs-quakes'));
+    expect(overviewCalls).toHaveLength(1);
+    expect(overviewCalls[0].url).toContain('/preview/');
+  });
+
+  it('isolates a rejected admin fetch: other pages proceed and state is written', async () => {
+    const { fn, calls } = schedulerFetch({
+      adminThrow: (url) => url.includes('/live/') && url.includes('us7000aaa'),
+    });
+    vi.stubGlobal('fetch', fn);
+    const kv = fakeKv({ pages: {} });
+    await expect(
+      worker.scheduled({}, { ADMIN_API_KEY: 'tok', QUAKES_KV: kv }),
+    ).resolves.toBeUndefined();
+
+    const urls = calls.map((c) => c.url);
+    expect(urls.some((u) => u.includes('/live/') && u.includes('us7000bbb'))).toBe(true);
+    expect(urls.filter((u) => u.endsWith('/extras/usgs-quakes'))).toHaveLength(2);
+    const saved = JSON.parse(kv.puts.at(-1).value);
+    expect(saved.pages).toEqual({ us7000bbb: 222 });
+  });
+
+  it('clips a run to 200 pages and leaves clipped ids out of state for retry', async () => {
+    const features = [];
+    for (let i = 1; i <= 201; i += 1) {
+      features.push(quakeFeature(`us${String(i).padStart(7, '0')}`, 5.5, i));
+    }
+    const { fn, calls } = schedulerFetch({ usgs: { type: 'FeatureCollection', features } });
+    vi.stubGlobal('fetch', fn);
+    const kv = fakeKv({ pages: {} });
+    await worker.scheduled({}, { ADMIN_API_KEY: 'tok', QUAKES_KV: kv });
+
+    expect(calls).toHaveLength(402);
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('clipping'));
+    const saved = JSON.parse(kv.puts.at(-1).value);
+    expect(Object.keys(saved.pages)).toHaveLength(200);
+    expect(saved.pages.us0000201).toBeUndefined();
   });
 
   it('keeps removed pages published, drops them from state, issues no delete calls', async () => {
