@@ -25,13 +25,6 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.usgs-quakes main .quake-title {
-  min-width: 0;
-  font-family: var(--heading-font-family);
-  font-size: var(--body-font-size-m);
-  line-height: 1.3;
-}
-
 .usgs-quakes main .quake-list li > a {
   display: flex;
   align-items: center;
@@ -39,14 +32,14 @@
   padding: var(--space-xs) var(--space-s);
   border-radius: var(--radius-s);
   color: var(--text-color);
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.3;
   transition: background-color var(--transition-fast);
 }
 
 .usgs-quakes main .quake-list li > a:hover {
   background-color: var(--color-hover-surface);
-}
-
-.usgs-quakes main .quake-list li > a:hover .quake-title {
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
@@ -112,8 +105,9 @@
   color: var(--text-color);
 }
 
-/* USGS credit and generated timestamp, muted */
-.usgs-quakes main .generated,
+/* USGS credit and generated timestamp, muted. The timestamp p has no class
+   after the pipeline, so it is targeted as the credit line's sibling. */
+.usgs-quakes main p:has(a[href*="earthquake-hazards"]) + p,
 .usgs-quakes main p:has(a[href*="earthquake-hazards"]) {
   font-size: var(--body-font-size-xs);
   color: light-dark(var(--color-gray-600), var(--color-gray-500));

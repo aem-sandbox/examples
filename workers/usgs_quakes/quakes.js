@@ -34,7 +34,6 @@ export function reshape(feature) {
 
   const [lon, lat, depth] = coordinates;
   const magFmt = Number(props.mag).toFixed(1);
-  const magClass = `m${Math.min(7, Math.max(5, Math.floor(Number(props.mag))))}`;
   const place = props.place || null;
   const timeISO = new Date(props.time).toISOString();
   const timeUTC = `${timeISO.slice(0, 10)} ${timeISO.slice(11, 16)} UTC`;
@@ -51,7 +50,6 @@ export function reshape(feature) {
     path: `/extras/usgs-quakes/${id}`,
     title: place ? `M ${magFmt} - ${place}` : `M ${magFmt}`,
     mag: magFmt,
-    magClass,
     magDisplay: `${magFmt} (${props.magType})`,
     place,
     timeISO,
