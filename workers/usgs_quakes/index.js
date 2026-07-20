@@ -15,8 +15,8 @@ function jsonError(status, message, extraHeaders = {}) {
   });
 }
 
-function fetchUsgs(env, nowMs = Date.now()) {
-  return fetch(buildQueryUrl(env, nowMs), {
+function fetchUsgs(env) {
+  return fetch(buildQueryUrl(env), {
     headers: { 'User-Agent': USER_AGENT },
     cf: { cacheTtl: 60, cacheEverything: true },
     signal: AbortSignal.timeout(9000),
@@ -31,10 +31,16 @@ function target(env, action, path) {
 }
 
 async function admin(env, action, path) {
-  const res = await fetch(target(env, action, path), {
-    method: 'POST',
-    headers: { Authorization: `token ${env.ADMIN_API_KEY}` },
-  });
+  let res;
+  try {
+    res = await fetch(target(env, action, path), {
+      method: 'POST',
+      headers: { Authorization: `token ${env.ADMIN_API_KEY}` },
+    });
+  } catch (err) {
+    console.log(`admin ${action} ${path} failed: ${err.message}`);
+    return false;
+  }
   if (!res.ok) {
     const detail = res.headers.get('x-error') || '';
     console.log(`admin ${action} ${path} failed: ${res.status} ${detail}`);
@@ -122,8 +128,11 @@ export default {
       }
     }
 
-    await admin(env, 'preview', OVERVIEW_PATH);
-    await admin(env, 'live', OVERVIEW_PATH);
+    if (await admin(env, 'preview', OVERVIEW_PATH)) {
+      await admin(env, 'live', OVERVIEW_PATH);
+    } else {
+      console.log('overview preview failed, live overview not refreshed');
+    }
 
     await env.QUAKES_KV.put('state', JSON.stringify(nextState(state, removed, succeeded)));
   },
