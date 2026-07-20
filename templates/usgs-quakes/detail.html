@@ -12,6 +12,17 @@
       <h1 id="{{id}}">{{title}}</h1>
     </div>
     <div>
+      <div class="quake-map">
+        <div><div>lat</div><div>{{lat}}</div></div>
+        <div><div>lon</div><div>{{lon}}</div></div>
+        <div><div>mag</div><div>{{mag}}</div></div>
+        {{#alert}}
+        <div><div>alert</div><div>{{alert}}</div></div>
+        {{/alert}}
+      </div>
+    </div>
+    <div>
+      <p class="backlink"><a href="/extras/usgs-quakes">All recent earthquakes</a></p>
       <div class="columns usgs-quakes">
         <div>
           <div>Magnitude</div>

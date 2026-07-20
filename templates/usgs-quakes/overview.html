@@ -14,7 +14,7 @@
     <div>
       <ul class="quake-list">
         {{#data}}
-        <li><a href="{{{path}}}">{{title}}</a> <span>{{timeUTC}} · {{depthKm}}</span></li>
+        <li><a href="{{{path}}}"><span class="quake-mag {{magClass}}">M {{mag}}</span><span class="quake-title">{{#place}}{{place}}{{/place}}{{^place}}Location pending review{{/place}}</span></a><span class="quake-meta">{{timeUTC}} · {{depthKm}}</span></li>
         {{/data}}
       </ul>
       {{^data}}
