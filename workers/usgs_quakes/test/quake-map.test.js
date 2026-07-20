@@ -6,22 +6,26 @@ import { mapGeometry, ringRadii } from '../../../blocks/quake-map/quake-map.js';
 const xy = (geometry) => geometry.tiles.map((t) => [t.x, t.y]);
 
 describe('mapGeometry', () => {
-  it('places lat 0 lon 0 at zoom 7 with the quake tile centered', () => {
+  it('places lat 0 lon 0 at zoom 7 with a 5x3 mosaic around the quake tile', () => {
     const geometry = mapGeometry(0, 0);
     expect(geometry.z).toBe(7);
-    expect(geometry.tiles).toHaveLength(6);
+    expect(geometry.tiles).toHaveLength(15);
     expect(xy(geometry)).toEqual([
-      [63, 63], [64, 63], [65, 63], [63, 64], [64, 64], [65, 64],
+      [62, 63], [63, 63], [64, 63], [65, 63], [66, 63],
+      [62, 64], [63, 64], [64, 64], [65, 64], [66, 64],
+      [62, 65], [63, 65], [64, 65], [65, 65], [66, 65],
     ]);
-    expect(geometry.tiles[4].url).toBe('https://tile.openstreetmap.org/7/64/64.png');
-    expect(geometry.originPx).toEqual({ x: 256, y: 256 });
+    expect(geometry.tiles[7].url).toBe('https://tile.openstreetmap.org/7/64/64.png');
+    expect(geometry.originPx).toEqual({ x: 512, y: 256 });
   });
 
   it('centers the real fixture quake tile at zoom 7', () => {
     const geometry = mapGeometry(14.1592, -92.9052);
     expect(geometry.z).toBe(7);
     expect(xy(geometry)).toEqual([
-      [29, 58], [30, 58], [31, 58], [29, 59], [30, 59], [31, 59],
+      [28, 57], [29, 57], [30, 57], [31, 57], [32, 57],
+      [28, 58], [29, 58], [30, 58], [31, 58], [32, 58],
+      [28, 59], [29, 59], [30, 59], [31, 59], [32, 59],
     ]);
   });
 
@@ -33,9 +37,10 @@ describe('mapGeometry', () => {
   it('wraps tile x across the antimeridian', () => {
     const geometry = mapGeometry(0, 179.95);
     expect(geometry.z).toBe(7);
-    expect(xy(geometry)).toEqual([
-      [126, 63], [127, 63], [0, 63], [126, 64], [127, 64], [0, 64],
+    expect(xy(geometry).slice(0, 5)).toEqual([
+      [125, 63], [126, 63], [127, 63], [0, 63], [1, 63],
     ]);
+    expect(geometry.tiles).toHaveLength(15);
     expect(geometry.tiles.every((t) => t.x >= 0 && t.x < 128)).toBe(true);
   });
 
@@ -43,7 +48,7 @@ describe('mapGeometry', () => {
     const geometry = mapGeometry(84, 0);
     expect(geometry.z).toBe(4);
     expect(geometry.tiles.every((t) => t.y >= 0 && t.y < 16)).toBe(true);
-    expect(geometry.tiles.every((t) => t.y === 0)).toBe(true);
+    expect(geometry.tiles.every((t) => t.y <= 1)).toBe(true);
   });
 });
 
