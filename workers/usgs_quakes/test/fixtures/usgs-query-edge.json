@@ -1,0 +1,8 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {"generated": 1784549971000, "title": "USGS Earthquakes", "status": 200, "count": 2},
+  "features": [
+    {"type":"Feature","properties":{"mag":null,"place":null,"time":1784480000000,"updated":1784480000000,"tz":null,"felt":null,"cdi":null,"mmi":null,"alert":null,"status":"deleted","tsunami":0,"sig":0,"net":null,"code":null,"magType":null,"type":"earthquake","title":""},"geometry":null,"id":""},
+    {"type":"Feature","properties":{"mag":null,"place":"22 km N of Testville","time":1784470000000,"updated":1784470000000,"tz":null,"felt":null,"cdi":null,"mmi":null,"alert":null,"status":"automatic","tsunami":0,"sig":0,"net":"us","code":"tnull","magType":"md","type":"earthquake","title":"M ? - 22 km N of Testville"},"geometry":{"type":"Point","coordinates":[10.0,20.0,5.0]},"id":"us7000tnull"}
+  ]
+}
