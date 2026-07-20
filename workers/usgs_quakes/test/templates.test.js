@@ -14,11 +14,14 @@ const fullRecord = {
   path: '/extras/usgs-quakes/us7000t1tp',
   title: 'M 5.5 - 81 km SW of Puerto Madero, Mexico',
   mag: '5.5',
+  magClass: 'm5',
   magDisplay: '5.5 (mww)',
   place: '81 km SW of Puerto Madero, Mexico',
   timeISO: '2026-07-19T17:45:16.923Z',
   timeUTC: '2026-07-19 17:45 UTC',
   coords: '14.16°N, 92.91°W',
+  lat: '14.1592',
+  lon: '-92.9052',
   depthKm: '35 km',
   usgsUrl: 'https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1tp',
   alert: 'green',
@@ -34,11 +37,14 @@ const minimalRecord = {
   path: '/extras/usgs-quakes/us7000t1py',
   title: 'M 5.3',
   mag: '5.3',
+  magClass: 'm5',
   magDisplay: '5.3 (mb)',
   place: null,
   timeISO: '2026-07-19T00:39:39.917Z',
   timeUTC: '2026-07-19 00:39 UTC',
   coords: '51.39°N, 159.61°E',
+  lat: '51.3859',
+  lon: '159.6116',
   depthKm: '10 km',
   usgsUrl: 'https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1py',
   alert: null,
@@ -60,11 +66,22 @@ const feedView = {
 describe('overview template', () => {
   const html = Mustache.render(overviewTpl, feedView);
 
-  it('lists every quake with an unescaped path href and escaped title', () => {
+  it('lists every quake with an unescaped path href', () => {
     expect(html).toContain('href="/extras/usgs-quakes/us7000t1tp"');
     expect(html).toContain('href="/extras/usgs-quakes/us7000t1py"');
-    expect(html).toContain('M 5.5 - 81 km SW of Puerto Madero, Mexico');
     expect(html).not.toContain('&#x2F;');
+  });
+
+  it('renders a magnitude badge, place, and meta line for each row', () => {
+    expect(html).toContain('class="quake-mag m5"');
+    expect(html).toContain('M 5.5');
+    expect(html).toContain('<span class="quake-title">81 km SW of Puerto Madero, Mexico</span>');
+    expect(html).toContain('class="quake-meta"');
+    expect(html).toContain('2026-07-19 17:45 UTC · 35 km');
+  });
+
+  it('shows a placeholder title when a quake has no place', () => {
+    expect(html).toContain('Location pending review');
   });
 
   it('shows the count and the USGS credit line', () => {
@@ -95,6 +112,32 @@ describe('overview template', () => {
 });
 
 describe('detail template', () => {
+  it('links back to the overview above the facts', () => {
+    const html = Mustache.render(detailTpl, fullRecord);
+    expect(html).toContain('class="backlink"');
+    expect(html).toContain('href="/extras/usgs-quakes"');
+    expect(html).toContain('All recent earthquakes');
+  });
+
+  it('renders the quake-map block with coordinate, magnitude, and alert rows', () => {
+    const html = Mustache.render(detailTpl, fullRecord);
+    expect(html).toContain('class="quake-map"');
+    expect(html).toContain('<div>lat</div>');
+    expect(html).toContain('<div>14.1592</div>');
+    expect(html).toContain('<div>lon</div>');
+    expect(html).toContain('<div>-92.9052</div>');
+    expect(html).toContain('<div>mag</div>');
+    expect(html).toContain('<div>alert</div>');
+  });
+
+  it('omits the map alert row when the quake has no alert', () => {
+    const html = Mustache.render(detailTpl, minimalRecord);
+    expect(html).toContain('class="quake-map"');
+    expect(html).toContain('<div>51.3859</div>');
+    expect(html).toContain('<div>159.6116</div>');
+    expect(html).not.toContain('<div>alert</div>');
+  });
+
   it('renders every conditional row when the record has the data', () => {
     const html = Mustache.render(detailTpl, fullRecord);
     expect(html).toContain('<title>M 5.5 - 81 km SW of Puerto Madero, Mexico</title>');

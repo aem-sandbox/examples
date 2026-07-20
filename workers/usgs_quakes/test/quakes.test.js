@@ -67,11 +67,14 @@ describe('reshape', () => {
       path: '/extras/usgs-quakes/us7000t1tp',
       title: 'M 5.5 - 81 km SW of Puerto Madero, Mexico',
       mag: '5.5',
+      magClass: 'm5',
       magDisplay: '5.5 (mww)',
       place: '81 km SW of Puerto Madero, Mexico',
       timeISO: '2026-07-19T17:45:16.923Z',
       timeUTC: '2026-07-19 17:45 UTC',
       coords: '14.16°N, 92.91°W',
+      lat: '14.1592',
+      lon: '-92.9052',
       depthKm: '35 km',
       usgsUrl: 'https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1tp',
       alert: 'green',
@@ -135,6 +138,24 @@ describe('reshape', () => {
   it('flags tsunami only when the tsunami property equals 1', () => {
     expect(reshape(makeFeature({ tsunami: 1 })).tsunami).toBe('1');
     expect(reshape(makeFeature({ tsunami: 0 })).tsunami).toBeNull();
+  });
+
+  it('keeps raw lat and lon coordinate strings in [lon, lat, depth] order', () => {
+    const north = reshape(featureById(feed, 'us7000t1tp'));
+    expect(north.lat).toBe('14.1592');
+    expect(north.lon).toBe('-92.9052');
+    const south = reshape(featureById(feed, 'us7000t1q7'));
+    expect(south.lat).toBe('-12.0429');
+    expect(south.lon).toBe('-75.3013');
+  });
+
+  it('derives magClass by flooring and clamping the magnitude to m5..m7', () => {
+    expect(reshape(featureById(feed, 'us7000t1tp')).magClass).toBe('m5');
+    expect(reshape(featureById(feed, 'us7000t0d0')).magClass).toBe('m6');
+    expect(reshape(featureById(feed, 'us7000t1bu')).magClass).toBe('m7');
+    expect(reshape(makeFeature({ mag: 8.1 })).magClass).toBe('m7');
+    expect(reshape(makeFeature({ mag: 5.9 })).magClass).toBe('m5');
+    expect(reshape(makeFeature({ mag: 4.8 })).magClass).toBe('m5');
   });
 
   it('drops features with empty id, null magnitude, bad geometry, or illegal id', () => {
