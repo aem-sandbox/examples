@@ -82,12 +82,16 @@ async function createIcon(name) {
 }
 
 /**
+ * @param {Object<string, string>} placeholders localized strings, keyed by camelCase key
  * @returns {{url: string, title: string}} the current page's canonical URL and title
  */
-function getShareData() {
+function getShareData(placeholders) {
   const canonicalHref = document.querySelector('link[rel="canonical"]')?.href;
   const url = canonicalHref || window.location.href;
-  const title = document.querySelector('meta[property="og:title"]')?.content || document.title || 'Untitled page';
+  const title = document.querySelector('meta[property="og:title"]')?.content
+    || document.title
+    || placeholders.socialShareUntitledFallback
+    || 'Untitled page';
 
   return { url, title };
 }
@@ -121,7 +125,9 @@ async function copyToClipboard(text) {
 
 /**
  * Shows temporary success/error feedback on the copy button (icon + status text),
- * reverting to resetLabel after FEEDBACK_RESET_MS.
+ * reverting to resetLabel after FEEDBACK_RESET_MS. The reset timer is stashed on
+ * `block` and cleared before scheduling a new one, so rapid repeat clicks don't stack
+ * timers and reset the button mid-feedback.
  * @param {Element} block
  * @param {Element} button the copy button
  * @param {string} message
@@ -133,13 +139,15 @@ async function setCopyFeedback(block, button, message, iconName, resetLabel) {
   const status = block.querySelector('.social-share-status');
   const icon = button.querySelector('.social-share-icon');
 
+  clearTimeout(block.socialShareFeedbackTimer);
+
   block.classList.remove('is-copied', 'is-copy-error');
   block.classList.add(iconName === 'check' ? 'is-copied' : 'is-copy-error');
   button.setAttribute('aria-label', message);
   status.textContent = message;
   icon.replaceChildren(await createIcon(iconName));
 
-  window.setTimeout(async () => {
+  block.socialShareFeedbackTimer = window.setTimeout(async () => {
     block.classList.remove('is-copied', 'is-copy-error');
     button.setAttribute('aria-label', resetLabel);
     status.textContent = '';
@@ -159,7 +167,6 @@ async function buildAction(action, shareData, block, placeholders) {
   const label = placeholders[action.labelKey] || action.fallbackLabel;
   const item = createTag('li', { class: 'social-share-item' });
   const icon = createTag('span', { class: 'social-share-icon' }, await createIcon(action.icon));
-  const labelSpan = createTag('span', { class: 'social-share-sr-only' }, label);
 
   if (action.type === 'button') {
     const button = createTag('button', {
@@ -167,7 +174,7 @@ async function buildAction(action, shareData, block, placeholders) {
       type: 'button',
       'aria-label': label,
       title: label,
-    }, [icon, labelSpan]);
+    }, icon);
 
     if (action.id === 'copy') {
       button.addEventListener('click', async () => {
@@ -213,7 +220,7 @@ async function buildAction(action, shareData, block, placeholders) {
     rel: 'noopener noreferrer',
     'aria-label': label,
     title: label,
-  }, [icon, labelSpan]);
+  }, icon);
 
   item.append(link);
   return item;
@@ -229,7 +236,7 @@ async function buildAction(action, shareData, block, placeholders) {
 export default async function decorate(block) {
   const { prefix } = getLocale();
   const placeholders = await fetchPlaceholders(prefix || 'default');
-  const shareData = getShareData();
+  const shareData = getShareData(placeholders);
   const dock = createTag('nav', {
     class: 'social-share-dock',
     'aria-label': placeholders.socialShareDockLabel || 'Share this page',
