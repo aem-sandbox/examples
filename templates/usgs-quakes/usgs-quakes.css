@@ -1,0 +1,120 @@
+/* ==========================================================================
+   USGS quakes: overview list + detail facts
+   ========================================================================== */
+
+/* Detail: back link sits small, above the facts. Its link rule comes before the
+   overview list link rules so specificity stays ascending. */
+.usgs-quakes main .backlink {
+  margin: 0 0 var(--space-s);
+  font-size: var(--body-font-size-s);
+}
+
+.usgs-quakes main .backlink a {
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+}
+
+/* Overview list */
+.usgs-quakes main .quake-list {
+  max-width: 760px;
+  margin: var(--space-l) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.usgs-quakes main .quake-list li {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.usgs-quakes main .quake-list li > a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--radius-s);
+  color: var(--text-color);
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.3;
+  transition: background-color var(--transition-fast);
+}
+
+.usgs-quakes main .quake-list li > a:hover {
+  background-color: var(--color-hover-surface);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.usgs-quakes main .quake-mag {
+  flex: 0 0 auto;
+  width: 3.25rem;
+  padding: 3px 0;
+  border-radius: var(--radius-full);
+  background-color: #5b6b7a;
+  color: var(--color-light);
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
+.usgs-quakes main .quake-mag.m6 {
+  background-color: #b45309;
+}
+
+.usgs-quakes main .quake-mag.m7 {
+  background-color: #c62828;
+}
+
+.usgs-quakes main .quake-meta {
+  display: block;
+  margin: var(--space-xs) 0 var(--space-s);
+  padding-left: calc(3.25rem + 2 * var(--space-s));
+  font-size: var(--body-font-size-xs);
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+}
+
+/* Detail: one shared grid for the whole label/value list, so every value lines up
+   (mirrors the events columns fix) */
+.usgs-quakes .columns.usgs-quakes {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-s) var(--space-l);
+  align-items: baseline;
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-l) 0;
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--color-border);
+}
+
+.usgs-quakes .columns.usgs-quakes > div {
+  display: contents;
+}
+
+.usgs-quakes .columns.usgs-quakes > div > div:first-child {
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+}
+
+.usgs-quakes .columns.usgs-quakes > div > div:last-child {
+  font-size: var(--body-font-size-m);
+  color: var(--text-color);
+}
+
+/* USGS credit and generated timestamp, muted. The timestamp p has no class
+   after the pipeline, so it is targeted as the credit line's sibling. */
+.usgs-quakes main p:has(a[href*="earthquake-hazards"]) + p,
+.usgs-quakes main p:has(a[href*="earthquake-hazards"]) {
+  font-size: var(--body-font-size-xs);
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+}
+
+@media (width >= 900px) {
+  .usgs-quakes .columns.usgs-quakes {
+    gap: var(--space-m) var(--space-xl);
+  }
+}
