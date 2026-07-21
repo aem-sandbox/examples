@@ -90,8 +90,7 @@ function getShareData(placeholders) {
   const url = canonicalHref || window.location.href;
   const title = document.querySelector('meta[property="og:title"]')?.content
     || document.title
-    || placeholders.socialShareUntitledFallback
-    || 'Untitled page';
+    || placeholders.socialShareUntitledFallback;
 
   return { url, title };
 }
