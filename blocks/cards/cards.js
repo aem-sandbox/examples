@@ -13,6 +13,20 @@ import {
 const DEFAULT_LIMIT = 5;
 
 /**
+ * Decides whether a query-index image is a real image or the Edge Delivery
+ * default-meta-image placeholder. The pipeline fills the `image` column with
+ * `/default-meta-image.png` for pages that have no image; rendering it as a card
+ * image yields a broken img when the site has no such file.
+ * @param {string} image the `image` value from a query-index row
+ * @returns {boolean} true only for a real, page-specific image
+ */
+function hasRealCardImage(image) {
+  if (!image) return false;
+  const path = String(image).split('?')[0];
+  return !/(^|\/)default-meta-image\.png$/.test(path);
+}
+
+/**
  * Extracts a normalized pathname from an href, resolved against the current origin.
  * @param {string} href
  * @returns {string} the pathname, or '' if href can't be parsed as a URL
@@ -207,7 +221,7 @@ function buildCardRow(page) {
   const href = normalizePath(page.path);
   const cols = [];
 
-  if (page.image) {
+  if (hasRealCardImage(page.image)) {
     cols.push(createTag('div', {}, createTag('img', { src: page.image, alt: page.title || '' })));
   }
 
