@@ -1,0 +1,12 @@
+{
+  "name": "examples-usgs-quakes-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "mustache": "^4.2.0",
+    "vitest": "^3"
+  }
+}

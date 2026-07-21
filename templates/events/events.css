@@ -11,10 +11,12 @@
   color: light-dark(var(--color-gray-600), var(--color-gray-500));
 }
 
+/* one shared grid for the whole label/value list, so every value lines up */
 .events .columns.events {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-m);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-m) var(--space-l);
+  align-items: baseline;
   width: fit-content;
   max-width: 100%;
   margin: var(--space-l) auto 0;
@@ -23,12 +25,7 @@
 }
 
 .events .columns.events > div {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-xs) var(--space-l);
-  align-items: baseline;
-  width: 100%;
-  min-width: 0;
+  display: contents;
 }
 
 .events .columns.events > div > div {
@@ -43,6 +40,7 @@
   letter-spacing: 2px;
   color: light-dark(var(--color-brand), var(--color-blue-400));
   white-space: nowrap;
+  text-align: right;
 }
 
 .events .columns.events > div > div:last-child {
@@ -54,10 +52,9 @@
   text-overflow: ellipsis;
 }
 
-.events .section.divider.align-center > .columns.events + p {
-  max-width: none;
-  margin: var(--space-l) auto 0;
-  color: inherit;
+/* space between the details block and the Register CTA (they sit in separate wrappers) */
+.events .columns-wrapper + .default-content-wrapper {
+  margin-top: var(--space-2xl);
 }
 
 .events #other-events {
@@ -78,9 +75,5 @@
   .events .columns.events {
     gap: var(--space-m) var(--space-xl);
     padding-top: var(--space-xl);
-  }
-
-  .events .columns.events > div {
-    gap: var(--space-xs) var(--space-xl);
   }
 }

@@ -12,4 +12,6 @@ jobs:
         node-version: 24
     - run: npm ci
     - run: npm install --prefix workers/cdn
+    - run: npm install --prefix workers/usgs_quakes
     - run: npm run lint
+    - run: npm test --prefix workers/usgs_quakes

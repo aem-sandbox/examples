@@ -1,0 +1,30 @@
+<head>
+  <title>Recent Earthquakes</title>
+  <meta name="description" content="Earthquakes of magnitude {{minMagnitude}}+ worldwide in the last {{windowDays}} days, generated from USGS data.">
+  <meta name="keywords" content="usgs-quakes">
+  <meta name="template" content="usgs-quakes">
+</head>
+<body>
+  <header></header>
+  <main>
+    <div>
+      <h1 id="recent-earthquakes">Recent Earthquakes</h1>
+      <p>Magnitude {{minMagnitude}}+ earthquakes worldwide from the last {{windowDays}} days. {{count}} quakes in the current window. These pages update automatically as USGS revises the data.</p>
+    </div>
+    <div>
+      <ul class="quake-list">
+        {{#data}}
+        <li><a href="{{{path}}}"><strong>M {{mag}}</strong> {{#place}}{{place}}{{/place}}{{^place}}Location pending review{{/place}}</a> <em>{{timeUTC}} · {{depthKm}}</em></li>
+        {{/data}}
+      </ul>
+      {{^data}}
+      <p>No earthquakes in the current window.</p>
+      {{/data}}
+    </div>
+    <div>
+      <p>Data: <a href="https://www.usgs.gov/programs/earthquake-hazards">U.S. Geological Survey</a></p>
+      <p class="generated">Generated {{generated}}.</p>
+    </div>
+  </main>
+  <footer></footer>
+</body>
