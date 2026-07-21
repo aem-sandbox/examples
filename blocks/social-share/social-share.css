@@ -5,6 +5,7 @@
   inset-block-start: 50%;
   inset-inline-end: clamp(10px, 1.8vw, 24px);
   transform: translateY(-50%);
+
   /* Below modal (1400) and auth-toggle (10050), so both correctly cover this dock
      when open; there's no first-party fixed-position consent/cookie banner in this
      project to check against. Keep any new fixed-position UI's z-index in mind. */
