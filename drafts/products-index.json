@@ -1,0 +1,62 @@
+{
+  "total": 8,
+  "offset": 0,
+  "limit": 8,
+  "data": [
+    {
+      "path": "/products/apex-road-racer",
+      "name": "Apex Road Racer",
+      "category": "Road",
+      "price": "3299",
+      "image": "https://picsum.photos/seed/apex-road-racer/800/600"
+    },
+    {
+      "path": "/products/gravel-trail-explorer",
+      "name": "Gravel Trail Explorer",
+      "category": "Gravel",
+      "price": "1899",
+      "image": "https://picsum.photos/seed/gravel-trail-explorer/800/600"
+    },
+    {
+      "path": "/products/metro-city-cruiser",
+      "name": "Metro City Cruiser",
+      "category": "City",
+      "price": "899",
+      "image": "https://picsum.photos/seed/metro-city-cruiser/800/600"
+    },
+    {
+      "path": "/products/rockslide-mountain-trail",
+      "name": "Rockslide Mountain Trail",
+      "category": "Mountain",
+      "price": "1799"
+    },
+    {
+      "path": "/products/summit-mountain-pro",
+      "name": "Summit Mountain Pro",
+      "category": "Mountain",
+      "price": "4199",
+      "image": "https://picsum.photos/seed/summit-mountain-pro/800/600"
+    },
+    {
+      "path": "/products/velocity-road-sprint",
+      "name": "Velocity Road Sprint",
+      "category": "Road",
+      "price": "2450",
+      "image": "https://picsum.photos/seed/velocity-road-sprint/800/600"
+    },
+    {
+      "path": "/products/volt-e-bike-commuter",
+      "name": "Volt E-Bike Commuter",
+      "category": "E-Bike",
+      "price": "2999",
+      "image": "https://picsum.photos/seed/volt-e-bike-commuter/800/600"
+    },
+    {
+      "path": "/products/wanderer-gravel-adventure",
+      "name": "Wanderer Gravel Adventure",
+      "category": "Gravel",
+      "price": "1650",
+      "image": "https://picsum.photos/seed/wanderer-gravel-adventure/800/600"
+    }
+  ]
+}

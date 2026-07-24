@@ -1,0 +1,88 @@
+/* Hero: same block markup as events, shown only when a product has {{image}} */
+.products .hero {
+  min-height: 280px;
+}
+
+/* Facts grid (.columns.products) and specs grid (.columns.products-specs): same
+   shared label/value layout as events' .columns.events, so every value lines up.
+   Row/cell rules are shared between the two grids; only container spacing differs. */
+.products .columns.products,
+.products .columns.products-specs {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.products .columns.products {
+  gap: var(--space-m) var(--space-l);
+  margin: var(--space-l) auto 0;
+  padding-top: var(--space-l);
+  border-top: 1px solid var(--color-border);
+}
+
+.products .columns.products-specs {
+  gap: var(--space-s) var(--space-l);
+}
+
+.products .columns.products > div,
+.products .columns.products-specs > div {
+  display: contents;
+}
+
+.products .columns.products ul {
+  margin: 0;
+  padding-inline-start: 1.1em;
+}
+
+.products .columns.products > div > div,
+.products .columns.products-specs > div > div {
+  order: unset;
+  min-width: 0;
+}
+
+.products .columns.products > div > div:first-child,
+.products .columns.products-specs > div > div:first-child {
+  font-size: var(--body-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  color: light-dark(var(--color-brand), var(--color-blue-400));
+  text-align: right;
+}
+
+.products .columns.products > div > div:last-child,
+.products .columns.products-specs > div > div:last-child {
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.35;
+  color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.products #faqs {
+  margin-bottom: var(--space-m);
+}
+
+.products #more-products {
+  margin-bottom: var(--space-l);
+  text-align: center;
+}
+
+@media (width >= 900px) {
+  .products .hero {
+    min-height: 420px;
+  }
+
+  .products .columns.products {
+    gap: var(--space-m) var(--space-xl);
+    padding-top: var(--space-xl);
+  }
+
+  .products .columns.products-specs {
+    gap: var(--space-m) var(--space-xl);
+  }
+}
