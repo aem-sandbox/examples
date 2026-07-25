@@ -1,0 +1,102 @@
+.product {
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.product .product-hero {
+  display: grid;
+  gap: var(--space-l);
+  align-items: center;
+  margin-bottom: var(--space-l);
+}
+
+.product .product-media {
+  line-height: 0;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background-color: light-dark(var(--color-gray-100), var(--color-gray-900));
+}
+
+.product .product-media img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.product .product-heading h1 {
+  margin: 0 0 var(--space-xs);
+}
+
+.product .product-subtitle {
+  margin: 0;
+  font-size: var(--body-font-size-s);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.product .product-description {
+  font-size: var(--body-font-size-m);
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+  margin-bottom: var(--space-l);
+}
+
+.product .product-facts,
+.product .product-specs {
+  display: grid;
+  gap: 0;
+  margin: 0 0 var(--space-l);
+  border-top: 1px solid var(--color-border);
+}
+
+.product .product-fact {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: var(--space-m);
+  margin: 0;
+  padding: var(--space-s) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.product .product-fact dt {
+  margin: 0;
+  font-weight: 600;
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+.product .product-fact dd {
+  margin: 0;
+}
+
+.product h2 {
+  margin: var(--space-l) 0 var(--space-s);
+  padding-top: var(--space-m);
+  border-top: 2px solid var(--color-border);
+}
+
+.product .product-faq {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-s) 0;
+}
+
+.product .product-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.product .product-faq > div {
+  margin-top: var(--space-s);
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+@media (width >= 900px) {
+  .product .product-hero {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .product .product-hero-noimage {
+    grid-template-columns: 1fr;
+  }
+}
