@@ -1,0 +1,20 @@
+{
+  "total": 1,
+  "limit": 1,
+  "offset": 0,
+  "data": [
+    {
+      "id": "document-authoring-best-practices",
+      "path": "/events/document-authoring-best-practices",
+      "title": "Document Authoring Best Practices for Scalable Sites",
+      "description": "Guidelines for structuring content in DA, including schema design, metadata modeling, and reusable content patterns.",
+      "date": "2026-08-02",
+      "image": "https://examples.bbird.live/events/media_1dee8903fd2c0a29d36949c55504216a18b1fb632.jpg",
+      "type": "Training",
+      "time": "",
+      "location": "Adobe San Jose Campus",
+      "ahref": "/contact-us"
+    }
+  ],
+  ":type": "sheet"
+}

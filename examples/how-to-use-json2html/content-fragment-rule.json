@@ -1,0 +1,10 @@
+{
+  "path": "/adventures/",
+  "endpoint": "https://author-p1234-e5678.adobeaemcloud.com/graphql/execute.json/wknd-shared/adventure-by-slug;slug={{id}}",
+  "regex": "/[^/]+$/",
+  "template": "/templates/adventures/adventure.html",
+  "forwardHeaders": [
+    "Authorization"
+  ],
+  "useAEMMapping": true
+}
