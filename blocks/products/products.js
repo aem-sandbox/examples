@@ -1,7 +1,7 @@
 import { createOptimizedPicture, readBlockConfig, toClassName } from '../../scripts/aem.js';
 import { createTag, QUERY_INDEX_PAGE_SIZE } from '../../scripts/shared.js';
 
-const DEFAULT_SOURCE = '/products-index.json';
+const PRODUCTS_INDEX_PATH = '/products-index.json';
 const DEFAULT_LIMIT = 24;
 const DEFAULT_SORT = 'name';
 const SORT_VALUES = ['name', 'price-asc', 'price-desc', 'category'];
@@ -13,16 +13,14 @@ const priceFormatter = new Intl.NumberFormat('en-US', {
 });
 
 /**
- * Fetches one page of a product index. Adapted from shared.js's fetchQueryIndexPage,
- * which hardcodes /query-index.json; this takes the index path as a parameter so the
- * block can point at an author-supplied source.
+ * Fetches one page of the product index. Adapted from shared.js's fetchQueryIndexPage,
+ * which reads /query-index.json.
  * @param {number} offset
  * @param {number} limit
- * @param {string} source index path, e.g. /products-index.json
  * @returns {Promise<Array<Object>>}
  */
-async function fetchProductsIndexPage(offset, limit, source) {
-  const resp = await fetch(`${source}?offset=${offset}&limit=${limit}`);
+async function fetchProductsIndexPage(offset, limit) {
+  const resp = await fetch(`${PRODUCTS_INDEX_PATH}?offset=${offset}&limit=${limit}`);
   if (!resp.ok) throw new Error(`Products index request failed: ${resp.status}`);
   const json = await resp.json();
   return json?.data || [];
@@ -32,16 +30,15 @@ async function fetchProductsIndexPage(offset, limit, source) {
  * Fetches the full product index across pages. Product catalogs are expected to be
  * small-to-moderate, so this fetches everything eagerly: category chip counts need
  * the true totals, not just enough rows to fill one page.
- * @param {string} source index path
  * @returns {Promise<Array<Object>>}
  */
-async function fetchAllProductRows(source) {
+async function fetchAllProductRows() {
   const rows = [];
   let offset = 0;
   let hasMore = true;
   while (hasMore) {
     // eslint-disable-next-line no-await-in-loop
-    const batch = await fetchProductsIndexPage(offset, QUERY_INDEX_PAGE_SIZE, source);
+    const batch = await fetchProductsIndexPage(offset, QUERY_INDEX_PAGE_SIZE);
     offset += batch.length;
     hasMore = batch.length === QUERY_INDEX_PAGE_SIZE;
     rows.push(...batch);
@@ -69,11 +66,6 @@ function isValidProductRow(row) {
  */
 function productPath(row) {
   return row.path || `/products/${row.slug}`;
-}
-
-function parseSource(raw) {
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  return String(value || '').trim() || DEFAULT_SOURCE;
 }
 
 function parseCategoriesOverride(raw) {
@@ -184,7 +176,6 @@ function sortProductRows(rows, sort) {
  */
 export default async function decorate(block) {
   const config = readBlockConfig(block);
-  const source = parseSource(config.source);
   const categoriesOverride = parseCategoriesOverride(config.categories);
   const pageSize = parseLimit(config.limit);
   const initialSort = parseSort(config.sort);
@@ -241,7 +232,7 @@ export default async function decorate(block) {
   block.append(controls, resultsWrap);
 
   try {
-    const rawRows = await fetchAllProductRows(source);
+    const rawRows = await fetchAllProductRows();
     const seen = new Set();
     state.rows = rawRows.filter((row) => {
       if (!isValidProductRow(row)) return false;
