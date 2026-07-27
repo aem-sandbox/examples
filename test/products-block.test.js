@@ -18,6 +18,10 @@ const INDEX = {
     {
       path: '/products', name: '', category: '', price: '',
     },
+    // A named row with no path. There is no `slug` column, so it has no href.
+    {
+      name: 'Ghost Bike', slug: 'ghost-bike', category: 'Road', price: '1',
+    },
   ],
 };
 
@@ -47,6 +51,14 @@ describe('products listing block', () => {
     const block = await render();
     expect(requested[0]).toMatch(/^\/products-index\.json\?/);
     expect(block.querySelectorAll('.product-card')).toHaveLength(2);
+  });
+
+  it('drops a row without a path', async () => {
+    // The index defines name, category, price and image. A row without `path`
+    // cannot produce a card href, and `slug` is not a column.
+    const block = await render();
+    const hrefs = [...block.querySelectorAll('.product-card-link')].map((a) => a.getAttribute('href'));
+    expect(hrefs).toEqual(['/products/apex-road-racer', '/products/metro-city-cruiser']);
   });
 
   it('ignores a source row in the block config', async () => {
