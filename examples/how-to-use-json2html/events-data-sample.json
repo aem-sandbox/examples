@@ -1,6 +1,6 @@
 {
-  "total": 1,
-  "limit": 1,
+  "total": 7,
+  "limit": 7,
   "offset": 0,
   "data": [
     {
@@ -14,6 +14,78 @@
       "time": "",
       "location": "Adobe San Jose Campus",
       "ahref": "/contact-us"
+    },
+    {
+      "id": "eds-platform-deep-dive",
+      "path": "/events/eds-platform-deep-dive",
+      "title": "Edge Delivery Services Platform Deep Dive",
+      "description": "A technical walkthrough of AEM Edge Delivery Services architecture, including document authoring, JSON-based delivery models, and edge rendering strategies",
+      "date": "2026-07-10",
+      "image": "https://examples.bbird.live/events/media_1a6ac587075cbf3c9d7535091b8a5242c0c29807c.jpg",
+      "type": "",
+      "time": "",
+      "location": "",
+      "ahref": ""
+    },
+    {
+      "id": "json2html-rendering-workshop",
+      "path": "/events/json2html-rendering-workshop",
+      "title": "JSON2HTML Rendering Workshop for Edge Delivery Services",
+      "description": "Hands-on session demonstrating how JSON2HTML transforms API-driven content into semantic HTML using Mustache templates and overlay configuration.",
+      "date": "2026-07-22",
+      "image": "https://examples.bbird.live/events/media_1af2982479d38bb267356ca94edd124b66b4a67b9.jpg",
+      "type": "Workshop",
+      "time": "14:00 (Local time)",
+      "location": "Online",
+      "ahref": "/contact-us"
+    },
+    {
+      "id": "eds-performance-optimization",
+      "path": "/events/eds-performance-optimization",
+      "title": "Performance Optimization in Edge Delivery Sites",
+      "description": "Learn how Edge Delivery Services achieves high Lighthouse scores through edge rendering, caching strategies, and minimal client-side hydration.",
+      "date": "2026-07-28",
+      "image": "https://examples.bbird.live/events/media_19edc15eb03a8882096afaf331873aef94ad22e72.jpg",
+      "type": "Webinar",
+      "time": "11:00 (Local time)",
+      "location": "",
+      "ahref": ""
+    },
+    {
+      "id": "edge-delivery-integration-patterns",
+      "path": "/events/edge-delivery-integration-patterns",
+      "title": "Integration Patterns for Edge Delivery Services",
+      "description": "Architectural patterns for connecting APIs, spreadsheets, and legacy CMS systems into Edge Delivery pipelines.",
+      "date": "2026-08-08",
+      "image": "https://examples.bbird.live/events/media_10edf9ae323fe142cd7eac764ada2c90107a2d39f.jpg",
+      "type": "",
+      "time": "09:30 (Local time)",
+      "location": "Online",
+      "ahref": ""
+    },
+    {
+      "id": "aem-migration-modernization-pathways",
+      "path": "/events/aem-migration-modernization-pathways",
+      "title": "AEM Migration & Modernization Pathways",
+      "description": "Explore strategies for moving from legacy AEM implementations to Edge Delivery Services with minimal disruption.",
+      "date": "2026-08-18",
+      "image": "https://examples.bbird.live/events/media_1b10a3a12bb91ea3dcc5ebb5768bd8df2c0c325ba.jpg",
+      "type": "Roundtable",
+      "time": "15:00 (Local time)",
+      "location": "Customer Experience Center, Basel",
+      "ahref": "/contact-us"
+    },
+    {
+      "id": "aem-reference-architecture-review",
+      "path": "/events/aem-reference-architecture-review",
+      "title": "AEM Reference Architecture Review Session",
+      "description": "A consolidated review of recommended architecture patterns for AEM Sites, Edge Delivery Services, and hybrid implementations.",
+      "date": "2026-08-28",
+      "image": "https://examples.bbird.live/events/media_1cc37114b7a8a610afe80ddaef180180677885154.jpg",
+      "type": "Session",
+      "time": "",
+      "location": "Online",
+      "ahref": ""
     }
   ],
   ":type": "sheet"
