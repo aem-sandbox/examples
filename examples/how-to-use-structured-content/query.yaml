@@ -1,0 +1,28 @@
+# Index definition for the Structured Content products example.
+#
+# Apply with the Admin API, or with the Index Admin tool at
+# https://tools.aem.live/tools/index-admin/index.html
+#
+#   curl -X POST https://admin.hlx.page/config/<ORG>/sites/<SITE>/content/query.yaml \
+#     -H 'authorization: token <admin-api-key>' \
+#     -H 'content-type: text/yaml' \
+#     --data-binary @query.yaml
+#
+# Selectors run against the record's published markup. Two rules:
+#   - The heading id is the property key lowercased. #weightKg matches nothing, #weightkg does.
+#   - Scope to the schema block. `div:has(#name)` also matches the section div and .product
+#     itself, and `select:` joins every match into one string.
+version: 1
+indices:
+  products:
+    target: /products-index.json
+    include: [ /products/** ]
+    exclude: [ "**/drafts/**" ]
+    properties:
+      name:     { select: ".product > div:has(#name) > div:last-child",     value: textContent(el) }
+      category: { select: ".product > div:has(#category) > div:last-child", value: textContent(el) }
+      price:    { select: ".product > div:has(#price) > div:last-child",    value: textContent(el) }
+      image:    { select: ".product > div:has(#image) > div:last-child",    value: textContent(el) }
+      # Optional. Reads the page head, not the record's markup. Add it to keep `noindex`
+      # records out of sitemap.xml, or to drop them client-side.
+      # robots: { select: 'head > meta[name="robots"]', value: attribute(el, "content") }
