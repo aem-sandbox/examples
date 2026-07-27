@@ -48,24 +48,22 @@ async function fetchAllProductRows() {
 
 /**
  * Replaces shared.js's isQueryableRow, which requires row.title; product rows have
- * row.name instead. Excludes noindex rows, same as isQueryableRow.
+ * row.name instead. The index also holds the /products page itself, as a row with an
+ * empty name.
  * @param {Object} row a product index row
  * @returns {boolean}
  */
 function isValidProductRow(row) {
-  if (!row?.name || !(row.path || row.slug)) return false;
-  const robots = String(row.robots || '').toLowerCase();
-  return !robots.includes('noindex');
+  return Boolean(row?.name && row.path);
 }
 
 /**
- * The product detail page path for a row. A query index always carries `path`;
- * `slug` is only present if selected as a column, so fall back to it.
+ * The product detail page path for a row. A query index always carries `path`.
  * @param {Object} row a product index row
  * @returns {string}
  */
 function productPath(row) {
-  return row.path || `/products/${row.slug}`;
+  return row.path;
 }
 
 function parseCategoriesOverride(raw) {
