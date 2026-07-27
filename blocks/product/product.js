@@ -57,6 +57,12 @@ export default function decorate(block) {
   const specs = resolveRefs(d.specs || [], 'specs', scope);
   const faqs = resolveRefs(d.faqs || [], 'faqs', scope);
 
+  // The pipeline takes the page title from the first heading, which is the .da-form schema-name
+  // row, so every record ships the same title. Swap in the product name, but leave a title an
+  // author set with a Metadata block alone. This fixes the tab, not the server-rendered meta.
+  const derived = scope.querySelector('.da-form h3')?.textContent.trim();
+  if (d.name && derived && document.title === derived) document.title = d.name;
+
   // remove the raw metadata block and the now-consumed sibling item blocks
   scope.querySelectorAll('.da-form, .specs, .faqs').forEach((el) => el.remove());
 
