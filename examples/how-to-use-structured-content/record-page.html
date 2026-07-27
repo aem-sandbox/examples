@@ -1,0 +1,28 @@
+<!--
+  What a Structured Content record serves, trimmed from
+  https://main--examples--aem-sandbox.aem.live/products/apex-road-racer.plain.html
+
+  Four things to read off it:
+    - .da-form and .product are siblings, not nested. So are the .specs blocks.
+    - The heading id is the property key lowercased. weightKg is id="weightkg".
+      The heading text keeps the original spelling, so read keys from the label cell.
+    - Arrays of objects are not inline. The parent cell holds self://#specs-wuvstu refs,
+      and each ref names a sibling block's class, not an id.
+    - Booleans and numbers are text.
+-->
+<div class="da-form">
+  <div><div><h3 id="x-schema-name">x-schema-name</h3></div><div>product</div></div>
+  <div><div><h3 id="title">title</h3></div><div>Apex Road Racer</div></div>
+</div>
+<div class="product">
+  <div><div><h3 id="name">name</h3></div><div>Apex Road Racer</div></div>
+  <div><div><h3 id="category">category</h3></div><div>Road</div></div>
+  <div><div><h3 id="weightkg">weightKg</h3></div><div>7.8</div></div>
+  <div><div><h3 id="electric">electric</h3></div><div>false</div></div>
+  <div><div><h3 id="framesizes">frameSizes</h3></div><div><ul><li>49</li><li>52</li></ul></div></div>
+  <div><div><h3 id="specs">specs</h3></div><div><ul><li>self://#specs-wuvstu</li></ul></div></div>
+</div>
+<div class="specs specs-wuvstu">
+  <div><div><h3 id="label">label</h3></div><div>Frame</div></div>
+  <div><div><h3 id="value">value</h3></div><div>T900 carbon fiber, disc brake</div></div>
+</div>

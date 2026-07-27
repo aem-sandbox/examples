@@ -1,0 +1,13 @@
+{
+  "name": "examples-block-tests",
+  "private": true,
+  "type": "module",
+  "description": "Unit tests for blocks in the root package. Kept self-contained so the root package stays dependency-free.",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "happy-dom": "^20",
+    "vitest": "^3"
+  }
+}

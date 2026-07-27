@@ -1,0 +1,42 @@
+{
+  "$defs": {
+    "Spec": {
+      "type": "object",
+      "title": "Spec row",
+      "required": ["label", "value"],
+      "properties": {
+        "label": { "type": "string", "title": "Label" },
+        "value": { "type": "string", "title": "Value" }
+      }
+    },
+    "Faq": {
+      "type": "object",
+      "title": "FAQ",
+      "required": ["question", "answer"],
+      "properties": {
+        "question": { "type": "string", "title": "Question" },
+        "answer": { "type": "string", "title": "Answer" }
+      }
+    }
+  },
+  "type": "object",
+  "title": "Product",
+  "required": ["name", "slug", "category", "price"],
+  "properties": {
+    "name": { "type": "string", "title": "Name" },
+    "slug": { "type": "string", "title": "Slug", "minLength": 3, "maxLength": 40, "pattern": "^[a-z0-9-]+$" },
+    "category": { "type": "string", "title": "Category", "enum": ["Road", "Gravel", "Mountain", "City", "E-Bike"] },
+    "description": { "type": "string", "title": "Description" },
+    "image": { "type": "string", "title": "Image URL" },
+    "price": { "type": "number", "title": "Price (USD)", "minimum": 0 },
+    "weightKg": { "type": "number", "title": "Weight (kg)", "minimum": 0 },
+    "gears": { "type": "integer", "title": "Gears", "minimum": 1, "maximum": 30 },
+    "electric": { "type": "boolean", "title": "Electric", "default": false },
+    "inStock": { "type": "boolean", "title": "In stock", "default": true },
+    "frameSizes": { "type": "array", "title": "Frame sizes", "minItems": 1, "items": { "type": "string", "title": "Size" } },
+    "colors": { "type": "array", "title": "Colors", "items": { "type": "string", "title": "Color" } },
+    "specs": { "type": "array", "title": "Specs", "items": { "$ref": "#/$defs/Spec" } },
+    "faqs": { "type": "array", "title": "FAQs", "items": { "$ref": "#/$defs/Faq" } },
+    "sku": { "type": "string", "title": "SKU", "readOnly": true }
+  }
+}

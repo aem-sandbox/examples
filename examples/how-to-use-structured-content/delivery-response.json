@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "schemaName": "product",
+    "title": "Apex Road Racer"
+  },
+  "data": {
+    "name": "Apex Road Racer",
+    "slug": "apex-road-racer",
+    "category": "Road",
+    "description": "A lightweight carbon race bike built for long climbs and fast group rides. Stiff enough to sprint, light enough to forget it's there on a five-hour day.",
+    "image": "https://picsum.photos/seed/apex-road-racer/800/600",
+    "price": 3299,
+    "weightKg": 7.8,
+    "gears": 22,
+    "electric": false,
+    "inStock": true,
+    "frameSizes": [
+      49,
+      52,
+      54,
+      56,
+      58
+    ],
+    "colors": [
+      "Gloss Black",
+      "Racing Red",
+      "Arctic White"
+    ],
+    "specs": [
+      {
+        "label": "Frame",
+        "value": "T900 carbon fiber, disc brake"
+      },
+      {
+        "label": "Groupset",
+        "value": "Shimano 105 Di2, 2x11"
+      },
+      {
+        "label": "Wheels",
+        "value": "700c, tubeless-ready alloy"
+      },
+      {
+        "label": "Brakes",
+        "value": "Hydraulic disc, 160mm rotors"
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Is this bike tubeless-ready?",
+        "answer": "Yes, both wheels come taped and ready for tubeless tires and sealant."
+      },
+      {
+        "question": "What's the max tire clearance?",
+        "answer": "32mm, enough for light gravel without rubbing."
+      }
+    ],
+    "sku": "RB-APEX-2026"
+  }
+}
