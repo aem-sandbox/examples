@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/extras/usgs-quakes/",
+    "endpoint": "https://examples-bbird-usgs-quakes.aem-poc-lab.workers.dev/",
+    "arrayKey": "data",
+    "pathKey": "path",
+    "template": "/templates/usgs-quakes/detail.html"
+  },
+  {
+    "path": "/extras/usgs-quakes",
+    "endpoint": "https://examples-bbird-usgs-quakes.aem-poc-lab.workers.dev/",
+    "template": "/templates/usgs-quakes/overview.html"
+  }
+]

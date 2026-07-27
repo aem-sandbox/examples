@@ -1,0 +1,9 @@
+[
+  {
+    "path": "/events/",
+    "endpoint": "https://main--examples--aem-sandbox.aem.live/events-data.json",
+    "arrayKey": "data",
+    "pathKey": "path",
+    "template": "/templates/events/events.html"
+  }
+]

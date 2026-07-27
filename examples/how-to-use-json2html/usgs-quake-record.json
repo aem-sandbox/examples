@@ -1,0 +1,21 @@
+{
+  "id": "us7000t3m7",
+  "path": "/extras/usgs-quakes/us7000t3m7",
+  "title": "M 5.4 - 82 km SSW of San Pedro de Atacama, Chile",
+  "mag": "5.4",
+  "magDisplay": "5.4 (mb)",
+  "place": "82 km SSW of San Pedro de Atacama, Chile",
+  "timeISO": "2026-07-27T08:57:43.758Z",
+  "timeUTC": "2026-07-27 08:57 UTC",
+  "coords": "23.55°S, 68.63°W",
+  "lat": "-23.5454",
+  "lon": "-68.633",
+  "depthKm": "107 km",
+  "usgsUrl": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3m7",
+  "alert": "green",
+  "felt": "3 felt reports",
+  "tsunami": null,
+  "status": "reviewed",
+  "updated": 1785150707344,
+  "description": "Magnitude 5.4 earthquake, 82 km SSW of San Pedro de Atacama, Chile, 2026-07-27 08:57 UTC."
+}
