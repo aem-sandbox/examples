@@ -45,6 +45,8 @@ describe('product detail block', () => {
 
   beforeEach(() => {
     document.body.innerHTML = RECORD;
+    // What the pipeline derives from the first heading, the .da-form schema-name row.
+    document.title = 'x-schema-name';
     block = document.querySelector('.product');
     decorate(block);
   });
@@ -71,5 +73,18 @@ describe('product detail block', () => {
   it('keeps the fields whose key is already lowercase', () => {
     expect(block.querySelector('h1').textContent).toBe('Apex Road Racer');
     expect(factPairs(block)).toContainEqual(['Price', '$3299 USD']);
+  });
+
+  it('replaces the derived schema-name title with the product name', () => {
+    expect(document.title).toBe('Apex Road Racer');
+  });
+});
+
+describe('product detail block, authored title', () => {
+  it('leaves a title that did not come from the schema-name row', () => {
+    document.body.innerHTML = RECORD;
+    document.title = 'Apex Road Racer | Bikes';
+    decorate(document.querySelector('.product'));
+    expect(document.title).toBe('Apex Road Racer | Bikes');
   });
 });
