@@ -245,7 +245,9 @@ export default async function decorate(block) {
     return;
   }
 
-  const categoryCounts = new Map();
+  } catch (error) {
+    // eslint-disable-next-line no-console -- helpful for debugging index fetch failures
+    console.error('Failed to load products index:', error);
   state.rows.forEach((row) => {
     if (!row.category) return;
     const token = toClassName(row.category);
