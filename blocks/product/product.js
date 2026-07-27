@@ -5,6 +5,8 @@ import { createTag } from '../../scripts/shared.js';
  * Reads a Structured Content field block into a plain object. Each row is
  * `<div><div><h3 id=key>..</h3></div><div>value</div></div>`. Primitive arrays (`<ul><li>`) become
  * string arrays; `self://#id` list items are returned as ref ids for the caller to resolve.
+ * The key comes from the label text, not the heading id: ids are lowercased and de-duplicated
+ * document-wide, so `weightKg` becomes `weightkg` and a repeated `label` row becomes `label-1`.
  * @param {Element} block
  * @returns {Object}
  */
@@ -13,7 +15,8 @@ function readFieldBlock(block) {
   block.querySelectorAll(':scope > div').forEach((row) => {
     const cells = row.children;
     if (cells.length < 2) return;
-    const key = (cells[0].querySelector('h3')?.id) || cells[0].textContent.trim();
+    const key = cells[0].textContent.trim() || cells[0].querySelector('h3')?.id;
+    if (!key) return;
     const valueCell = cells[1];
     const list = valueCell.querySelector('ul');
     if (list) {
