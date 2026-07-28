@@ -3,7 +3,7 @@ import {
   createTag,
   fetchQueryIndexPage,
   formatDate,
-  getContentTimestamp,
+  getPublishedTimestamp,
   isQueryableRow,
   normalizePath,
   parseKeywords,
@@ -90,8 +90,10 @@ async function fetchSiblings(path, limit) {
     });
   }
 
+  // Newest first by the date the card shows, so republishing an old article does not
+  // move it to the top of every sibling's list under its original date.
   return siblings
-    .sort((a, b) => getContentTimestamp(b) - getContentTimestamp(a))
+    .sort((a, b) => getPublishedTimestamp(b) - getPublishedTimestamp(a))
     .slice(0, limit);
 }
 
@@ -122,7 +124,7 @@ function buildCardRow(page) {
   if (page.description) {
     body.append(createTag('p', { class: 'cards-card-description' }, page.description));
   }
-  const date = formatDate(page.date || page.lastModified);
+  const date = formatDate(getPublishedTimestamp(page));
   if (date) body.append(createTag('p', { class: 'cards-card-date' }, date));
   row.append(body);
 

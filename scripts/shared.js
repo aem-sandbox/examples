@@ -122,12 +122,24 @@ export function isQueryableRow(row) {
   return !robots.includes('noindex');
 }
 
-export function getContentTimestamp(entry = {}) {
-  const value = entry.lastModified || entry.date || entry.publisheddate;
+function toTimestamp(value) {
   if (!value) return 0;
   if (/^[0-9]+$/.test(String(value))) return Number(value);
   const parsed = Date.parse(String(value));
   return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/** When the document last changed. Republishing a typo fix moves this. */
+export function getContentTimestamp(entry = {}) {
+  return toTimestamp(entry.lastModified || entry.date || entry.publisheddate);
+}
+
+/**
+ * The authored publication date, in the order a card renders it. Sort with this
+ * wherever the same row shows its date, so the order matches what the reader sees.
+ */
+export function getPublishedTimestamp(entry = {}) {
+  return toTimestamp(entry.date || entry.publisheddate || entry.lastModified);
 }
 
 export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
