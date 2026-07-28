@@ -1,5 +1,16 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { createTag, formatDate } from '../../scripts/shared.js';
+import { decorateBlock, getMetadata, loadBlock } from '../../scripts/aem.js';
+import {
+  createTag,
+  fetchQueryIndexPage,
+  formatDate,
+  getContentTimestamp,
+  isQueryableRow,
+  normalizePath,
+  parseKeywords,
+  QUERY_INDEX_PAGE_SIZE,
+} from '../../scripts/shared.js';
+
+const RELATED_LIMIT = 3;
 
 function buildBreadcrumb(root = document) {
   const segments = window.location.pathname.split('/').filter(Boolean);
@@ -44,7 +55,106 @@ function buildAuthorDate() {
   return container;
 }
 
-export default function init(root = document) {
+function currentPath() {
+  return normalizePath(window.location.pathname).replace(/\/+$/, '') || '/';
+}
+
+// /learn/free/article-1 -> /learn/free/
+function folderOf(path) {
+  return path.slice(0, path.lastIndexOf('/') + 1) || '/';
+}
+
+// The folder is the join, so a /learn/free article never lists a /learn/premium one.
+// That is editorial, not a protection: query-index.json is public and carries every
+// published row, premium included.
+function isSibling(row, folder, path) {
+  if (!isQueryableRow(row)) return false;
+  const rowPath = normalizePath(row.path);
+  if (rowPath === path || !rowPath.startsWith(folder)) return false;
+  return !rowPath.slice(folder.length).includes('/');
+}
+
+async function fetchSiblings(path, limit) {
+  const folder = folderOf(path);
+  const siblings = [];
+  let offset = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    // eslint-disable-next-line no-await-in-loop
+    const batch = await fetchQueryIndexPage(offset, QUERY_INDEX_PAGE_SIZE);
+    offset += batch.length;
+    hasMore = batch.length === QUERY_INDEX_PAGE_SIZE;
+    batch.forEach((row) => {
+      if (isSibling(row, folder, path)) siblings.push(row);
+    });
+  }
+
+  return siblings
+    .sort((a, b) => getContentTimestamp(b) - getContentTimestamp(a))
+    .slice(0, limit);
+}
+
+// The pipeline fills `image` with /default-meta-image.png for pages that have none.
+function hasRealImage(image) {
+  if (!image) return false;
+  return !/(^|\/)default-meta-image\.png$/.test(String(image).split('?')[0]);
+}
+
+// One cards row in the shape the block reads from authored markup: an optional image
+// column, then a body column.
+function buildCardRow(page) {
+  const href = normalizePath(page.path);
+  const row = createTag('div');
+
+  if (hasRealImage(page.image)) {
+    row.append(createTag('div', {}, createTag('img', { src: page.image, alt: page.title || '' })));
+  }
+
+  const body = createTag('div');
+  const tag = parseKeywords(page.keywords ?? '')[0] || page.template;
+  if (tag) {
+    body.append(createTag('p', { class: 'cards-card-tag' }, String(tag).toUpperCase()));
+  }
+  body.append(createTag('h3', {}, createTag('a', { href }, page.title || href)));
+  if (page.description) {
+    body.append(createTag('p', { class: 'cards-card-description' }, page.description));
+  }
+  const date = formatDate(page.date || page.lastModified);
+  if (date) body.append(createTag('p', { class: 'cards-card-date' }, date));
+  row.append(body);
+
+  return row;
+}
+
+// Goes into the last section, not a new one: the template runs in the lazy phase after
+// the eager phase has loaded the first section, so this stays out of the LCP path.
+async function appendRelatedArticles(main) {
+  if (main.querySelector('.cards.related-articles')) return;
+
+  const section = main.querySelector(':scope > .section:last-child');
+  if (!section) return;
+
+  let siblings = [];
+  try {
+    siblings = await fetchSiblings(currentPath(), RELATED_LIMIT);
+  } catch {
+    return;
+  }
+  if (!siblings.length) return;
+
+  const heading = createTag('h2', { class: 'article-related-title' }, 'Related Articles');
+  section.append(createTag('div', { class: 'default-content-wrapper' }, heading));
+
+  const block = createTag('div', { class: 'cards related-articles' }, siblings.map(buildCardRow));
+  // decorateBlock classes the block's parent, so the block gets its own wrapper div
+  // rather than turning the section itself into the cards-wrapper.
+  section.append(createTag('div', {}, block));
+  decorateBlock(block);
+  await loadBlock(block);
+}
+
+export default async function init(root = document) {
   const main = root.querySelector('main');
   if (!main) return;
 
@@ -60,4 +170,6 @@ export default function init(root = document) {
     const authorDate = buildAuthorDate();
     if (authorDate) heroText.append(authorDate);
   }
+
+  await appendRelatedArticles(main);
 }

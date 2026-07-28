@@ -140,3 +140,15 @@
   letter-spacing: 0;
   color: var(--text-color);
 }
+
+/* Related articles: appended by the template into the last section, so it needs the
+   separation an authored section break would otherwise give it. */
+.article .article-related-title {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.article .cards.related-articles {
+  margin-top: var(--space-l);
+}
