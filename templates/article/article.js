@@ -127,13 +127,18 @@ function buildCardRow(page) {
   return row;
 }
 
-// Goes into the last section, not a new one: the template runs in the lazy phase after
-// the eager phase has loaded the first section, so this stays out of the LCP path.
-async function appendRelatedArticles(main) {
-  if (main.querySelector('.cards.related-articles')) return;
+const decorated = new WeakSet();
+
+// Goes into the last section, not a new one. Exported so `init` can start it without
+// awaiting it, and so the tests can await it.
+export async function appendRelatedArticles(main) {
+  if (decorated.has(main) || main.querySelector('.cards.related-articles')) return;
 
   const section = main.querySelector(':scope > .section:last-child');
   if (!section) return;
+
+  // Claimed before the first await, so two overlapping runs append one block.
+  decorated.add(main);
 
   let siblings = [];
   try {
@@ -154,7 +159,7 @@ async function appendRelatedArticles(main) {
   await loadBlock(block);
 }
 
-export default async function init(root = document) {
+export default function init(root = document) {
   const main = root.querySelector('main');
   if (!main) return;
 
@@ -171,5 +176,9 @@ export default async function init(root = document) {
     if (authorDate) heroText.append(authorDate);
   }
 
-  await appendRelatedArticles(main);
+  // Started, not awaited. scripts.js awaits this function, and the sections after the
+  // hero stay hidden until it returns, so a query-index round trip in here would hold
+  // the article body, the footer and the fonts. The block fills itself in when the
+  // index resolves; a failure leaves the page as it is.
+  appendRelatedArticles(main).catch(() => {});
 }
