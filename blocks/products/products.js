@@ -239,15 +239,15 @@ export default async function decorate(block) {
       seen.add(key);
       return true;
     });
-  } catch {
+  } catch (error) {
+    // eslint-disable-next-line no-console -- helpful for debugging index fetch failures
+    console.error('Failed to load products index:', error);
     block.textContent = '';
     block.append(createTag('p', { class: 'products-empty' }, 'Unable to load products right now.'));
     return;
   }
 
-  } catch (error) {
-    // eslint-disable-next-line no-console -- helpful for debugging index fetch failures
-    console.error('Failed to load products index:', error);
+  const categoryCounts = new Map();
   state.rows.forEach((row) => {
     if (!row.category) return;
     const token = toClassName(row.category);
