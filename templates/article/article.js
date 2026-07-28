@@ -64,14 +64,23 @@ function folderOf(path) {
   return path.slice(0, path.lastIndexOf('/') + 1) || '/';
 }
 
-// The folder is the join, so a /learn/free article never lists a /learn/premium one.
-// That is editorial, not a protection: query-index.json is public and carries every
-// published row, premium included.
-function isSibling(row, folder, path) {
+// /learn/free/article-1 -> /learn/ : the section, one level above the article's own
+// folder, so free and premium articles list each other. Premium ones are marked.
+function sectionRootOf(path) {
+  return folderOf(folderOf(path).replace(/\/+$/, ''));
+}
+
+function depthOf(path) {
+  return path.split('/').filter(Boolean).length;
+}
+
+// Depth, not the `template` column: the index reports template=article for the /learn/free
+// landing page, which carries no template metadata. Depth is something the path controls.
+function isRelated(row, sectionRoot, path, depth) {
   if (!isQueryableRow(row)) return false;
   const rowPath = normalizePath(row.path);
-  if (rowPath === path || !rowPath.startsWith(folder)) return false;
-  return !rowPath.slice(folder.length).includes('/');
+  if (rowPath === path || !rowPath.startsWith(sectionRoot)) return false;
+  return depthOf(rowPath) === depth;
 }
 
 // One flat index covers the whole site, and it carries no folder filter, so picking the
@@ -79,7 +88,8 @@ function isSibling(row, folder, path) {
 // why this runs off the critical path. A site large enough to feel it should publish a
 // folder-scoped index (see https://www.aem.live/developer/indexing) and read that instead.
 async function fetchSiblings(path, limit) {
-  const folder = folderOf(path);
+  const sectionRoot = sectionRootOf(path);
+  const depth = depthOf(path);
   const siblings = [];
   let offset = 0;
   let hasMore = true;
@@ -90,7 +100,7 @@ async function fetchSiblings(path, limit) {
     offset += data.length;
     hasMore = total ? offset < total : data.length === QUERY_INDEX_PAGE_SIZE;
     data.forEach((row) => {
-      if (isSibling(row, folder, path)) siblings.push(row);
+      if (isRelated(row, sectionRoot, path, depth)) siblings.push(row);
     });
   }
 
@@ -120,9 +130,14 @@ function buildCardRow(page) {
   }
 
   const body = createTag('div');
-  const tag = parseKeywords(page.keywords ?? '')[0] || page.template;
+  // `gated` comes from the index, so the label does not depend on an author remembering
+  // the keyword. The marker is a word, not a colour, and it goes inside the body: the
+  // cards block overwrites the class of every column div it moves.
+  const isGated = String(page.gated).toLowerCase() === 'true';
+  const tag = isGated ? 'premium' : parseKeywords(page.keywords ?? '')[0] || page.template;
   if (tag) {
-    body.append(createTag('p', { class: 'cards-card-tag' }, String(tag).toUpperCase()));
+    const tagClass = isGated ? 'cards-card-tag related-articles-premium' : 'cards-card-tag';
+    body.append(createTag('p', { class: tagClass }, String(tag).toUpperCase()));
   }
   body.append(createTag('h3', {}, createTag('a', { href }, page.title || href)));
   if (page.description) {
