@@ -53,6 +53,7 @@ const BODY = `
 const JAN_21 = '1769000000';
 const FEB_24 = '1771949580';
 const MAR_3 = '1772554380';
+const MAR_7 = '1772899980';
 const MAR_10 = '1773159180';
 
 const row = (path, title, extra = {}) => ({
@@ -79,7 +80,7 @@ const premium = (path, title, extra = {}) => row(path, title, {
 const INDEX = [
   row('/learn', 'Learn', { template: '', keywords: ['others'] }),
   // The index claims template=article for this landing page while the page itself carries no
-  // template metadata. Filtering on the folder rather than on `template` sidesteps the bad row.
+  // template metadata. Filtering on path depth rather than on `template` sidesteps the bad row.
   row('/learn/free', 'Free Content', { keywords: ['others'] }),
   row('/learn/free/article-1', 'Article 1 Title'),
   row('/learn/free/article-2', 'Article 2 Title', { date: FEB_24, lastModified: '1780677400' }),
@@ -91,7 +92,9 @@ const INDEX = [
   row('/learn/premium', 'Premium Content', { keywords: ['others'] }),
   premium('/learn/premium/article-4', 'Article 4 Title'),
   premium('/learn/premium/article-5', 'Article 5 Title', { date: FEB_24, lastModified: '1780677400' }),
-  premium('/learn/premium/article-6', 'Article 6 Title', { date: MAR_3 }),
+  // Newer than every free article but article-8, so a free article's top three has to hold
+  // it once premium articles are listed.
+  premium('/learn/premium/article-6', 'Article 6 Title', { date: MAR_7 }),
   row('/products/coffee-maker', 'Coffee Maker', { keywords: ['products'] }),
 ];
 
@@ -197,11 +200,11 @@ describe('article template related articles', () => {
   it('orders the cards by the date they display, newest first', async () => {
     await render('/learn/free/article-1');
 
-    expect(relatedDates()).toEqual(['March 10, 2026', 'March 3, 2026', 'February 24, 2026']);
+    expect(relatedDates()).toEqual(['March 10, 2026', 'March 7, 2026', 'March 3, 2026']);
     expect(relatedHrefs()).toEqual([
       '/learn/free/article-8',
+      '/learn/premium/article-6',
       '/learn/free/article-3',
-      '/learn/free/article-2',
     ]);
   });
 
@@ -219,20 +222,46 @@ describe('article template related articles', () => {
     expect(relatedHrefs()).not.toContain('/learn/free/article-1');
   });
 
-  it('lists only same-folder siblings, so a free article never links a premium one', async () => {
+  it('lists premium articles on a free article, rather than hiding them', async () => {
     await render('/learn/free/article-1');
 
-    expect(relatedHrefs().some((href) => href.startsWith('/learn/premium'))).toBe(false);
-    expect(relatedHrefs()).not.toContain('/learn/free');
+    expect(relatedHrefs()).toContain('/learn/premium/article-6');
   });
 
-  it('lists only premium siblings on a premium article', async () => {
+  it('lists free articles on a premium article', async () => {
     await render('/learn/premium/article-4');
 
-    expect(relatedHrefs()).toEqual(['/learn/premium/article-6', '/learn/premium/article-5']);
+    expect(relatedHrefs()).toContain('/learn/free/article-8');
+    expect(relatedHrefs()).not.toContain('/learn/premium/article-4');
   });
 
-  it('appends nothing when the folder holds no other pages', async () => {
+  it('marks a premium card and leaves a free one unmarked', async () => {
+    await render('/learn/free/article-1');
+
+    const cards = [...related().querySelectorAll(':scope > div')];
+    const byHref = (href) => cards
+      .find((card) => card.querySelector(`h3 > a[href="${href}"]`));
+
+    const premiumCard = byHref('/learn/premium/article-6');
+    const premiumTag = premiumCard.querySelector('.cards-card-tag');
+    // The marker is text, not colour alone, and it sits inside the body column because
+    // decorateCards overwrites the class of every column div.
+    expect(premiumTag.textContent).toBe('PREMIUM');
+    expect(premiumTag.classList.contains('related-articles-premium')).toBe(true);
+
+    const freeTag = byHref('/learn/free/article-8').querySelector('.cards-card-tag');
+    expect(freeTag.classList.contains('related-articles-premium')).toBe(false);
+  });
+
+  it('leaves out the landing pages that sit one level up', async () => {
+    await render('/learn/free/article-1');
+
+    expect(relatedHrefs()).not.toContain('/learn/free');
+    expect(relatedHrefs()).not.toContain('/learn/premium');
+    expect(relatedHrefs()).not.toContain('/learn');
+  });
+
+  it('appends nothing when the section holds no other articles', async () => {
     await render('/learn/free/article-1', [
       row('/learn/free/article-1', 'Article 1 Title'),
       row('/products/coffee-maker', 'Coffee Maker'),
