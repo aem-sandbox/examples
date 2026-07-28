@@ -1,7 +1,7 @@
 import { decorateBlock, getMetadata, loadBlock } from '../../scripts/aem.js';
 import {
   createTag,
-  fetchQueryIndexPage,
+  fetchQueryIndexBatch,
   formatDate,
   getPublishedTimestamp,
   isQueryableRow,
@@ -74,6 +74,10 @@ function isSibling(row, folder, path) {
   return !rowPath.slice(folder.length).includes('/');
 }
 
+// One flat index covers the whole site, and it carries no folder filter, so picking the
+// newest siblings means reading every row: one request per 500 published pages. That is
+// why this runs off the critical path. A site large enough to feel it should publish a
+// folder-scoped index (see https://www.aem.live/developer/indexing) and read that instead.
 async function fetchSiblings(path, limit) {
   const folder = folderOf(path);
   const siblings = [];
@@ -82,10 +86,10 @@ async function fetchSiblings(path, limit) {
 
   while (hasMore) {
     // eslint-disable-next-line no-await-in-loop
-    const batch = await fetchQueryIndexPage(offset, QUERY_INDEX_PAGE_SIZE);
-    offset += batch.length;
-    hasMore = batch.length === QUERY_INDEX_PAGE_SIZE;
-    batch.forEach((row) => {
+    const { data, total } = await fetchQueryIndexBatch(offset, QUERY_INDEX_PAGE_SIZE);
+    offset += data.length;
+    hasMore = total ? offset < total : data.length === QUERY_INDEX_PAGE_SIZE;
+    data.forEach((row) => {
       if (isSibling(row, folder, path)) siblings.push(row);
     });
   }

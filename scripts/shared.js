@@ -142,11 +142,22 @@ export function getPublishedTimestamp(entry = {}) {
   return toTimestamp(entry.date || entry.publisheddate || entry.lastModified);
 }
 
-export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
+/**
+ * One page of query-index rows plus the row count the index reports, so a caller
+ * walking the whole index can stop on the last full page instead of asking for a
+ * page past the end.
+ * @returns {Promise<{data: Object[], total: number}>}
+ */
+export async function fetchQueryIndexBatch(offset, limit, baseUrl = '') {
   const path = `/query-index.json?offset=${offset}&limit=${limit}`;
   const url = baseUrl ? `${String(baseUrl).replace(/\/+$/, '')}${path}` : path;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`Query index request failed: ${resp.status}`);
   const json = await resp.json();
-  return json?.data || [];
+  return { data: json?.data || [], total: Number(json?.total) || 0 };
+}
+
+export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
+  const { data } = await fetchQueryIndexBatch(offset, limit, baseUrl);
+  return data;
 }
