@@ -108,7 +108,9 @@ function buildCardRow(page) {
   const row = createTag('div');
 
   if (hasRealImage(page.image)) {
-    row.append(createTag('div', {}, createTag('img', { src: page.image, alt: page.title || '' })));
+    // `data-src`, not `src`: the cards block swaps this img for an optimized picture at a
+    // different URL, and a `src` here downloads the indexed full-size image for nothing.
+    row.append(createTag('div', {}, createTag('img', { 'data-src': page.image, alt: page.title || '' })));
   }
 
   const body = createTag('div');

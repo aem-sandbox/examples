@@ -222,7 +222,9 @@ function buildCardRow(page) {
   const cols = [];
 
   if (hasRealCardImage(page.image)) {
-    cols.push(createTag('div', {}, createTag('img', { src: page.image, alt: page.title || '' })));
+    // `data-src`, not `src`: the index URL asks for a 1200px JPEG, and optimizeCardImages
+    // replaces it with a different URL. A `src` here downloads the first one for nothing.
+    cols.push(createTag('div', {}, createTag('img', { 'data-src': page.image, alt: page.title || '' })));
   }
 
   const body = createTag('div');
@@ -247,15 +249,19 @@ function buildCardRow(page) {
 /**
  * Replaces card `<img>` elements with an optimized `<picture>`. Images inside
  * `featuredSelector` render at a higher resolution (bento's featured card).
+ * Reads `data-src` first, so a row built from the query index can hand over the
+ * image URL without the browser fetching it at its indexed size.
  * @param {Element} ul
  * @param {string|null} [featuredSelector]
  * @returns {void}
  */
 function optimizeCardImages(ul, featuredSelector = null) {
   ul.querySelectorAll('.cards-card-image img').forEach((img) => {
+    const src = img.dataset.src || img.src;
+    if (!src) return;
     const isFeatured = featuredSelector && img.closest(featuredSelector);
     const width = isFeatured ? '1200' : '750';
-    const optimized = createOptimizedPicture(img.src, img.alt, false, [{ width }]);
+    const optimized = createOptimizedPicture(src, img.alt, false, [{ width }]);
     (img.closest('picture') || img).replaceWith(optimized);
   });
 }
