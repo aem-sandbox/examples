@@ -122,19 +122,42 @@ export function isQueryableRow(row) {
   return !robots.includes('noindex');
 }
 
-export function getContentTimestamp(entry = {}) {
-  const value = entry.lastModified || entry.date || entry.publisheddate;
+function toTimestamp(value) {
   if (!value) return 0;
   if (/^[0-9]+$/.test(String(value))) return Number(value);
   const parsed = Date.parse(String(value));
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
+/** When the document last changed. Republishing a typo fix moves this. */
+export function getContentTimestamp(entry = {}) {
+  return toTimestamp(entry.lastModified || entry.date || entry.publisheddate);
+}
+
+/**
+ * The authored publication date, in the order a card renders it. Sort with this
+ * wherever the same row shows its date, so the order matches what the reader sees.
+ */
+export function getPublishedTimestamp(entry = {}) {
+  return toTimestamp(entry.date || entry.publisheddate || entry.lastModified);
+}
+
+/**
+ * One page of query-index rows plus the row count the index reports, so a caller
+ * walking the whole index can stop on the last full page instead of asking for a
+ * page past the end.
+ * @returns {Promise<{data: Object[], total: number}>}
+ */
+export async function fetchQueryIndexBatch(offset, limit, baseUrl = '') {
   const path = `/query-index.json?offset=${offset}&limit=${limit}`;
   const url = baseUrl ? `${String(baseUrl).replace(/\/+$/, '')}${path}` : path;
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`Query index request failed: ${resp.status}`);
   const json = await resp.json();
-  return json?.data || [];
+  return { data: json?.data || [], total: Number(json?.total) || 0 };
+}
+
+export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
+  const { data } = await fetchQueryIndexBatch(offset, limit, baseUrl);
+  return data;
 }

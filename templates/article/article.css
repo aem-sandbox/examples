@@ -140,3 +140,24 @@
   letter-spacing: 0;
   color: var(--text-color);
 }
+
+/* Related articles: appended by the template into the last section, so it needs the
+   separation an authored section break would otherwise give it. */
+.article .article-related-title {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.article .cards.related-articles {
+  margin-top: var(--space-l);
+}
+
+/* Gated articles stay in the list and say so. The word carries the meaning; the badge
+   makes it easier to scan. */
+.article .cards.related-articles .related-articles-premium {
+  padding: 0.15em 0.6em;
+  border: 1px solid var(--color-brand);
+  border-radius: 1em;
+  background-color: var(--color-brand-subtle);
+}
