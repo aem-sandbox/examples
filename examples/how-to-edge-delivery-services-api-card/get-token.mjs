@@ -13,7 +13,7 @@
  *   openid,AdobeID,aem.frontend.all,additional_info.projectedProductContext,read_organizations
  *
  * Usage:
- *   CLIENT_ID=... CLIENT_SECRET=... node scripts/shared-token-da-eds/get-token.mjs
+ *   CLIENT_ID=... CLIENT_SECRET=... node examples/how-to-edge-delivery-services-api-card/get-token.mjs
  */
 
 const IMS_TOKEN_URL = 'https://ims-na1.adobelogin.com/ims/token/v3';
