@@ -2,18 +2,9 @@
  * Exchanges an Adobe Developer Console "OAuth Server-to-Server" credential
  * (Client ID + Client Secret) for a bearer access token.
  *
- * The resulting token can be used for BOTH:
- *  - admin.da.live  (Document Authoring admin API)
- *  - admin.hlx.page (AEM Edge Delivery Services admin API)
- *
- * ...as long as the credential's technical account email has been added to
- * both DA Permissions and EDS Users for the relevant org/site.
- *
  * Required scopes for the "Edge Delivery Services" API card:
  *   openid,AdobeID,aem.frontend.all,additional_info.projectedProductContext,read_organizations
  *
- * Usage:
- *   CLIENT_ID=... CLIENT_SECRET=... node examples/how-to-edge-delivery-services-api-card/get-token.mjs
  */
 
 const IMS_TOKEN_URL = 'https://ims-na1.adobelogin.com/ims/token/v3';
