@@ -32,9 +32,9 @@
       },
       "contact": {
         "label": "Step 4 of 4",
-        "title": "Almost there — who should we send your match to?",
-        "subtitle": "We'll tailor your recommendations and reach out within one business day.",
-        "consent": "By submitting, you agree to receive product updates from Geometrixx. Unsubscribe anytime."
+        "title": "Try the contact-details step",
+        "subtitle": "These fields demonstrate native form controls and validation. Nothing is sent.",
+        "consent": "Demo only: your entries stay in this browser and are not sent or stored."
       }
     },
     "labels": {
@@ -49,16 +49,15 @@
     "nav": {
       "back": "Back",
       "next": "Continue",
-      "submit": "Get my match",
-      "sending": "Sending…",
+      "submit": "Preview my match",
       "progressLabel": "Lead form progress",
       "stepOf": "Step {current} of {total}"
     },
     "success": {
       "icon": "🎉",
-      "headline": "You're on the list!",
-      "description": "Thanks for sharing your stack story. A solutions architect will review your answers and follow up shortly.",
-      "personalized": "Based on your selections, we're already lining up resources for {companySize} teams focused on {priority}.",
+      "headline": "Your demo match is ready",
+      "description": "This example processed your answers only in this browser. No data was sent or stored.",
+      "personalized": "The demo matched {companySize} teams with resources focused on {priority}.",
       "restart": "Start over"
     },
     "companySizeOptions": [
@@ -134,9 +133,9 @@
       },
       "contact": {
         "label": "Étape 4 sur 4",
-        "title": "Presque fini — à qui envoyer votre match ?",
-        "subtitle": "Nous personnaliserons vos recommandations et vous contacterons sous un jour ouvré.",
-        "consent": "En soumettant, vous acceptez de recevoir des mises à jour produit de Geometrixx. Désabonnement à tout moment."
+        "title": "Essayez l’étape des coordonnées",
+        "subtitle": "Ces champs illustrent les contrôles de formulaire natifs et la validation. Rien n’est envoyé.",
+        "consent": "Démonstration uniquement : vos saisies restent dans ce navigateur et ne sont ni envoyées ni stockées."
       }
     },
     "labels": {
@@ -151,16 +150,15 @@
     "nav": {
       "back": "Retour",
       "next": "Continuer",
-      "submit": "Obtenir mon match",
-      "sending": "Envoi…",
+      "submit": "Prévisualiser mon résultat",
       "progressLabel": "Progression du formulaire",
       "stepOf": "Étape {current} sur {total}"
     },
     "success": {
       "icon": "🎉",
-      "headline": "Vous êtes inscrit !",
-      "description": "Merci d'avoir partagé votre histoire stack. Un architecte solutions examinera vos réponses et vous recontactera rapidement.",
-      "personalized": "D'après vos sélections, nous préparons déjà des ressources pour les équipes {companySize} axées sur {priority}.",
+      "headline": "Votre résultat de démonstration est prêt",
+      "description": "Cet exemple a traité vos réponses uniquement dans ce navigateur. Aucune donnée n'a été envoyée ni stockée.",
+      "personalized": "La démonstration associe les équipes {companySize} à des ressources axées sur {priority}.",
       "restart": "Recommencer"
     },
     "companySizeOptions": [
@@ -236,9 +234,9 @@
       },
       "contact": {
         "label": "Schritt 4 von 4",
-        "title": "Fast geschafft — wem sollen wir Ihren Match schicken?",
-        "subtitle": "Wir passen Ihre Empfehlungen an und melden uns innerhalb eines Werktags.",
-        "consent": "Mit dem Absenden stimmen Sie Produktupdates von Geometrixx zu. Abmeldung jederzeit möglich."
+        "title": "Testen Sie den Schritt mit den Kontaktdaten",
+        "subtitle": "Diese Felder demonstrieren native Formularelemente und Validierung. Es wird nichts gesendet.",
+        "consent": "Nur Demo: Ihre Eingaben bleiben in diesem Browser und werden weder gesendet noch gespeichert."
       }
     },
     "labels": {
@@ -253,16 +251,15 @@
     "nav": {
       "back": "Zurück",
       "next": "Weiter",
-      "submit": "Match erhalten",
-      "sending": "Wird gesendet…",
+      "submit": "Demo-Ergebnis anzeigen",
       "progressLabel": "Formularfortschritt",
       "stepOf": "Schritt {current} von {total}"
     },
     "success": {
       "icon": "🎉",
-      "headline": "Sie stehen auf der Liste!",
-      "description": "Danke, dass Sie Ihre Stack-Geschichte geteilt haben. Ein Solutions Architect prüft Ihre Antworten und meldet sich in Kürze.",
-      "personalized": "Basierend auf Ihrer Auswahl bereiten wir bereits Ressourcen für {companySize}-Teams mit Fokus auf {priority} vor.",
+      "headline": "Ihr Demo-Ergebnis ist fertig",
+      "description": "Dieses Beispiel hat Ihre Antworten nur in diesem Browser verarbeitet. Es wurden keine Daten gesendet oder gespeichert.",
+      "personalized": "Die Demo ordnet {companySize}-Teams Ressourcen mit Fokus auf {priority} zu.",
       "restart": "Neu starten"
     },
     "companySizeOptions": [
@@ -338,9 +335,9 @@
       },
       "contact": {
         "label": "Paso 4 de 4",
-        "title": "Casi listo — ¿a quién enviamos tu match?",
-        "subtitle": "Personalizaremos tus recomendaciones y te contactaremos en un día hábil.",
-        "consent": "Al enviar, aceptas recibir actualizaciones de producto de Geometrixx. Cancela cuando quieras."
+        "title": "Prueba el paso de datos de contacto",
+        "subtitle": "Estos campos demuestran controles de formulario nativos y validación. No se envía nada.",
+        "consent": "Solo demostración: tus datos permanecen en este navegador y no se envían ni almacenan."
       }
     },
     "labels": {
@@ -355,16 +352,15 @@
     "nav": {
       "back": "Atrás",
       "next": "Continuar",
-      "submit": "Obtener mi match",
-      "sending": "Enviando…",
+      "submit": "Ver mi resultado de prueba",
       "progressLabel": "Progreso del formulario",
       "stepOf": "Paso {current} de {total}"
     },
     "success": {
       "icon": "🎉",
-      "headline": "¡Estás en la lista!",
-      "description": "Gracias por compartir tu historia de stack. Un arquitecto de soluciones revisará tus respuestas y se pondrá en contacto pronto.",
-      "personalized": "Según tus selecciones, ya estamos preparando recursos para equipos {companySize} enfocados en {priority}.",
+      "headline": "Tu resultado de prueba está listo",
+      "description": "Este ejemplo procesó tus respuestas solo en este navegador. No se enviaron ni almacenaron datos.",
+      "personalized": "La demostración asoció equipos {companySize} con recursos enfocados en {priority}.",
       "restart": "Empezar de nuevo"
     },
     "companySizeOptions": [

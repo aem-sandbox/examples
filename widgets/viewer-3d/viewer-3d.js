@@ -55,7 +55,8 @@ function createModelViewer(copy) {
   viewer.setAttribute('alt', model.alt);
   viewer.setAttribute('camera-controls', '');
   viewer.setAttribute('touch-action', 'pan-y');
-  viewer.setAttribute('auto-rotate', '');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) viewer.setAttribute('auto-rotate', '');
   viewer.setAttribute('shadow-intensity', '1');
   viewer.setAttribute('exposure', '1.1');
   viewer.setAttribute('interaction-prompt', 'none');
@@ -89,6 +90,12 @@ function applyCopy(widget, copy) {
   autoBtn.setAttribute('aria-label', copy.autoRotateOn);
   autoBtn.dataset.labelOn = copy.autoRotateOn;
   autoBtn.dataset.labelOff = copy.autoRotateOff;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    autoBtn.textContent = copy.autoRotateOff;
+    autoBtn.setAttribute('aria-label', copy.autoRotateOff);
+    autoBtn.setAttribute('aria-pressed', 'false');
+  }
 }
 
 /**

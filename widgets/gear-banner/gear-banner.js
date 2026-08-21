@@ -28,6 +28,11 @@ async function loadWidgetCopy(lang) {
  * @param {number} duration - Animation duration in ms
  */
 function countUp(el, target, duration = 1200) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = String(target);
+    return;
+  }
+
   const start = performance.now();
   const tick = (now) => {
     const progress = Math.min((now - start) / duration, 1);

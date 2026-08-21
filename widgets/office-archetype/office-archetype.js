@@ -107,7 +107,7 @@ function renderQuestion(widget, question, index, nav, total) {
   optionsEl.replaceChildren();
 
   question.options.forEach((opt, optIndex) => {
-    const id = `office-archetype-q${index}-${opt.value}`;
+    const id = `${widget.dataset.instanceId}-q${index}-${opt.value}`;
     const label = document.createElement('label');
     label.className = 'office-archetype-option';
     label.setAttribute('for', id);
@@ -115,7 +115,7 @@ function renderQuestion(widget, question, index, nav, total) {
 
     const input = document.createElement('input');
     input.type = 'radio';
-    input.name = `question-${index}`;
+    input.name = `${widget.dataset.instanceId}-question-${index}`;
     input.id = id;
     input.value = opt.value;
     input.dataset.questionIndex = String(index);
@@ -227,8 +227,9 @@ function showResult(widget, copy, archetypeKey) {
  * @param {HTMLElement} widget - Widget root
  * @param {string} panelName - intro | quiz | result
  * @param {string} direction - forward | back
+ * @param {boolean} moveFocus - Move focus immediately after revealing the panel
  */
-function showPanel(widget, panelName, direction = 'forward') {
+function showPanel(widget, panelName, direction = 'forward', moveFocus = true) {
   widget.dataset.direction = direction;
 
   widget.querySelectorAll('.office-archetype-panel').forEach((panel) => {
@@ -239,8 +240,10 @@ function showPanel(widget, panelName, direction = 'forward') {
       if (panelName === 'result') return;
       requestAnimationFrame(() => {
         panel.classList.add('revealed');
-        panel.setAttribute('tabindex', '-1');
-        panel.focus();
+        if (moveFocus) {
+          panel.setAttribute('tabindex', '-1');
+          panel.focus();
+        }
       });
     } else {
       panel.setAttribute('hidden', '');
@@ -270,6 +273,10 @@ export default async function decorate(widget) {
   const lang = getLanguage();
   const copy = await loadWidgetCopy(lang).catch(() => null);
   if (!copy?.questions?.length) return;
+
+  const questionTitle = widget.querySelector('.office-archetype-question-title');
+  questionTitle.id = `${widget.dataset.instanceId}-q-title`;
+  widget.querySelector('.office-archetype-options').setAttribute('aria-labelledby', questionTitle.id);
 
   applyIntro(widget, copy);
   buildProgressDots(widget, copy.questions.length);
@@ -301,6 +308,10 @@ export default async function decorate(widget) {
     const panel = widget.querySelector('[data-panel="quiz"]');
     panel.classList.add('exiting');
 
+    let delay = 0;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      delay = direction === 'back' ? 200 : 280;
+    }
     window.setTimeout(() => {
       renderQuestion(widget, copy.questions[index], index, copy.nav, copy.questions.length);
       panel.classList.remove('exiting');
@@ -317,9 +328,11 @@ export default async function decorate(widget) {
       }
 
       transitioning = false;
-    }, direction === 'back' ? 200 : 280);
+      panel.setAttribute('tabindex', '-1');
+      panel.focus();
+    }, delay);
 
-    showPanel(widget, 'quiz', direction);
+    showPanel(widget, 'quiz', direction, false);
   };
 
   widget.querySelector('.office-archetype-start').addEventListener('click', () => {
@@ -342,10 +355,11 @@ export default async function decorate(widget) {
 
     const winner = computeArchetype(copy.questions, answers);
     widget.querySelector('[data-panel="quiz"]').classList.add('exiting');
+    const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 300;
     window.setTimeout(() => {
       widget.querySelector('[data-panel="quiz"]').setAttribute('hidden', '');
       showResult(widget, copy, winner);
-    }, 300);
+    }, delay);
   });
 
   widget.addEventListener('change', (e) => {

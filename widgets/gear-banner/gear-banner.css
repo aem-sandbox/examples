@@ -4,7 +4,7 @@
   width: 100%;
 }
 
-.gear-banner-ad {
+.gear-banner .gear-banner-ad {
   border-radius: 20px;
   box-shadow: 0 20px 60px rgb(15 40 30 / 25%);
   isolation: isolate;
@@ -14,14 +14,14 @@
 }
 
 /* animated scene */
-.gear-banner-scene {
+.gear-banner .gear-banner-scene {
   inset: 0;
   overflow: hidden;
   position: absolute;
   z-index: 0;
 }
 
-.gear-banner-sky {
+.gear-banner .gear-banner-sky {
   animation: gear-banner-sky-shift 12s ease-in-out infinite alternate;
   background: linear-gradient(
     180deg,
@@ -39,7 +39,7 @@
   100% { filter: hue-rotate(8deg) brightness(1.05); }
 }
 
-.gear-banner-sun {
+.gear-banner .gear-banner-sun {
   animation: gear-banner-sun-pulse 4s ease-in-out infinite;
   background: radial-gradient(circle, #ffe066 0%, rgb(255 224 102 / 0%) 70%);
   height: 120px;
@@ -61,7 +61,7 @@
   }
 }
 
-.gear-banner-cloud {
+.gear-banner .gear-banner-cloud {
   animation: gear-banner-cloud-drift linear infinite;
   background: rgb(255 255 255 / 55%);
   border-radius: 999px;
@@ -70,35 +70,35 @@
   position: absolute;
 }
 
-.gear-banner-cloud::before,
-.gear-banner-cloud::after {
+.gear-banner .gear-banner-cloud::before,
+.gear-banner .gear-banner-cloud::after {
   background: rgb(255 255 255 / 55%);
   border-radius: 50%;
   content: "";
   position: absolute;
 }
 
-.gear-banner-cloud-1 {
+.gear-banner .gear-banner-cloud-1 {
   animation-duration: 38s;
   top: 14%;
   width: 90px;
 }
 
-.gear-banner-cloud-1::before {
+.gear-banner .gear-banner-cloud-1::before {
   height: 36px;
   left: 12px;
   top: -16px;
   width: 36px;
 }
 
-.gear-banner-cloud-1::after {
+.gear-banner .gear-banner-cloud-1::after {
   height: 28px;
   right: 8px;
   top: -10px;
   width: 28px;
 }
 
-.gear-banner-cloud-2 {
+.gear-banner .gear-banner-cloud-2 {
   animation-duration: 52s;
   animation-delay: -12s;
   height: 22px;
@@ -106,21 +106,21 @@
   width: 70px;
 }
 
-.gear-banner-cloud-2::before {
+.gear-banner .gear-banner-cloud-2::before {
   height: 28px;
   left: 8px;
   top: -12px;
   width: 28px;
 }
 
-.gear-banner-cloud-2::after {
+.gear-banner .gear-banner-cloud-2::after {
   height: 22px;
   right: 6px;
   top: -8px;
   width: 22px;
 }
 
-.gear-banner-cloud-3 {
+.gear-banner .gear-banner-cloud-3 {
   animation-duration: 44s;
   animation-delay: -24s;
   height: 20px;
@@ -129,7 +129,7 @@
   width: 55px;
 }
 
-.gear-banner-cloud-3::before {
+.gear-banner .gear-banner-cloud-3::before {
   height: 24px;
   left: 6px;
   top: -10px;
@@ -141,14 +141,14 @@
   to { transform: translateX(calc(100vw + 120%)); }
 }
 
-.gear-banner-mountain {
+.gear-banner .gear-banner-mountain {
   bottom: 0;
   clip-path: polygon(0 100%, 0 40%, 100% 100%);
   position: absolute;
   width: 100%;
 }
 
-.gear-banner-mountain-back {
+.gear-banner .gear-banner-mountain-back {
   animation: gear-banner-parallax-back 20s ease-in-out infinite alternate;
   background: linear-gradient(180deg, #4a6741 0%, #3d5536 100%);
   clip-path: polygon(0 100%, 0 55%, 25% 30%, 45% 50%, 65% 25%, 85% 45%, 100% 35%, 100% 100%);
@@ -156,7 +156,7 @@
   opacity: 0.6;
 }
 
-.gear-banner-mountain-mid {
+.gear-banner .gear-banner-mountain-mid {
   animation: gear-banner-parallax-mid 14s ease-in-out infinite alternate;
   background: linear-gradient(180deg, #2d5016 0%, #1e3a0f 100%);
   clip-path: polygon(0 100%, 0 65%, 20% 45%, 40% 60%, 55% 38%, 75% 55%, 100% 42%, 100% 100%);
@@ -164,7 +164,7 @@
   opacity: 0.85;
 }
 
-.gear-banner-mountain-front {
+.gear-banner .gear-banner-mountain-front {
   animation: gear-banner-parallax-front 10s ease-in-out infinite alternate;
   background: linear-gradient(180deg, #1a3d12 0%, #0f2810 100%);
   clip-path: polygon(0 100%, 0 75%, 30% 55%, 50% 68%, 70% 50%, 100% 62%, 100% 100%);
@@ -186,7 +186,7 @@
   to { transform: translateX(-20px); }
 }
 
-.gear-banner-trees {
+.gear-banner .gear-banner-trees {
   background: repeating-linear-gradient(
     90deg,
     transparent,
@@ -203,13 +203,13 @@
   width: 50%;
 }
 
-.gear-banner-particles {
+.gear-banner .gear-banner-particles {
   inset: 0;
   pointer-events: none;
   position: absolute;
 }
 
-.gear-banner-particle {
+.gear-banner .gear-banner-particle {
   animation: gear-banner-particle-float var(--duration, 8s) ease-in-out var(--delay, 0s) infinite;
   background: rgb(255 255 255 / 45%);
   border-radius: 50%;
@@ -236,7 +236,7 @@
 }
 
 /* content layout */
-.gear-banner-content {
+.gear-banner .gear-banner-content {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: 1fr;
@@ -246,8 +246,8 @@
   z-index: 1;
 }
 
-@media (width >= 768px) {
-  .gear-banner-content {
+@media (width >= 900px) {
+  .gear-banner .gear-banner-content {
     align-items: center;
     grid-template-columns: 1.2fr 0.8fr;
     min-height: 360px;
@@ -255,19 +255,19 @@
   }
 }
 
-@media (width >= 1024px) {
-  .gear-banner-content {
+@media (width >= 1200px) {
+  .gear-banner .gear-banner-content {
     min-height: 400px;
     padding: 3rem 3.5rem;
   }
 }
 
-.gear-banner-copy {
+.gear-banner .gear-banner-copy {
   color: #fff;
   text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
 }
 
-.gear-banner-eyebrow {
+.gear-banner .gear-banner-eyebrow {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
   color: #ffe066;
   font-family: var(--heading-font-family);
@@ -278,7 +278,7 @@
   text-transform: uppercase;
 }
 
-.gear-banner-headline {
+.gear-banner .gear-banner-headline {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
   font-family: var(--heading-font-family);
   font-size: clamp(1.75rem, 5vw, var(--heading-font-size-l));
@@ -286,7 +286,7 @@
   margin: 0 0 0.65rem;
 }
 
-.gear-banner-subhead {
+.gear-banner .gear-banner-subhead {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
   font-size: clamp(0.9rem, 2.5vw, var(--body-font-size-s));
   line-height: 1.45;
@@ -295,7 +295,7 @@
   opacity: 0.92;
 }
 
-.gear-banner-includes {
+.gear-banner .gear-banner-includes {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
   display: flex;
   flex-wrap: wrap;
@@ -305,7 +305,7 @@
   padding: 0;
 }
 
-.gear-banner-includes li {
+.gear-banner .gear-banner-includes li {
   backdrop-filter: blur(6px);
   background: rgb(255 255 255 / 15%);
   border: 1px solid rgb(255 255 255 / 25%);
@@ -314,13 +314,13 @@
   padding: 0.25rem 0.75rem;
 }
 
-.gear-banner-code-line {
+.gear-banner .gear-banner-code-line {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
   font-size: var(--body-font-size-xs);
   margin: 0 0 1rem;
 }
 
-.gear-banner-code {
+.gear-banner .gear-banner-code {
   animation: gear-banner-code-flash 2.5s ease-in-out 1.5s infinite;
   background: rgb(0 0 0 / 30%);
   border-radius: 6px;
@@ -337,12 +337,12 @@
   50% { background: rgb(255 224 102 / 35%); }
 }
 
-.gear-banner-copy .button-wrapper {
+.gear-banner .gear-banner-copy .button-wrapper {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
   margin: 0 0 0.75rem;
 }
 
-.gear-banner-cta {
+.gear-banner .gear-banner-cta {
   animation: gear-banner-cta-shimmer 3s ease-in-out infinite;
   position: relative;
 }
@@ -352,7 +352,7 @@
   50% { box-shadow: 0 4px 32px rgb(255 224 102 / 55%); }
 }
 
-.gear-banner-fine-print {
+.gear-banner .gear-banner-fine-print {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
   font-size: 0.75rem;
   margin: 0;
@@ -372,7 +372,7 @@
 }
 
 /* offer badge */
-.gear-banner-offer {
+.gear-banner .gear-banner-offer {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -380,7 +380,7 @@
   text-align: center;
 }
 
-.gear-banner-badge {
+.gear-banner .gear-banner-badge {
   animation: gear-banner-badge-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both,
     gear-banner-badge-glow 3s ease-in-out 1.5s infinite;
   aspect-ratio: 1;
@@ -401,7 +401,7 @@
   width: min(52vw, 200px);
 }
 
-.gear-banner-badge::before {
+.gear-banner .gear-banner-badge::before {
   animation: gear-banner-ring-pulse 2.5s ease-out infinite;
   border: 2px solid rgb(255 224 102 / 60%);
   border-radius: 50%;
@@ -439,7 +439,7 @@
   }
 }
 
-.gear-banner-percent {
+.gear-banner .gear-banner-percent {
   color: #ffe066;
   font-family: var(--heading-font-family);
   font-size: clamp(2.75rem, 12vw, 4rem);
@@ -447,7 +447,7 @@
   line-height: 0.9;
 }
 
-.gear-banner-percent-sign {
+.gear-banner .gear-banner-percent-sign {
   color: #ffe066;
   font-family: var(--heading-font-family);
   font-size: clamp(1.5rem, 6vw, 2.25rem);
@@ -455,7 +455,7 @@
   margin-top: -0.15em;
 }
 
-.gear-banner-off-label {
+.gear-banner .gear-banner-off-label {
   color: #fff;
   font-family: var(--heading-font-family);
   font-size: clamp(0.85rem, 3vw, 1.1rem);
@@ -464,7 +464,7 @@
   margin-top: 0.15rem;
 }
 
-.gear-banner-category {
+.gear-banner .gear-banner-category {
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
   color: rgb(255 255 255 / 85%);
   font-size: var(--body-font-size-xs);
@@ -474,14 +474,14 @@
   text-transform: uppercase;
 }
 
-.gear-banner-icons {
+.gear-banner .gear-banner-icons {
   display: flex;
   gap: 0.65rem;
   justify-content: center;
   margin-bottom: 0.75rem;
 }
 
-.gear-banner-gear-icon {
+.gear-banner .gear-banner-gear-icon {
   animation: gear-banner-icon-bob 3s ease-in-out var(--float-delay, 0s) infinite;
   font-size: clamp(1.25rem, 4vw, 1.75rem);
   filter: drop-shadow(0 2px 4px rgb(0 0 0 / 30%));
@@ -492,7 +492,7 @@
   50% { transform: translateY(-6px); }
 }
 
-.gear-banner-urgency {
+.gear-banner .gear-banner-urgency {
   align-items: center;
   animation: gear-banner-slide-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
   color: rgb(255 255 255 / 80%);
@@ -503,7 +503,7 @@
   margin: 0;
 }
 
-.gear-banner-urgency-dot {
+.gear-banner .gear-banner-urgency-dot {
   animation: gear-banner-dot-blink 1.2s ease-in-out infinite;
   background: #ff6b6b;
   border-radius: 50%;
@@ -529,37 +529,45 @@
   opacity: 0;
 }
 
-.gear-banner-active .gear-banner-scene .gear-banner-cloud {
+.gear-banner.gear-banner-active .gear-banner-scene .gear-banner-cloud {
   animation-play-state: running;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gear-banner-sky,
-  .gear-banner-sun,
-  .gear-banner-cloud,
-  .gear-banner-mountain-back,
-  .gear-banner-mountain-mid,
-  .gear-banner-mountain-front,
-  .gear-banner-particle,
-  .gear-banner-gear-icon,
-  .gear-banner-badge,
-  .gear-banner-badge::before,
-  .gear-banner-urgency-dot,
-  .gear-banner-code,
-  .gear-banner-cta,
-  .gear-banner-eyebrow,
-  .gear-banner-headline,
-  .gear-banner-subhead,
-  .gear-banner-includes,
-  .gear-banner-code-line,
-  .gear-banner-copy .button-wrapper,
-  .gear-banner-fine-print,
-  .gear-banner-category,
-  .gear-banner-urgency {
+  .gear-banner .gear-banner-sky,
+  .gear-banner .gear-banner-sun,
+  .gear-banner .gear-banner-cloud,
+  .gear-banner .gear-banner-mountain-back,
+  .gear-banner .gear-banner-mountain-mid,
+  .gear-banner .gear-banner-mountain-front,
+  .gear-banner .gear-banner-particle,
+  .gear-banner .gear-banner-gear-icon,
+  .gear-banner .gear-banner-badge,
+  .gear-banner .gear-banner-badge::before,
+  .gear-banner .gear-banner-urgency-dot,
+  .gear-banner .gear-banner-code,
+  .gear-banner .gear-banner-cta,
+  .gear-banner .gear-banner-eyebrow,
+  .gear-banner .gear-banner-headline,
+  .gear-banner .gear-banner-subhead,
+  .gear-banner .gear-banner-includes,
+  .gear-banner .gear-banner-code-line,
+  .gear-banner .gear-banner-copy .button-wrapper,
+  .gear-banner .gear-banner-fine-print,
+  .gear-banner .gear-banner-category,
+  .gear-banner .gear-banner-urgency {
     animation: none;
   }
 
-  .gear-banner-percent {
+  .gear-banner .gear-banner-percent {
     opacity: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  .gear-banner .gear-banner-ad,
+  .gear-banner .gear-banner-includes li,
+  .gear-banner .gear-banner-cta {
+    border: 2px solid CanvasText;
   }
 }

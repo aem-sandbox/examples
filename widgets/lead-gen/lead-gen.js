@@ -36,16 +36,43 @@ function interpolate(template, vars) {
 }
 
 /**
+ * Namespaces the lead form's known static IDs and their explicit references.
+ * @param {HTMLElement} widget - Widget root
+ */
+function namespaceLeadIds(widget) {
+  const { instanceId } = widget.dataset;
+  const ids = new Map();
+  widget.querySelectorAll('[id^="lead-gen-"]').forEach((element) => {
+    const original = element.id;
+    const namespaced = `${instanceId}-${original}`;
+    ids.set(original, namespaced);
+    element.id = namespaced;
+  });
+
+  widget.querySelectorAll('[for], [aria-labelledby]').forEach((element) => {
+    ['for', 'aria-labelledby'].forEach((attribute) => {
+      const value = element.getAttribute(attribute);
+      if (!value) return;
+      element.setAttribute(attribute, value
+        .split(/\s+/)
+        .map((token) => ids.get(token) || token)
+        .join(' '));
+    });
+  });
+}
+
+/**
  * Builds option cards into a container.
  * @param {HTMLElement} container - Target element
  * @param {Object[]} options - Option definitions from JSON
  * @param {string} inputType - radio or checkbox
  * @param {string} inputName - Form field name
+ * @param {string} instanceId - Page-local widget instance prefix
  */
-function buildOptions(container, options, inputType, inputName) {
+function buildOptions(container, options, inputType, inputName, instanceId) {
   container.replaceChildren();
   options.forEach((opt) => {
-    const id = `lead-gen-${inputName}-${opt.value}`;
+    const id = `${instanceId}-${inputName}-${opt.value}`;
     const label = document.createElement('label');
     label.className = 'lead-gen-option';
     label.setAttribute('for', id);
@@ -142,38 +169,44 @@ function applyCopy(widget, copy) {
 
   const { labels } = copy;
   const labelMap = [
-    ['lead-gen-first-name', labels.firstName],
-    ['lead-gen-last-name', labels.lastName],
-    ['lead-gen-email', labels.email],
-    ['lead-gen-company', labels.company],
-    ['lead-gen-role', labels.role],
-    ['lead-gen-phone', labels.phone],
+    ['firstName', labels.firstName],
+    ['lastName', labels.lastName],
+    ['email', labels.email],
+    ['company', labels.company],
+    ['role', labels.role],
+    ['phone', labels.phone],
   ];
-  labelMap.forEach(([id, text]) => {
-    const label = widget.querySelector(`label[for="${id}"] .label-text`);
+  labelMap.forEach(([name, text]) => {
+    const field = widget.querySelector(`[name="${name}"]`);
+    const label = field && widget.querySelector(`label[for="${field.id}"] .label-text`);
     if (label) label.textContent = text;
   });
+
+  const { instanceId } = widget.dataset;
 
   buildOptions(
     widget.querySelector('[data-panel="company-size"] .lead-gen-options'),
     copy.companySizeOptions,
     'radio',
     'companySize',
+    instanceId,
   );
   buildOptions(
     widget.querySelector('[data-panel="challenges"] .lead-gen-options'),
     copy.challengeOptions,
     'checkbox',
     'challenges',
+    instanceId,
   );
   buildOptions(
     widget.querySelector('[data-panel="priority"] .lead-gen-options'),
     copy.priorityOptions,
     'radio',
     'priority',
+    instanceId,
   );
   buildRoleSelect(
-    widget.querySelector('#lead-gen-role'),
+    widget.querySelector('[name="role"]'),
     copy.roleOptions,
     labels.selectRole,
   );
@@ -281,44 +314,33 @@ function showPanel(widget, panelName) {
 }
 
 /**
- * Collects form data from all steps.
+ * Collects only the non-personal values needed for the local demo result.
  * @param {HTMLElement} widget - Widget root
- * @returns {Object} Lead payload
+ * @returns {Object} Demo result values
  */
-function collectPayload(widget) {
+function collectDemoResult(widget) {
   const form = widget.querySelector('.lead-gen-form');
   const data = new FormData(form);
-  const challenges = [...form.querySelectorAll('input[name="challenges"]:checked')].map((i) => i.value);
   return {
     companySize: data.get('companySize'),
-    challenges,
     priority: data.get('priority'),
-    firstName: data.get('firstName'),
-    lastName: data.get('lastName'),
-    email: data.get('email'),
-    company: data.get('company'),
-    role: data.get('role'),
-    phone: data.get('phone') || '',
-    pageUrl: window.location.href,
-    formId: 'lead-gen',
-    language: getLanguage(),
   };
 }
 
 /**
  * Shows the success panel with personalized copy.
  * @param {HTMLElement} widget - Widget root
- * @param {Object} payload - Submitted form data
+ * @param {Object} result - Local demo result values
  */
-function showSuccess(widget, payload) {
+function showSuccess(widget, result) {
   const copy = JSON.parse(widget.dataset.copy || '{}');
   const success = widget.querySelector('[data-panel="success"]');
   success.querySelector('.lead-gen-success-icon').textContent = copy.success?.icon || '';
   success.querySelector('.lead-gen-headline').textContent = copy.success?.headline || '';
   success.querySelector('.lead-gen-description').textContent = copy.success?.description || '';
 
-  const companySize = copy.companySizeLabels?.[payload.companySize] || payload.companySize;
-  const priority = copy.priorityLabels?.[payload.priority] || payload.priority;
+  const companySize = copy.companySizeLabels?.[result.companySize] || result.companySize;
+  const priority = copy.priorityLabels?.[result.priority] || result.priority;
   const personalized = interpolate(copy.success?.personalized || '', { companySize, priority });
   success.querySelector('.lead-gen-personalized').textContent = personalized;
 
@@ -345,6 +367,7 @@ export default async function decorate(widget) {
   const copy = await loadWidgetCopy(lang).catch(() => ({}));
   if (!copy.intro) return;
 
+  namespaceLeadIds(widget);
   applyCopy(widget, copy);
   showPanel(widget, 'intro');
 
@@ -362,7 +385,7 @@ export default async function decorate(widget) {
     }
   });
 
-  widget.querySelector('.lead-gen-next').addEventListener('click', async () => {
+  widget.querySelector('.lead-gen-next').addEventListener('click', () => {
     const panelName = STEP_PANELS[currentStep];
 
     if (panelName === 'contact') {
@@ -372,23 +395,7 @@ export default async function decorate(widget) {
         return;
       }
 
-      const nextBtn = widget.querySelector('.lead-gen-next');
-      const copyData = JSON.parse(widget.dataset.copy || '{}');
-      const originalLabel = nextBtn.textContent;
-      nextBtn.disabled = true;
-      nextBtn.textContent = copyData.nav?.sending || 'Sending…';
-
-      const payload = collectPayload(widget);
-      try {
-        // eslint-disable-next-line no-console
-        console.info('Lead gen submission', payload);
-        showSuccess(widget, payload);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Lead gen submission failed', err);
-        nextBtn.disabled = false;
-        nextBtn.textContent = originalLabel;
-      }
+      showSuccess(widget, collectDemoResult(widget));
       return;
     }
 

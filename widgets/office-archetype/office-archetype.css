@@ -8,7 +8,7 @@
   display: none !important;
 }
 
-.office-archetype-quiz {
+.office-archetype .office-archetype-quiz {
   background: linear-gradient(160deg, #1a1a2e 0%, #16213e 45%, #0f3460 100%);
   border-radius: 20px;
   box-shadow: 0 16px 48px rgb(15 52 96 / 35%);
@@ -18,7 +18,7 @@
 }
 
 /* floating background icons */
-.office-archetype-bg {
+.office-archetype .office-archetype-bg {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -26,40 +26,40 @@
   z-index: 0;
 }
 
-.office-archetype-float {
+.office-archetype .office-archetype-float {
   animation: office-archetype-float 8s ease-in-out infinite;
   font-size: 2rem;
   opacity: 0.12;
   position: absolute;
 }
 
-.office-archetype-float:nth-child(1) {
+.office-archetype .office-archetype-float:nth-child(1) {
   animation-delay: 0s;
   left: 8%;
   top: 12%;
 }
 
-.office-archetype-float:nth-child(2) {
+.office-archetype .office-archetype-float:nth-child(2) {
   animation-delay: -2s;
   font-size: 2.5rem;
   right: 10%;
   top: 20%;
 }
 
-.office-archetype-float:nth-child(3) {
+.office-archetype .office-archetype-float:nth-child(3) {
   animation-delay: -4s;
   bottom: 30%;
   left: 15%;
 }
 
-.office-archetype-float:nth-child(4) {
+.office-archetype .office-archetype-float:nth-child(4) {
   animation-delay: -1s;
   bottom: 15%;
   font-size: 1.75rem;
   right: 18%;
 }
 
-.office-archetype-float:nth-child(5) {
+.office-archetype .office-archetype-float:nth-child(5) {
   animation-delay: -3s;
   font-size: 3rem;
   left: 45%;
@@ -71,18 +71,22 @@
   50% { transform: translateY(-18px) rotate(8deg); }
 }
 
-.office-archetype-panel {
-  outline: none;
+.office-archetype .office-archetype-panel {
   padding: 2rem 1.5rem 1rem;
   position: relative;
   z-index: 1;
 }
 
-.office-archetype-panel.revealed {
+.office-archetype .office-archetype-panel:focus-visible {
+  outline: 2px solid #ffd93d;
+  outline-offset: -2px;
+}
+
+.office-archetype .office-archetype-panel.revealed {
   animation: office-archetype-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.office-archetype-panel.exiting {
+.office-archetype .office-archetype-panel.exiting {
   animation: office-archetype-exit 0.28s ease both;
 }
 
@@ -142,8 +146,8 @@
   }
 }
 
-.office-archetype-eyebrow,
-.office-archetype-result-eyebrow {
+.office-archetype .office-archetype-eyebrow,
+.office-archetype .office-archetype-result-eyebrow {
   color: #ffd93d;
   font-family: var(--heading-font-family);
   font-size: var(--body-font-size-xs);
@@ -153,45 +157,45 @@
   text-transform: uppercase;
 }
 
-.office-archetype-headline,
-.office-archetype-question-title,
-.office-archetype-result-title {
+.office-archetype .office-archetype-headline,
+.office-archetype .office-archetype-question-title,
+.office-archetype .office-archetype-result-title {
   font-family: var(--heading-font-family);
   font-size: var(--heading-font-size-m);
   line-height: 1.15;
   margin: 0 0 0.75rem;
 }
 
-.office-archetype-description,
-.office-archetype-time,
-.office-archetype-result-tagline,
-.office-archetype-result-roast,
-.office-archetype-result-coworker {
+.office-archetype .office-archetype-description,
+.office-archetype .office-archetype-time,
+.office-archetype .office-archetype-result-tagline,
+.office-archetype .office-archetype-result-roast,
+.office-archetype .office-archetype-result-coworker {
   color: rgb(255 255 255 / 78%);
   font-size: var(--body-font-size-s);
   line-height: 1.55;
   margin: 0 0 0.75rem;
 }
 
-.office-archetype-time {
+.office-archetype .office-archetype-time {
   font-size: var(--body-font-size-xs);
   margin-top: 1.25rem;
 }
 
-.office-archetype-step-label {
+.office-archetype .office-archetype-step-label {
   color: rgb(255 255 255 / 55%);
   font-size: var(--body-font-size-xs);
   margin: 0 0 0.35rem;
 }
 
 /* progress dots */
-.office-archetype-progress-dots {
+.office-archetype .office-archetype-progress-dots {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
 }
 
-.office-archetype-dot {
+.office-archetype .office-archetype-dot {
   background: rgb(255 255 255 / 20%);
   border-radius: 999px;
   flex: 1;
@@ -199,24 +203,24 @@
   transition: background 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.office-archetype-dot.active {
+.office-archetype .office-archetype-dot.active {
   background: #ffd93d;
   transform: scaleY(1.8);
 }
 
-.office-archetype-dot.done {
+.office-archetype .office-archetype-dot.done {
   background: rgb(255 255 255 / 50%);
 }
 
 /* options */
-.office-archetype-options {
+.office-archetype .office-archetype-options {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
   margin-top: 1rem;
 }
 
-.office-archetype-option {
+.office-archetype .office-archetype-option {
   align-items: flex-start;
   background: rgb(255 255 255 / 7%);
   border: 2px solid rgb(255 255 255 / 12%);
@@ -228,14 +232,15 @@
   transition: border-color 0.25s, background 0.25s, transform 0.2s, box-shadow 0.25s;
 }
 
-.office-archetype-option:hover {
+.office-archetype .office-archetype-option:hover,
+.office-archetype .office-archetype-option:has(input:focus-visible) {
   background: rgb(255 255 255 / 12%);
   border-color: rgb(255 255 255 / 30%);
   transform: translateX(4px);
 }
 
-.office-archetype-option.revealed,
-.office-archetype-panel.revealed .office-archetype-option {
+.office-archetype .office-archetype-option.revealed,
+.office-archetype .office-archetype-panel.revealed .office-archetype-option {
   animation: office-archetype-option-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--stagger, 0s);
 }
@@ -252,13 +257,13 @@
   }
 }
 
-.office-archetype-option.selected {
+.office-archetype .office-archetype-option.selected {
   background: rgb(59 99 251 / 25%);
   border-color: #6b8cff;
   box-shadow: 0 0 20px rgb(107 140 255 / 25%);
 }
 
-.office-archetype-option.pop {
+.office-archetype .office-archetype-option.pop {
   animation: office-archetype-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -268,41 +273,41 @@
   100% { transform: scale(1); }
 }
 
-.office-archetype-option input {
+.office-archetype .office-archetype-option input {
   flex-shrink: 0;
   margin-top: 0.3rem;
 }
 
-.office-archetype-option-icon {
+.office-archetype .office-archetype-option-icon {
   flex-shrink: 0;
   font-size: 1.6rem;
   line-height: 1;
 }
 
-.office-archetype-option-text {
+.office-archetype .office-archetype-option-text {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
 }
 
-.office-archetype-option-label {
+.office-archetype .office-archetype-option-label {
   font-size: var(--body-font-size-s);
   font-weight: 600;
 }
 
-.office-archetype-option-hint {
+.office-archetype .office-archetype-option-hint {
   color: rgb(255 255 255 / 55%);
   font-size: var(--body-font-size-xs);
 }
 
 /* result */
-.office-archetype-result {
+.office-archetype .office-archetype-result {
   overflow: hidden;
   position: relative;
   text-align: center;
 }
 
-.office-archetype-confetti {
+.office-archetype .office-archetype-confetti {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
@@ -310,7 +315,7 @@
   z-index: 2;
 }
 
-.office-archetype-confetti-piece {
+.office-archetype .office-archetype-confetti-piece {
   animation: office-archetype-confetti-fall var(--duration, 2s) ease-out var(--delay, 0s) both;
   background: var(--color, #ffd93d);
   border-radius: 2px;
@@ -333,12 +338,12 @@
   }
 }
 
-.office-archetype-badge {
+.office-archetype .office-archetype-badge {
   animation: office-archetype-badge-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
   margin: 0.5rem auto 1rem;
 }
 
-.office-archetype-badge-icon {
+.office-archetype .office-archetype-badge-icon {
   animation: office-archetype-badge-pulse 2.5s ease-in-out 1s infinite;
   display: block;
   font-size: 4.5rem;
@@ -362,14 +367,14 @@
   50% { transform: scale(1.08); }
 }
 
-.office-archetype-traits {
+.office-archetype .office-archetype-traits {
   list-style: none;
   margin: 1.25rem 0;
   padding: 0;
   text-align: left;
 }
 
-.office-archetype-traits li {
+.office-archetype .office-archetype-traits li {
   animation: office-archetype-trait-in 0.45s ease both;
   animation-delay: var(--stagger, 0s);
   background: rgb(255 255 255 / 8%);
@@ -392,40 +397,40 @@
   }
 }
 
-.office-archetype-result-roast {
+.office-archetype .office-archetype-result-roast {
   font-style: italic;
   margin-top: 1rem;
 }
 
-.office-archetype-result-coworker {
+.office-archetype .office-archetype-result-coworker {
   font-size: var(--body-font-size-xs);
   margin-bottom: 1.5rem;
 }
 
-.office-archetype-result-actions {
+.office-archetype .office-archetype-result-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   justify-content: center;
 }
 
-.office-archetype-result-actions .button {
+.office-archetype .office-archetype-result-actions .button {
   min-width: 10rem;
 }
 
 /* controls bar */
-.office-archetype-controls {
+.office-archetype .office-archetype-controls {
   border-top: 1px solid rgb(255 255 255 / 10%);
   padding: 1rem 1.5rem 1.5rem;
   position: relative;
   z-index: 1;
 }
 
-.office-archetype-controls-intro {
+.office-archetype .office-archetype-controls-intro {
   text-align: center;
 }
 
-.office-archetype-start {
+.office-archetype .office-archetype-start {
   animation: office-archetype-cta-glow 2.5s ease-in-out infinite;
 }
 
@@ -434,12 +439,12 @@
   50% { box-shadow: 0 0 24px 4px rgb(255 217 61 / 35%); }
 }
 
-.office-archetype-nav {
+.office-archetype .office-archetype-nav {
   display: flex;
   gap: 0.75rem;
 }
 
-.office-archetype-nav .button {
+.office-archetype .office-archetype-nav .button {
   flex: 1;
 }
 
@@ -460,28 +465,45 @@
 }
 
 @media (width >= 900px) {
-  .office-archetype-panel {
+  .office-archetype .office-archetype-panel {
     padding: 2.5rem 2rem 1.25rem;
   }
 
-  .office-archetype-controls {
+  .office-archetype .office-archetype-controls {
     padding: 1.25rem 2rem 2rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .office-archetype-float,
-  .office-archetype-badge-icon,
-  .office-archetype-start,
-  .office-archetype-confetti-piece {
+  .office-archetype .office-archetype-float,
+  .office-archetype .office-archetype-badge-icon,
+  .office-archetype .office-archetype-start,
+  .office-archetype .office-archetype-confetti-piece {
     animation: none;
   }
 
-  .office-archetype-panel.revealed,
-  .office-archetype-panel.exiting,
-  .office-archetype-option,
-  .office-archetype-traits li,
-  .office-archetype-badge {
+  .office-archetype .office-archetype-panel.revealed,
+  .office-archetype .office-archetype-panel.exiting,
+  .office-archetype .office-archetype-option,
+  .office-archetype .office-archetype-traits li,
+  .office-archetype .office-archetype-badge {
     animation: none;
+  }
+
+  .office-archetype .office-archetype-dot,
+  .office-archetype .office-archetype-option {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .office-archetype .office-archetype-quiz,
+  .office-archetype .office-archetype-option,
+  .office-archetype .button {
+    border: 2px solid CanvasText;
+  }
+
+  .office-archetype .office-archetype-panel:focus-visible {
+    outline-color: Highlight;
   }
 }
