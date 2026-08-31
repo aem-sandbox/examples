@@ -17,6 +17,7 @@ import { applyGatingIfNeeded } from './handlers/gating.js';
 const getExtension = (path) => {
   const basename = path.split('/').pop();
   const pos = basename.lastIndexOf('.');
+  if (basename === '.json') return 'json';
   return (basename === '' || pos < 1) ? '' : basename.slice(pos + 1);
 };
 
@@ -58,6 +59,11 @@ const handleRequest = async (request, env) => {
 
   if (url.pathname.startsWith('/drafts/')) {
     return new Response('Not Found', { status: 404 });
+  }
+
+  if (requestURL.pathname === '/index.json') {
+    requestURL.pathname = '/.json';
+    url.pathname = '/.json';
   }
 
   if (isRUMRequest(url)) {
@@ -115,7 +121,7 @@ const handleRequest = async (request, env) => {
 
   // html2json - start
   if (request.method === 'GET' && extension === 'json' && resp.status === 404) {
-    const html2jsonResp = await fetch(buildHTML2JSONURL(url), {
+    const html2jsonResp = await fetch(buildHTML2JSONURL(requestURL), {
       headers: {
         accept: 'application/json',
       },
