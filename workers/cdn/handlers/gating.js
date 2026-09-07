@@ -109,6 +109,6 @@ export async function applyGatingIfNeeded(request, requestURL, response) {
     return htmlResponse(html, response);
   }
 
-  const out = transformGatedHtml(html, isAuthenticated(request));
+  const out = transformGatedHtml(html, await isAuthenticated(request));
   return htmlResponse(out, response, out !== html);
 }
