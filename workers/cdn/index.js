@@ -12,7 +12,7 @@
 
 /* eslint-disable strict, prefer-template, no-restricted-syntax */
 
-import { applyGatingIfNeeded } from './handlers/gating.js';
+import { applyGatingIfNeeded, needsFullOriginResponse } from './handlers/gating.js';
 
 const getExtension = (path) => {
   const basename = path.split('/').pop();
@@ -105,6 +105,13 @@ const handleRequest = async (request, env) => {
   const req = new Request(url, request);
   req.headers.set('x-forwarded-host', req.headers.get('host'));
   req.headers.set('x-byo-cdn-type', 'cloudflare');
+  if (needsFullOriginResponse(request)) {
+    // The cached copy this validator refers to may belong to a different audience, so a
+    // 304 from the origin could resurrect it. Ask for the full body and let the gating
+    // handler decide 200 versus 304.
+    req.headers.delete('if-none-match');
+    req.headers.delete('if-modified-since');
+  }
   if (env.PUSH_INVALIDATION !== 'disabled') {
     req.headers.set('x-push-invalidation', 'enabled');
   }
