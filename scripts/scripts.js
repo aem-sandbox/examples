@@ -152,6 +152,21 @@ function buildEmbedBlocks(main) {
 }
 
 /**
+ * Turns `/widgets/...` links into widget blocks.
+ * @param {Element} main The container element
+ */
+function buildWidgetAutoBlocks(main) {
+  const widgetLinks = [...main.querySelectorAll('a[href*="/widgets/"]')];
+  widgetLinks.forEach((link) => {
+    if (link.closest('.widget')) return;
+
+    const block = buildBlock('widget', [[link.cloneNode(true)]]);
+    replaceParagraphWithBlock(link, block);
+    decorateBlock(block);
+  });
+}
+
+/**
  * Inlines fragment links in a section.
  * @param {Element} section The section element
  */
@@ -190,6 +205,7 @@ function buildAutoBlocks(main) {
   try {
     buildHeroBlock(main);
     buildEmbedBlocks(main);
+    buildWidgetAutoBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);

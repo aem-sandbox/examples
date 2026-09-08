@@ -1,0 +1,506 @@
+{
+  "en": {
+    "intro": {
+      "eyebrow": "Totally unscientific quiz",
+      "headline": "What's your office archetype?",
+      "description": "Five scenarios. Zero HR involvement. Discover whether you're the person who closes loops, blocks calendars, or turns every Slack into a summit.",
+      "timeEstimate": "About 90 seconds · pure vibes",
+      "cta": "Reveal my archetype"
+    },
+    "nav": {
+      "back": "← Back",
+      "next": "Next",
+      "finish": "Show my result",
+      "stepOf": "Question {current} of {total}",
+      "share": "Copy result",
+      "shareSuccess": "Copied!",
+      "restart": "Take again"
+    },
+    "result": {
+      "eyebrow": "Drumroll please…",
+      "coworkerPrefix": "Your ideal desk neighbor:",
+      "coworkerSuffix": "(tag them if you dare)"
+    },
+    "floatIcons": ["☕", "📊", "💬", "📅", "🎯"],
+    "questions": [
+      {
+        "id": "monday",
+        "title": "It's 9:01 on Monday. What's the first tab you open?",
+        "options": [
+          { "value": "calendar", "icon": "📅", "label": "Calendar", "hint": "I need to know where I'm supposed to be", "scores": { "calendar-blocker": 3, "closer": 1 } },
+          { "value": "slack", "icon": "💬", "label": "Slack", "hint": "Someone definitely needs me already", "scores": { "quick-question": 3, "vibes-curator": 1 } },
+          { "value": "coffee", "icon": "☕", "label": "The team kitchen", "hint": "Morale before milestones", "scores": { "vibes-curator": 3, "quick-question": 1 } },
+          { "value": "inbox", "icon": "🎯", "label": "Inbox zero sprint", "hint": "Clear the deck, then conquer", "scores": { "closer": 3, "async-hero": 1 } }
+        ]
+      },
+      {
+        "id": "quick-q",
+        "title": "A coworker pings: \"Got a quick question?\" Your move:",
+        "options": [
+          { "value": "call", "icon": "📞", "label": "\"Let's hop on a call\"", "hint": "45 minutes, minimum", "scores": { "quick-question": 3, "calendar-blocker": 1 } },
+          { "value": "loom", "icon": "🎬", "label": "Send a Loom instead", "hint": "Watch on your own time", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "whiteboard", "icon": "📊", "label": "Draw it out first", "hint": "Words are hard; boxes help", "scores": { "diagram": 3, "async-hero": 1 } },
+          { "value": "friday", "icon": "🗓️", "label": "\"Can this wait till Friday?\"", "hint": "Protect the focus block", "scores": { "calendar-blocker": 3, "closer": 1 } }
+        ]
+      },
+      {
+        "id": "notes",
+        "title": "Your meeting notes are famously…",
+        "options": [
+          { "value": "actions", "icon": "✅", "label": "Action items with owners", "hint": "Who does what by when", "scores": { "closer": 3, "calendar-blocker": 1 } },
+          { "value": "flowchart", "icon": "🔀", "label": "A flowchart that needs a flowchart", "hint": "Arrows everywhere", "scores": { "diagram": 3, "quick-question": 1 } },
+          { "value": "recording", "icon": "🔗", "label": "\"See the recording\"", "hint": "The notes are in the video", "scores": { "quick-question": 2, "async-hero": 2 } },
+          { "value": "vibes", "icon": "😂", "label": "Highlights + inside jokes", "hint": "Culture is documentation too", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "office",
+        "title": "The office perk you'd fight for in court:",
+        "options": [
+          { "value": "whiteboard", "icon": "🖊️", "label": "Wall-sized whiteboard", "hint": "Think in public", "scores": { "diagram": 3, "closer": 1 } },
+          { "value": "booth", "icon": "🤫", "label": "Soundproof phone booth", "hint": "Silence is a feature", "scores": { "async-hero": 3, "closer": 1 } },
+          { "value": "kitchen", "icon": "🥐", "label": "Premium snack bar", "hint": "Feed the team, fuel the banter", "scores": { "vibes-curator": 3, "calendar-blocker": 1 } },
+          { "value": "av", "icon": "🎥", "label": "Meeting room with perfect A/V", "hint": "Hybrid harmony", "scores": { "calendar-blocker": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "ooo",
+        "title": "Your out-of-office autoreply reads like…",
+        "options": [
+          { "value": "delegate", "icon": "🔁", "label": "Full delegation map", "hint": "Contact X for Y, Z for emergencies", "scores": { "closer": 3, "async-hero": 1 } },
+          { "value": "essay", "icon": "📄", "label": "A three-paragraph essay", "hint": "Links, FAQs, and context", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "meetings", "icon": "📅", "label": "\"In meetings until…\"", "hint": "Even on vacation, somehow", "scores": { "calendar-blocker": 3, "quick-question": 1 } },
+          { "value": "gif", "icon": "🎉", "label": "A GIF and a pun", "hint": "OOO = Out Of Office, obviously", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      }
+    ],
+    "archetypes": {
+      "closer": {
+        "icon": "🎯",
+        "title": "The Closer",
+        "tagline": "You don't leave the room until there's an owner and a date.",
+        "traits": ["Inbox zero is a lifestyle", "Your follow-ups have follow-ups", "You turn \"we should\" into \"done\""],
+        "roast": "Your team secretly sets deadlines a day early so there's buffer. Respect.",
+        "coworker": "The Async Hero — they write the docs, you ship the outcome."
+      },
+      "diagram": {
+        "icon": "📊",
+        "title": "The Diagram Person",
+        "tagline": "If it can't be drawn in boxes and arrows, is it even real?",
+        "traits": ["Whiteboard marker always in pocket", "You explain Slack threads with flowcharts", "\"Let me share my screen\" is your catchphrase"],
+        "roast": "Someone once asked you what you had for lunch and you opened Miro.",
+        "coworker": "The Quick Question Merchant — they talk, you translate."
+      },
+      "quick-question": {
+        "icon": "❓",
+        "title": "The \"Quick Question\" Merchant",
+        "tagline": "It's never quick. It's never one question. And we're all fine with it.",
+        "traits": ["\"Got 2 minutes?\" is your opener", "Meetings beget meetings", "You think best out loud"],
+        "roast": "Your calendar has a calendar. HR uses you as a case study for \"collaboration.\"",
+        "coworker": "The Calendar Blocker — together you own 100% of everyone's afternoon."
+      },
+      "calendar-blocker": {
+        "icon": "📅",
+        "title": "The Calendar Blocker",
+        "tagline": "If it's not on the calendar, it doesn't exist. If it is, you're double-booked.",
+        "traits": ["Focus time is sacred turf", "You know every conference room by HVAC noise", "Back-to-back is your default view"],
+        "roast": "You once declined a 1:1 with yourself. Fair.",
+        "coworker": "The Vibes Curator — they fill the gaps between your meetings."
+      },
+      "async-hero": {
+        "icon": "📝",
+        "title": "The Async Hero",
+        "tagline": "Why meet when a perfectly structured doc exists?",
+        "traits": ["Your Notion pages have Notion pages", "You reply in threads, thoughtfully", "Recordings > real-time every time"],
+        "roast": "Someone said \"quick sync\" and you sent a 12-minute read with a table of contents.",
+        "coworker": "The Closer — they pull the trigger on your brilliant briefs."
+      },
+      "vibes-curator": {
+        "icon": "☕",
+        "title": "The Vibes Curator",
+        "tagline": "You keep the culture warm and the coffee hot.",
+        "traits": ["You know everyone's order", "Standups start with a win", "You turn awkward silence into inside jokes"],
+        "roast": "The office plants thrive near your desk. Coincidence? No.",
+        "coworker": "The Diagram Person — they map the plan, you keep the room alive."
+      }
+    }
+  },
+  "fr": {
+    "intro": {
+      "eyebrow": "Quiz totalement non scientifique",
+      "headline": "Quel est votre archétype de bureau ?",
+      "description": "Cinq scénarios. Zéro implication RH. Découvrez si vous êtes celui qui boucle les dossiers, bloque les calendriers ou transforme chaque Slack en sommet.",
+      "timeEstimate": "Environ 90 secondes · pure ambiance",
+      "cta": "Révéler mon archétype"
+    },
+    "nav": {
+      "back": "← Retour",
+      "next": "Suivant",
+      "finish": "Voir mon résultat",
+      "stepOf": "Question {current} sur {total}",
+      "share": "Copier le résultat",
+      "shareSuccess": "Copié !",
+      "restart": "Recommencer"
+    },
+    "result": {
+      "eyebrow": "Roulement de tambour…",
+      "coworkerPrefix": "Votre voisin de bureau idéal :",
+      "coworkerSuffix": "(taguez-le si vous osez)"
+    },
+    "floatIcons": ["☕", "📊", "💬", "📅", "🎯"],
+    "questions": [
+      {
+        "id": "monday",
+        "title": "Il est 9 h 01 lundi. Quel est le premier onglet que vous ouvrez ?",
+        "options": [
+          { "value": "calendar", "icon": "📅", "label": "Calendrier", "hint": "Je dois savoir où je dois être", "scores": { "calendar-blocker": 3, "closer": 1 } },
+          { "value": "slack", "icon": "💬", "label": "Slack", "hint": "Quelqu'un a sûrement besoin de moi", "scores": { "quick-question": 3, "vibes-curator": 1 } },
+          { "value": "coffee", "icon": "☕", "label": "La cuisine d'équipe", "hint": "Le moral avant les objectifs", "scores": { "vibes-curator": 3, "quick-question": 1 } },
+          { "value": "inbox", "icon": "🎯", "label": "Inbox zero", "hint": "Vider le deck, puis conquérir", "scores": { "closer": 3, "async-hero": 1 } }
+        ]
+      },
+      {
+        "id": "quick-q",
+        "title": "Un collègue écrit : « Petite question rapide ? » Votre réaction :",
+        "options": [
+          { "value": "call", "icon": "📞", "label": "« On saute sur un appel »", "hint": "45 minutes, minimum", "scores": { "quick-question": 3, "calendar-blocker": 1 } },
+          { "value": "loom", "icon": "🎬", "label": "Envoyer un Loom", "hint": "Regardez à votre rythme", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "whiteboard", "icon": "📊", "label": "Dessiner d'abord", "hint": "Les mots, c'est dur ; les boîtes aident", "scores": { "diagram": 3, "async-hero": 1 } },
+          { "value": "friday", "icon": "🗓️", "label": "« On peut attendre vendredi ? »", "hint": "Protéger le bloc focus", "scores": { "calendar-blocker": 3, "closer": 1 } }
+        ]
+      },
+      {
+        "id": "notes",
+        "title": "Vos notes de réunion sont réputées pour être…",
+        "options": [
+          { "value": "actions", "icon": "✅", "label": "Actions avec responsables", "hint": "Qui fait quoi et quand", "scores": { "closer": 3, "calendar-blocker": 1 } },
+          { "value": "flowchart", "icon": "🔀", "label": "Un organigramme qui en demande un autre", "hint": "Des flèches partout", "scores": { "diagram": 3, "quick-question": 1 } },
+          { "value": "recording", "icon": "🔗", "label": "« Voir l'enregistrement »", "hint": "Les notes sont dans la vidéo", "scores": { "quick-question": 2, "async-hero": 2 } },
+          { "value": "vibes", "icon": "😂", "label": "Moments forts + blagues internes", "hint": "La culture, c'est aussi de la doc", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "office",
+        "title": "L'avantage de bureau pour lequel vous iriez au tribunal :",
+        "options": [
+          { "value": "whiteboard", "icon": "🖊️", "label": "Tableau blanc mural", "hint": "Penser en public", "scores": { "diagram": 3, "closer": 1 } },
+          { "value": "booth", "icon": "🤫", "label": "Cabine insonorisée", "hint": "Le silence est une fonctionnalité", "scores": { "async-hero": 3, "closer": 1 } },
+          { "value": "kitchen", "icon": "🥐", "label": "Bar à snacks premium", "hint": "Nourrir l'équipe, alimenter les blagues", "scores": { "vibes-curator": 3, "calendar-blocker": 1 } },
+          { "value": "av", "icon": "🎥", "label": "Salle de réunion A/V parfaite", "hint": "Harmonie hybride", "scores": { "calendar-blocker": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "ooo",
+        "title": "Votre message d'absence ressemble à…",
+        "options": [
+          { "value": "delegate", "icon": "🔁", "label": "Plan de délégation complet", "hint": "Contactez X pour Y, Z pour les urgences", "scores": { "closer": 3, "async-hero": 1 } },
+          { "value": "essay", "icon": "📄", "label": "Un essai de trois paragraphes", "hint": "Liens, FAQ et contexte", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "meetings", "icon": "📅", "label": "« En réunion jusqu'à… »", "hint": "Même en vacances, bizarrement", "scores": { "calendar-blocker": 3, "quick-question": 1 } },
+          { "value": "gif", "icon": "🎉", "label": "Un GIF et un jeu de mots", "hint": "OOO = Out Of Office, évidemment", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      }
+    ],
+    "archetypes": {
+      "closer": {
+        "icon": "🎯",
+        "title": "Le Closer",
+        "tagline": "Vous ne quittez pas la salle sans responsable et date limite.",
+        "traits": ["Inbox zero est un mode de vie", "Vos relances ont des relances", "Vous transformez « on devrait » en « fait »"],
+        "roast": "Votre équipe fixe secrètement les deadlines un jour plus tôt. Respect.",
+        "coworker": "Le Héros Async — il rédige, vous livrez."
+      },
+      "diagram": {
+        "icon": "📊",
+        "title": "La Personne aux Diagrammes",
+        "tagline": "Si ça ne tient pas en boîtes et flèches, est-ce que c'est réel ?",
+        "traits": ["Marqueur tableau blanc toujours en poche", "Vous expliquez Slack avec des schémas", "« Je partage mon écran » est votre phrase fétiche"],
+        "roast": "On vous a demandé ce que vous aviez mangé et vous avez ouvert Miro.",
+        "coworker": "Le Marchand de « Petites Questions » — il parle, vous traduisez."
+      },
+      "quick-question": {
+        "icon": "❓",
+        "title": "Le Marchand de « Petites Questions »",
+        "tagline": "Ce n'est jamais rapide. Ce n'est jamais une seule question. Et ça va.",
+        "traits": ["« 2 minutes ? » est votre accroche", "Les réunions engendrent des réunions", "Vous pensez mieux à voix haute"],
+        "roast": "Votre calendrier a un calendrier. Les RH vous citent en exemple de « collaboration ».",
+        "coworker": "Le Bloqueur de Calendrier — ensemble vous possédez 100 % des après-midis."
+      },
+      "calendar-blocker": {
+        "icon": "📅",
+        "title": "Le Bloqueur de Calendrier",
+        "tagline": "Si ce n'est pas au calendrier, ça n'existe pas. Si c'est au calendrier, vous êtes en double.",
+        "traits": ["Le focus time est territoire sacré", "Vous connaissez chaque salle par le bruit CVC", "Back-to-back est votre vue par défaut"],
+        "roast": "Vous avez déjà refusé un 1:1 avec vous-même. L'équité.",
+        "coworker": "Le Curateur de Vibes — il remplit les trous entre vos réunions."
+      },
+      "async-hero": {
+        "icon": "📝",
+        "title": "Le Héros Async",
+        "tagline": "Pourquoi se réunir quand un doc parfaitement structuré existe ?",
+        "traits": ["Vos pages Notion ont des pages Notion", "Vous répondez dans les fils, avec réflexion", "Enregistrements > temps réel, toujours"],
+        "roast": "Quelqu'un a dit « sync rapide » et vous avez envoyé une lecture de 12 minutes avec sommaire.",
+        "coworker": "Le Closer — il déclenche sur vos brillants briefs."
+      },
+      "vibes-curator": {
+        "icon": "☕",
+        "title": "Le Curateur de Vibes",
+        "tagline": "Vous gardez la culture chaleureuse et le café chaud.",
+        "traits": ["Vous connaissez la commande de chacun", "Les standups commencent par une victoire", "Vous transformez le silence en blagues internes"],
+        "roast": "Les plantes de bureau prospèrent près de votre bureau. Coïncidence ? Non.",
+        "coworker": "La Personne aux Diagrammes — elle cartographie, vous animez la salle."
+      }
+    }
+  },
+  "de": {
+    "intro": {
+      "eyebrow": "Völlig unwissenschaftliches Quiz",
+      "headline": "Was ist dein Büro-Archetyp?",
+      "description": "Fünf Szenarien. Null HR-Beteiligung. Finde heraus, ob du der Loop-Closer, Kalender-Blocker oder Slack-Gipfel-Veranstalter bist.",
+      "timeEstimate": "Etwa 90 Sekunden · pure Vibes",
+      "cta": "Archetyp enthüllen"
+    },
+    "nav": {
+      "back": "← Zurück",
+      "next": "Weiter",
+      "finish": "Ergebnis zeigen",
+      "stepOf": "Frage {current} von {total}",
+      "share": "Ergebnis kopieren",
+      "shareSuccess": "Kopiert!",
+      "restart": "Nochmal"
+    },
+    "result": {
+      "eyebrow": "Spannung steigt…",
+      "coworkerPrefix": "Dein idealer Schreibtisch-Nachbar:",
+      "coworkerSuffix": "(markiere sie, wenn du dich traust)"
+    },
+    "floatIcons": ["☕", "📊", "💬", "📅", "🎯"],
+    "questions": [
+      {
+        "id": "monday",
+        "title": "Es ist Montag, 9:01. Welchen Tab öffnest du zuerst?",
+        "options": [
+          { "value": "calendar", "icon": "📅", "label": "Kalender", "hint": "Ich muss wissen, wo ich sein soll", "scores": { "calendar-blocker": 3, "closer": 1 } },
+          { "value": "slack", "icon": "💬", "label": "Slack", "hint": "Jemand braucht mich bestimmt schon", "scores": { "quick-question": 3, "vibes-curator": 1 } },
+          { "value": "coffee", "icon": "☕", "label": "Teamküche", "hint": "Moral vor Meilensteinen", "scores": { "vibes-curator": 3, "quick-question": 1 } },
+          { "value": "inbox", "icon": "🎯", "label": "Inbox Zero", "hint": "Deck klären, dann erobern", "scores": { "closer": 3, "async-hero": 1 } }
+        ]
+      },
+      {
+        "id": "quick-q",
+        "title": "Ein Kollege schreibt: „Kurze Frage?“ Dein Move:",
+        "options": [
+          { "value": "call", "icon": "📞", "label": "„Lass uns telefonieren“", "hint": "45 Minuten, minimum", "scores": { "quick-question": 3, "calendar-blocker": 1 } },
+          { "value": "loom", "icon": "🎬", "label": "Loom schicken", "hint": "Schau in deiner Zeit", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "whiteboard", "icon": "📊", "label": "Erst mal zeichnen", "hint": "Worte sind schwer; Kästen helfen", "scores": { "diagram": 3, "async-hero": 1 } },
+          { "value": "friday", "icon": "🗓️", "label": "„Geht das bis Freitag?“", "hint": "Focus-Block schützen", "scores": { "calendar-blocker": 3, "closer": 1 } }
+        ]
+      },
+      {
+        "id": "notes",
+        "title": "Deine Meeting-Notizen sind berühmt-berüchtigt…",
+        "options": [
+          { "value": "actions", "icon": "✅", "label": "Action Items mit Ownern", "hint": "Wer macht was bis wann", "scores": { "closer": 3, "calendar-blocker": 1 } },
+          { "value": "flowchart", "icon": "🔀", "label": "Ein Flowchart mit Flowchart", "hint": "Pfeile überall", "scores": { "diagram": 3, "quick-question": 1 } },
+          { "value": "recording", "icon": "🔗", "label": "„Siehe Aufzeichnung“", "hint": "Die Notizen sind im Video", "scores": { "quick-question": 2, "async-hero": 2 } },
+          { "value": "vibes", "icon": "😂", "label": "Highlights + Insider-Witze", "hint": "Kultur ist auch Dokumentation", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "office",
+        "title": "Das Büro-Perk, für das du vor Gericht ziehst:",
+        "options": [
+          { "value": "whiteboard", "icon": "🖊️", "label": "Wand-Whiteboard", "hint": "In public denken", "scores": { "diagram": 3, "closer": 1 } },
+          { "value": "booth", "icon": "🤫", "label": "Schallisolierte Kabine", "hint": "Stille ist ein Feature", "scores": { "async-hero": 3, "closer": 1 } },
+          { "value": "kitchen", "icon": "🥐", "label": "Premium-Snack-Bar", "hint": "Team füttern, Banter tanken", "scores": { "vibes-curator": 3, "calendar-blocker": 1 } },
+          { "value": "av", "icon": "🎥", "label": "Meeting-Raum mit perfektem A/V", "hint": "Hybrid-Harmonie", "scores": { "calendar-blocker": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "ooo",
+        "title": "Deine Abwesenheitsnotiz liest sich wie…",
+        "options": [
+          { "value": "delegate", "icon": "🔁", "label": "Voller Delegationsplan", "hint": "X für Y, Z für Notfälle", "scores": { "closer": 3, "async-hero": 1 } },
+          { "value": "essay", "icon": "📄", "label": "Drei Absätze Essay", "hint": "Links, FAQs und Kontext", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "meetings", "icon": "📅", "label": "„In Meetings bis…“", "hint": "Auch im Urlaub, irgendwie", "scores": { "calendar-blocker": 3, "quick-question": 1 } },
+          { "value": "gif", "icon": "🎉", "label": "Ein GIF und ein Wortspiel", "hint": "OOO = Out Of Office, klar", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      }
+    ],
+    "archetypes": {
+      "closer": {
+        "icon": "🎯",
+        "title": "Der Closer",
+        "tagline": "Du verlässt den Raum erst mit Owner und Datum.",
+        "traits": ["Inbox Zero ist Lifestyle", "Deine Follow-ups haben Follow-ups", "Du machst aus „wir sollten“ ein „erledigt“"],
+        "roast": "Dein Team setzt heimlich Deadlines einen Tag früher. Respekt.",
+        "coworker": "Der Async-Held — schreibt die Docs, du lieferst das Ergebnis."
+      },
+      "diagram": {
+        "icon": "📊",
+        "title": "Die Diagramm-Person",
+        "tagline": "Wenn es nicht in Kästen und Pfeilen passt — ist es real?",
+        "traits": ["Whiteboard-Marker immer in der Tasche", "Du erklärst Slack-Threads mit Flowcharts", "„Ich teile meinen Bildschirm“ ist dein Motto"],
+        "roast": "Jemand fragte nach dem Mittagessen und du hast Miro geöffnet.",
+        "coworker": "Der „Kurze Frage“-Händler — redet, du übersetzt."
+      },
+      "quick-question": {
+        "icon": "❓",
+        "title": "Der „Kurze Frage“-Händler",
+        "tagline": "Es ist nie kurz. Es ist nie eine Frage. Und das ist okay.",
+        "traits": ["„2 Minuten?“ ist dein Opener", "Meetings gebären Meetings", "Du denkst am besten laut"],
+        "roast": "Dein Kalender hat einen Kalender. HR nutzt dich als „Kollaborations“-Fallstudie.",
+        "coworker": "Der Kalender-Blocker — zusammen besetzt ihr 100 % aller Nachmittage."
+      },
+      "calendar-blocker": {
+        "icon": "📅",
+        "title": "Der Kalender-Blocker",
+        "tagline": "Nicht im Kalender = existiert nicht. Im Kalender = doppelt gebucht.",
+        "traits": ["Focus Time ist heiliges Terrain", "Du kennst jeden Raum am HVAC-Geräusch", "Back-to-back ist deine Standard-Ansicht"],
+        "roast": "Du hast mal ein 1:1 mit dir selbst abgelehnt. Fair.",
+        "coworker": "Der Vibes-Kurator — füllt die Lücken zwischen deinen Meetings."
+      },
+      "async-hero": {
+        "icon": "📝",
+        "title": "Der Async-Held",
+        "tagline": "Warum treffen, wenn ein perfekt strukturiertes Doc existiert?",
+        "traits": ["Deine Notion-Seiten haben Notion-Seiten", "Du antwortest durchdacht in Threads", "Aufzeichnungen > Echtzeit, immer"],
+        "roast": "Jemand sagte „kurzer Sync“ und du schicktest 12 Minuten Lesezeit mit Inhaltsverzeichnis.",
+        "coworker": "Der Closer — zündet bei deinen brillanten Briefs."
+      },
+      "vibes-curator": {
+        "icon": "☕",
+        "title": "Der Vibes-Kurator",
+        "tagline": "Du hältst die Kultur warm und den Kaffee heiß.",
+        "traits": ["Du kennst jedes Bestellungen", "Standups starten mit einem Win", "Du machst aus Stille Insider-Witze"],
+        "roast": "Die Büropflanzen gedeihen an deinem Schreibtisch. Zufall? Nein.",
+        "coworker": "Die Diagramm-Person — plant die Karte, du hältst den Raum lebendig."
+      }
+    }
+  },
+  "es": {
+    "intro": {
+      "eyebrow": "Quiz totalmente no científico",
+      "headline": "¿Cuál es tu arquetipo de oficina?",
+      "description": "Cinco escenarios. Cero RR. HH. Descubre si eres quien cierra loops, bloquea calendarios o convierte cada Slack en una cumbre.",
+      "timeEstimate": "Unos 90 segundos · puro ambiente",
+      "cta": "Revelar mi arquetipo"
+    },
+    "nav": {
+      "back": "← Atrás",
+      "next": "Siguiente",
+      "finish": "Ver mi resultado",
+      "stepOf": "Pregunta {current} de {total}",
+      "share": "Copiar resultado",
+      "shareSuccess": "¡Copiado!",
+      "restart": "Repetir"
+    },
+    "result": {
+      "eyebrow": "Redoble de tambores…",
+      "coworkerPrefix": "Tu compañero de escritorio ideal:",
+      "coworkerSuffix": "(menciónalo si te atreves)"
+    },
+    "floatIcons": ["☕", "📊", "💬", "📅", "🎯"],
+    "questions": [
+      {
+        "id": "monday",
+        "title": "Son las 9:01 del lunes. ¿Qué pestaña abres primero?",
+        "options": [
+          { "value": "calendar", "icon": "📅", "label": "Calendario", "hint": "Necesito saber dónde debo estar", "scores": { "calendar-blocker": 3, "closer": 1 } },
+          { "value": "slack", "icon": "💬", "label": "Slack", "hint": "Alguien seguro me necesita ya", "scores": { "quick-question": 3, "vibes-curator": 1 } },
+          { "value": "coffee", "icon": "☕", "label": "La cocina del equipo", "hint": "Moral antes que metas", "scores": { "vibes-curator": 3, "quick-question": 1 } },
+          { "value": "inbox", "icon": "🎯", "label": "Inbox zero", "hint": "Despejar la mesa, luego conquistar", "scores": { "closer": 3, "async-hero": 1 } }
+        ]
+      },
+      {
+        "id": "quick-q",
+        "title": "Un compañero escribe: \"¿Una pregunta rápida?\" Tu movimiento:",
+        "options": [
+          { "value": "call", "icon": "📞", "label": "\"Saltemos a una llamada\"", "hint": "45 minutos, mínimo", "scores": { "quick-question": 3, "calendar-blocker": 1 } },
+          { "value": "loom", "icon": "🎬", "label": "Enviar un Loom", "hint": "Míralo a tu ritmo", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "whiteboard", "icon": "📊", "label": "Dibujarlo primero", "hint": "Las palabras cuestan; las cajas ayudan", "scores": { "diagram": 3, "async-hero": 1 } },
+          { "value": "friday", "icon": "🗓️", "label": "\"¿Puede esperar al viernes?\"", "hint": "Proteger el bloque de enfoque", "scores": { "calendar-blocker": 3, "closer": 1 } }
+        ]
+      },
+      {
+        "id": "notes",
+        "title": "Tus notas de reunión son famosas por ser…",
+        "options": [
+          { "value": "actions", "icon": "✅", "label": "Acciones con responsables", "hint": "Quién hace qué y cuándo", "scores": { "closer": 3, "calendar-blocker": 1 } },
+          { "value": "flowchart", "icon": "🔀", "label": "Un diagrama que necesita otro diagrama", "hint": "Flechas por todas partes", "scores": { "diagram": 3, "quick-question": 1 } },
+          { "value": "recording", "icon": "🔗", "label": "\"Ver la grabación\"", "hint": "Las notas están en el video", "scores": { "quick-question": 2, "async-hero": 2 } },
+          { "value": "vibes", "icon": "😂", "label": "Highlights + chistes internos", "hint": "La cultura también es documentación", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "office",
+        "title": "La ventaja de oficina por la que irías a juicio:",
+        "options": [
+          { "value": "whiteboard", "icon": "🖊️", "label": "Pizarra de pared", "hint": "Pensar en público", "scores": { "diagram": 3, "closer": 1 } },
+          { "value": "booth", "icon": "🤫", "label": "Cabina insonorizada", "hint": "El silencio es una función", "scores": { "async-hero": 3, "closer": 1 } },
+          { "value": "kitchen", "icon": "🥐", "label": "Bar de snacks premium", "hint": "Alimentar al equipo, alimentar el banter", "scores": { "vibes-curator": 3, "calendar-blocker": 1 } },
+          { "value": "av", "icon": "🎥", "label": "Sala con A/V perfecto", "hint": "Armonía híbrida", "scores": { "calendar-blocker": 3, "quick-question": 1 } }
+        ]
+      },
+      {
+        "id": "ooo",
+        "title": "Tu mensaje de ausencia suena a…",
+        "options": [
+          { "value": "delegate", "icon": "🔁", "label": "Mapa de delegación completo", "hint": "Contacta a X por Y, Z por emergencias", "scores": { "closer": 3, "async-hero": 1 } },
+          { "value": "essay", "icon": "📄", "label": "Un ensayo de tres párrafos", "hint": "Enlaces, FAQ y contexto", "scores": { "async-hero": 3, "diagram": 1 } },
+          { "value": "meetings", "icon": "📅", "label": "\"En reuniones hasta…\"", "hint": "Incluso de vacaciones, somehow", "scores": { "calendar-blocker": 3, "quick-question": 1 } },
+          { "value": "gif", "icon": "🎉", "label": "Un GIF y un juego de palabras", "hint": "OOO = Out Of Office, obvio", "scores": { "vibes-curator": 3, "quick-question": 1 } }
+        ]
+      }
+    ],
+    "archetypes": {
+      "closer": {
+        "icon": "🎯",
+        "title": "El Closer",
+        "tagline": "No sales de la sala sin responsable y fecha.",
+        "traits": ["Inbox zero es un estilo de vida", "Tus seguimientos tienen seguimientos", "Conviertes \"deberíamos\" en \"hecho\""],
+        "roast": "Tu equipo pone deadlines un día antes en secreto. Respeto.",
+        "coworker": "El Héroe Async — escribe los docs, tú entregas el resultado."
+      },
+      "diagram": {
+        "icon": "📊",
+        "title": "La Persona de Diagramas",
+        "tagline": "Si no cabe en cajas y flechas, ¿es real?",
+        "traits": ["Rotulador de pizarra siempre en el bolsillo", "Explicas hilos de Slack con flowcharts", "\"Comparto pantalla\" es tu frase favorita"],
+        "roast": "Te preguntaron qué almorzaste y abriste Miro.",
+        "coworker": "El Mercader de \"Preguntas Rápidas\" — habla, tú traduces."
+      },
+      "quick-question": {
+        "icon": "❓",
+        "title": "El Mercader de \"Preguntas Rápidas\"",
+        "tagline": "Nunca es rápida. Nunca es una sola. Y está bien.",
+        "traits": ["\"¿2 minutos?\" es tu apertura", "Las reuniones engendran reuniones", "Piensas mejor en voz alta"],
+        "roast": "Tu calendario tiene calendario. RR. HH. te usa como caso de \"colaboración\".",
+        "coworker": "El Bloqueador de Calendario — juntos poseéis el 100 % de las tardes."
+      },
+      "calendar-blocker": {
+        "icon": "📅",
+        "title": "El Bloqueador de Calendario",
+        "tagline": "Si no está en el calendario, no existe. Si está, tienes doble reserva.",
+        "traits": ["El focus time es territorio sagrado", "Conoces cada sala por el ruido HVAC", "Back-to-back es tu vista por defecto"],
+        "roast": "Una vez rechazaste un 1:1 contigo mismo. Justo.",
+        "coworker": "El Curador de Vibes — llena los huecos entre tus reuniones."
+      },
+      "async-hero": {
+        "icon": "📝",
+        "title": "El Héroe Async",
+        "tagline": "¿Para qué reunirse si existe un doc perfectamente estructurado?",
+        "traits": ["Tus páginas Notion tienen páginas Notion", "Respondes en hilos, con calma", "Grabaciones > tiempo real, siempre"],
+        "roast": "Alguien dijo \"sync rápido\" y enviaste 12 minutos de lectura con índice.",
+        "coworker": "El Closer — dispara con tus brillantes briefs."
+      },
+      "vibes-curator": {
+        "icon": "☕",
+        "title": "El Curador de Vibes",
+        "tagline": "Mantienes la cultura cálida y el café caliente.",
+        "traits": ["Conoces el pedido de todos", "Los standups empiezan con una victoria", "Conviertes el silencio en chistes internos"],
+        "roast": "Las plantas de oficina prosperan cerca de tu escritorio. ¿Casualidad? No.",
+        "coworker": "La Persona de Diagramas — traza el plan, tú mantienes la sala viva."
+      }
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "en": {
+    "ariaLabel": "Interactive 3D model viewer",
+    "autoRotateOn": "Pause spin",
+    "autoRotateOff": "Auto spin",
+    "reset": "Reset view",
+    "model": {
+      "src": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+      "alt": "Damaged Helmet — a photorealistic sci-fi helmet 3D model",
+      "poster": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/Screenshot/screenshot_large.jpg",
+      "environment": "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    },
+    "camera": {
+      "orbit": "0deg 75deg 105%",
+      "target": "0m 0m 0m",
+      "fieldOfView": "30deg"
+    }
+  },
+  "fr": {
+    "ariaLabel": "Visionneuse 3D interactive",
+    "autoRotateOn": "Pause rotation",
+    "autoRotateOff": "Rotation auto",
+    "reset": "Réinitialiser",
+    "model": {
+      "src": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+      "alt": "Casque endommagé — modèle 3D photoréaliste de casque sci-fi",
+      "poster": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/Screenshot/screenshot_large.jpg",
+      "environment": "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    },
+    "camera": {
+      "orbit": "0deg 75deg 105%",
+      "target": "0m 0m 0m",
+      "fieldOfView": "30deg"
+    }
+  },
+  "de": {
+    "ariaLabel": "Interaktiver 3D-Modell-Viewer",
+    "autoRotateOn": "Rotation pausieren",
+    "autoRotateOff": "Auto-Rotation",
+    "reset": "Ansicht zurücksetzen",
+    "model": {
+      "src": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+      "alt": "Beschädigter Helm — fotorealistisches Sci-Fi-Helm-3D-Modell",
+      "poster": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/Screenshot/screenshot_large.jpg",
+      "environment": "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    },
+    "camera": {
+      "orbit": "0deg 75deg 105%",
+      "target": "0m 0m 0m",
+      "fieldOfView": "30deg"
+    }
+  },
+  "es": {
+    "ariaLabel": "Visor 3D interactivo",
+    "autoRotateOn": "Pausar giro",
+    "autoRotateOff": "Giro automático",
+    "reset": "Restablecer vista",
+    "model": {
+      "src": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+      "alt": "Casco dañado — modelo 3D fotorrealista de casco sci-fi",
+      "poster": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DamagedHelmet/Screenshot/screenshot_large.jpg",
+      "environment": "https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    },
+    "camera": {
+      "orbit": "0deg 75deg 105%",
+      "target": "0m 0m 0m",
+      "fieldOfView": "30deg"
+    }
+  }
+}
