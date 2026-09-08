@@ -27,6 +27,17 @@ describe('getLoginUrl', () => {
     expect(returnToOf(getLoginUrl('https://evil.example/steal'))).toBe('/');
   });
 
+  it('targets the auth worker on the current origin, not a hardcoded host', () => {
+    window.happyDOM.setURL('https://preview.example.test/gated-content');
+    try {
+      const target = new URL(getLoginUrl());
+      expect(target.origin).toBe('https://preview.example.test');
+      expect(target.pathname).toBe('/auth/login');
+    } finally {
+      window.happyDOM.setURL('https://examples.bbird.live/');
+    }
+  });
+
   it('returns the demo name with the authenticated session state', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({
       authenticated: true,

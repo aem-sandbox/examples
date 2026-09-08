@@ -5,13 +5,14 @@
  * It works with any backend that provides the three core auth endpoints.
  *
  * CONFIGURATION:
- * Change AUTH_ORIGIN to point to your authentication backend.
- *
- * Examples:
- * - Cloudflare Worker: 'https://your-auth-worker.workers.dev'
- * - Custom domain: 'https://auth.yourdomain.com'
- * - Auth0: 'https://your-tenant.auth0.com'
- */
+ * By default the auth backend is served from the same origin as the page, which keeps the
+ * session cookie first-party. Set AUTH_ORIGIN only if your backend lives elsewhere.
+  *
+  * Examples:
+  * - Cloudflare Worker: 'https://your-auth-worker.workers.dev'
+  * - Custom domain: 'https://auth.yourdomain.com'
+  * - Auth0: 'https://your-tenant.auth0.com'
+  */
 
 // =============================================================================
 // CONFIGURATION - Update this to match your deployment
@@ -20,16 +21,26 @@
 /**
  * Auth backend origin URL
  *
- * For this example, a Cloudflare Worker at examples.bbird.live/auth/* provides a public demo
- * identity. It asks for a display name and returns a fixed fake email address. The demo session
- * illustrates the integration contract but does not verify a real identity.
- *
- * To use your own:
- * 1. Deploy the auth worker (see workers/auth/README.md)
- * 2. Update this URL to your worker's endpoint
- * 3. Replace the demo worker with your identity-provider integration
+ * Empty means same-origin: /auth/* is served by a Cloudflare Worker routed onto the site's own
+ * hostname. Same-origin keeps the session cookie first-party, so it survives SameSite=Lax and
+ * needs no cross-origin CORS grant. For this example that worker provides a public demo identity:
+ * it asks for a display name and returns a fixed fake email address. The demo session illustrates
+ * the integration contract but does not verify a real identity.
+  *
+  * To use your own:
+  * 1. Deploy the auth worker (see workers/auth/README.md)
+ * 2. Route it onto your site's hostname, or set AUTH_ORIGIN to its origin
+  * 3. Replace the demo worker with your identity-provider integration
+  */
+const AUTH_ORIGIN = '';
+
+/**
+ * Resolves the auth backend origin, defaulting to the current page's origin.
+ * @returns {string} Origin used to build auth URLs
  */
-const AUTH_ORIGIN = 'https://examples.bbird.live';
+function authOrigin() {
+  return AUTH_ORIGIN || window.location.origin;
+}
 
 /**
  * Auth endpoint paths
@@ -59,7 +70,7 @@ const AUTH_LABELS = {
  * @returns {string} Full URL
  */
 function authUrl(path) {
-  return new URL(path, AUTH_ORIGIN).toString();
+  return new URL(path, authOrigin()).toString();
 }
 
 /**
@@ -110,7 +121,7 @@ function toReturnPath(returnTo) {
  * window.location.href = getLoginUrl('/dashboard');
  */
 export function getLoginUrl(returnTo = window.location.href) {
-  const target = new URL(AUTH_PATHS.login, AUTH_ORIGIN);
+  const target = new URL(AUTH_PATHS.login, authOrigin());
   target.searchParams.set('returnTo', toReturnPath(returnTo));
   return target.toString();
 }
