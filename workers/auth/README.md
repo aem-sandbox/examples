@@ -1,237 +1,92 @@
-# Auth Worker - Reference Implementation
+# Demo Login Worker
 
-**This is a reference implementation** showing how to build a login flow for AEM Edge Delivery Services using **Cloudflare Access + Cloudflare Workers**.
+Public login-flow reference for the AEM Examples site.
 
-This worker provides three simple endpoints that work with **any authentication provider** - the code is provider-agnostic, it just reads headers that the auth provider sets.
+This worker intentionally **does not verify identity**. It asks for a display name, assigns the
+reserved fake address `visitor@example.invalid`, and stores that demo identity in a signed,
+short-lived cookie. It demonstrates the browser-to-worker session contract without collecting real
+email addresses or requiring an account with an external identity provider.
 
-## How It Works
+Do not use this worker to authorize access to private content. A production implementation replaces
+the demo login handler with OAuth or OpenID Connect while keeping the same site-facing routes.
 
-### Architecture
+## Route contract
 
-```
-User clicks "Login"
-    ↓
-Auth Provider intercepts (e.g., Cloudflare Access)
-    ↓
-Shows login page / handles authentication
-    ↓
-Sets session cookie + adds headers
-    ↓
-Forwards authenticated request to this worker
-    ↓
-Worker reads headers, returns data or redirects
-```
+| Route | Purpose |
+| --- | --- |
+| `GET /auth/login?returnTo=<path>` | Shows the demo login form. |
+| `POST /auth/login` | Creates the signed demo session and returns to the requested path. |
+| `GET /auth/session` | Returns the current session as JSON. |
+| `GET /auth/logout` | Clears the demo session and returns to the home page. |
 
-**Key insight**: The worker does NOT handle authentication itself. It just reads headers that the auth provider already set.
+`returnTo` must be a path on this site. Absolute, protocol-relative, malformed, and non-HTTP targets
+fall back to `/auth/session`, preventing an open redirect after login.
 
-For **Cloudflare Access specifically**:
-- Cloudflare Access sits in front of this worker
-- Access handles the login UI, email/PIN flow, session management
-- Access adds these headers to authenticated requests:
-  - `Cf-Access-Authenticated-User-Email`
-  - `Cf-Access-Jwt-Assertion`
-- Worker reads these headers and returns JSON or redirects
+## Session
 
-## Endpoints
+The worker stores this payload in an HMAC-SHA256-signed cookie:
 
-### `GET /auth/login?returnTo=<url>`
-Initiates login flow.
-
-**What it does:**
-- Validates `returnTo` parameter (security!)
-- Redirects to `returnTo` URL
-
-**What the auth provider does** (happens BEFORE this endpoint):
-- Shows login page
-- Validates credentials
-- Creates session
-- Sets cookie
-- Then forwards to this endpoint
-
-**Example:**
-```
-GET /auth/login?returnTo=https://example.com/page
-
-Response: 302 Redirect to https://example.com/page
+```json
+{
+  "v": 1,
+  "name": "Ada Lovelace",
+  "email": "visitor@example.invalid",
+  "exp": 1788796800
+}
 ```
 
-### `GET /auth/logout`
-Logs out user.
+The cookie is host-only, `HttpOnly`, `Secure`, `SameSite=Lax`, available on `/`, and expires after
+one hour. The signing key is intentionally a public constant in this example. It demonstrates the
+mechanics of a signed session, but anyone can forge a cookie because the key is public.
 
-**What it does:**
-- Redirects to auth provider's logout endpoint
-- For Cloudflare Access: `/cdn-cgi/access/logout`
+The fixed `.invalid` email makes the response shape realistic without collecting or inventing a
+real address. The chosen display name is held only in the visitor's cookie; the worker has no user
+database.
 
-**Example:**
-```
-GET /auth/logout
+There is no session-secret configuration step for this public demo. A real implementation must
+store its signing key in a Worker environment secret and must not share it with browsers or source
+control. This demo remains separate from origin protection and does not make content private.
 
-Response: 302 Redirect to /cdn-cgi/access/logout
-```
+## Site integration
 
-### `GET /auth/session`
-Returns current authentication state as JSON.
+- `scripts/shared/auth-api.js` calls the four `/auth/*` routes.
+- `blocks/header/header.js` changes **Login** to **Logout** when `/auth/session` is authenticated.
+- The existing info marker exposes the chosen name and fake email in its tooltip.
+- Login and Logout remain available in the mobile header.
 
-**What it does:**
-- Reads headers set by auth provider
-- Returns authentication status
+Example authenticated session response:
 
-**Example (authenticated):**
 ```json
 {
   "authenticated": true,
-  "email": "user@example.com",
-  "hasJwtAssertion": true,
+  "name": "Ada Lovelace",
+  "email": "visitor@example.invalid",
   "path": "/auth/session"
 }
 ```
 
-**Example (anonymous):**
-```json
-{
-  "authenticated": false,
-  "email": "",
-  "hasJwtAssertion": false,
-  "path": "/auth/session"
-}
-```
+## Cloudflare routing
 
-## For This Examples Site
+`wrangler.toml` routes `examples.bbird.live/auth/*` to this worker. Remove the existing Cloudflare
+Access application from that route before testing the public demo; otherwise Access intercepts the
+request before this worker can show its form.
 
-**This site uses:**
-- Auth endpoint: `https://examples.bbird.live/auth`
-- Auth provider: Cloudflare Access
-- Policy: Allow any email (open for community)
-- Authentication method: One-time PIN via email
+## Production adaptation
 
-**Configured in:**
-- `scripts/shared/auth-api.js` - Points to this worker
-- `blocks/header/header.js` - Uses auth-api to show Login/Logout
+Keep the route contract, but replace the demo implementation:
 
-## Deploying Your Own
+1. `/auth/login` redirects to the chosen identity provider.
+2. `/auth/callback` validates state and PKCE, exchanges the authorization code, and creates the
+   application session.
+3. `/auth/session` verifies that session and returns the minimum identity the site needs.
+4. `/auth/logout` clears the application session and, when appropriate, signs out at the provider.
 
-If you want to deploy your own auth worker:
+If login controls access to content rather than only personalizing public pages, protect every
+alternate origin and representation as a separate authorization concern.
 
-### 1. Update wrangler.toml
-
-```toml
-name = "my-auth-worker"
-account_id = "YOUR_ACCOUNT_ID"  # Get from Cloudflare dashboard
-main = "index.js"
-compatibility_date = "2026-03-13"
-workers_dev = true
-```
-
-### 2. Deploy the worker
+## Tests
 
 ```bash
-cd workers/auth
-wrangler deploy
+npm install --prefix ./workers/auth
+npm test --prefix ./workers/auth
 ```
-
-Your worker will be at: `https://my-auth-worker.YOUR_SUBDOMAIN.workers.dev`
-
-### 3. Configure Cloudflare Access
-
-In Cloudflare Zero Trust dashboard:
-
-1. **Create Access Application:**
-   - Domain: `my-auth-worker.YOUR_SUBDOMAIN.workers.dev`
-   - Path: (leave empty to protect entire domain)
-
-2. **Configure Authentication:**
-   - Choose identity provider: Email (OTP), Google, GitHub, etc.
-
-3. **Create Policy:**
-   - Action: Allow
-   - Include: Emails ending in `your-domain.com`
-
-### 4. Update your site
-
-In `scripts/shared/auth-api.js`:
-
-```javascript
-const AUTH_ORIGIN = 'https://my-auth-worker.YOUR_SUBDOMAIN.workers.dev';
-```
-
-## Adapting for Other Auth Providers
-
-This worker is designed to work with **any auth provider**. Just change the header names:
-
-### For Auth0:
-
-```javascript
-// index.js
-function getAccessContext(request) {
-  // Read Auth0 headers (example - adjust to your setup)
-  const email = request.headers.get('X-Auth0-Email');
-  const jwt = request.headers.get('X-Auth0-JWT');
-
-  return {
-    authenticated: Boolean(email || jwt),
-    email: email || '',
-    hasJwtAssertion: Boolean(jwt),
-  };
-}
-```
-
-### For Okta:
-
-```javascript
-// index.js
-function getAccessContext(request) {
-  // Read Okta headers (example - adjust to your setup)
-  const email = request.headers.get('X-Okta-User');
-  const jwt = request.headers.get('X-Okta-Token');
-
-  return {
-    authenticated: Boolean(email || jwt),
-    email: email || '',
-    hasJwtAssertion: Boolean(jwt),
-  };
-}
-```
-
-### For Custom OAuth:
-
-You might not even need this worker! Many OAuth providers offer client-side SDKs that handle everything in the browser.
-
-## Testing
-
-### 1. Open incognito window
-
-### 2. Visit the login endpoint
-
-```
-https://examples.bbird.live/auth/login?returnTo=https://examples.bbird.live/
-```
-
-### 3. Complete authentication
-
-- Enter any email address
-- Get PIN via email
-- Enter PIN
-- Redirected back to examples site
-
-### 4. Check session
-
-Visit:
-```
-https://examples.bbird.live/auth/session
-```
-
-Should show `authenticated: true` with your email.
-
-## Key Takeaways
-
-1. **Worker doesn't do authentication** - auth provider does
-2. **Worker just reads headers** - very simple code
-3. **Provider-agnostic design** - change headers, not logic
-4. **Security handled externally** - in Cloudflare Access dashboard
-5. **CORS enabled** - works cross-domain
-
-**This pattern works for ANY authentication provider that can:**
-- Intercept requests
-- Handle login UI
-- Add headers to authenticated requests
-- Forward to your backend

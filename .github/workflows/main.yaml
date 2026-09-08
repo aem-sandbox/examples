@@ -11,9 +11,12 @@ jobs:
       with:
         node-version: 24
     - run: npm ci
+    - run: npm install --prefix workers/auth
     - run: npm install --prefix workers/cdn
     - run: npm install --prefix workers/usgs_quakes
     - run: npm install --prefix test
     - run: npm run lint
+    - run: npm test --prefix workers/auth
+    - run: npm test --prefix workers/cdn
     - run: npm test --prefix workers/usgs_quakes
     - run: npm test --prefix test

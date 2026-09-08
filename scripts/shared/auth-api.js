@@ -5,13 +5,14 @@
  * It works with any backend that provides the three core auth endpoints.
  *
  * CONFIGURATION:
- * Change AUTH_ORIGIN to point to your authentication backend.
- *
- * Examples:
- * - Cloudflare Worker: 'https://your-auth-worker.workers.dev'
- * - Custom domain: 'https://auth.yourdomain.com'
- * - Auth0: 'https://your-tenant.auth0.com'
- */
+ * By default the auth backend is served from the same origin as the page, which keeps the
+ * session cookie first-party. Set AUTH_ORIGIN only if your backend lives elsewhere.
+  *
+  * Examples:
+  * - Cloudflare Worker: 'https://your-auth-worker.workers.dev'
+  * - Custom domain: 'https://auth.yourdomain.com'
+  * - Auth0: 'https://your-tenant.auth0.com'
+  */
 
 // =============================================================================
 // CONFIGURATION - Update this to match your deployment
@@ -20,17 +21,26 @@
 /**
  * Auth backend origin URL
  *
- * For this example, we're using a Cloudflare Worker deployed at examples.bbird.live.
- * The worker is available at examples.bbird.live/auth/* and is protected by
- * Cloudflare Access with an OPEN policy that allows ANY email to authenticate
- * (not restricted to specific domains).
- *
- * To use your own:
- * 1. Deploy the auth worker (see workers/auth/README.md)
- * 2. Update this URL to your worker's endpoint
- * 3. Ensure your auth provider protects the /auth/* endpoints
+ * Empty means same-origin: /auth/* is served by a Cloudflare Worker routed onto the site's own
+ * hostname. Same-origin keeps the session cookie first-party, so it survives SameSite=Lax and
+ * needs no cross-origin CORS grant. For this example that worker provides a public demo identity:
+ * it asks for a display name and returns a fixed fake email address. The demo session illustrates
+ * the integration contract but does not verify a real identity.
+  *
+  * To use your own:
+  * 1. Deploy the auth worker (see workers/auth/README.md)
+ * 2. Route it onto your site's hostname, or set AUTH_ORIGIN to its origin
+  * 3. Replace the demo worker with your identity-provider integration
+  */
+const AUTH_ORIGIN = '';
+
+/**
+ * Resolves the auth backend origin, defaulting to the current page's origin.
+ * @returns {string} Origin used to build auth URLs
  */
-const AUTH_ORIGIN = 'https://examples.bbird.live';
+function authOrigin() {
+  return AUTH_ORIGIN || window.location.origin;
+}
 
 /**
  * Auth endpoint paths
@@ -60,7 +70,7 @@ const AUTH_LABELS = {
  * @returns {string} Full URL
  */
 function authUrl(path) {
-  return new URL(path, AUTH_ORIGIN).toString();
+  return new URL(path, authOrigin()).toString();
 }
 
 /**
@@ -77,9 +87,29 @@ export function getDefaultAuthLabel(type) {
 // =============================================================================
 
 /**
+ * Reduces a return destination to a path on this site.
+ *
+ * The worker accepts a path and nothing else, so an absolute URL is stripped to its path and
+ * a foreign origin is dropped entirely. A redirect target that survives a round trip through
+ * the identity provider as a query parameter is an open redirect unless both ends check it.
+ *
+ * @param {string} returnTo - path or URL to reduce
+ * @returns {string} a path starting with '/'
+ */
+function toReturnPath(returnTo) {
+  try {
+    const target = new URL(returnTo, window.location.origin);
+    if (target.origin !== window.location.origin) return '/';
+    return `${target.pathname}${target.search}${target.hash}`;
+  } catch {
+    return '/';
+  }
+}
+
+/**
  * Generates login URL with return destination
  *
- * @param {string} returnTo - URL to redirect to after login (defaults to current page)
+ * @param {string} returnTo - path to return to after login (defaults to current page)
  * @returns {string} Login URL with returnTo parameter
  *
  * @example
@@ -88,11 +118,11 @@ export function getDefaultAuthLabel(type) {
  *
  * @example
  * // Redirect to login, come back to specific page
- * window.location.href = getLoginUrl('https://example.com/dashboard');
+ * window.location.href = getLoginUrl('/dashboard');
  */
 export function getLoginUrl(returnTo = window.location.href) {
-  const target = new URL(AUTH_PATHS.login, AUTH_ORIGIN);
-  target.searchParams.set('returnTo', returnTo);
+  const target = new URL(AUTH_PATHS.login, authOrigin());
+  target.searchParams.set('returnTo', toReturnPath(returnTo));
   return target.toString();
 }
 
@@ -113,8 +143,8 @@ export function getLogoutUrl() {
  */
 const ANONYMOUS_SESSION = {
   authenticated: false,
+  name: '',
   email: '',
-  hasJwtAssertion: false,
 };
 
 /**
@@ -125,8 +155,8 @@ const ANONYMOUS_SESSION = {
  *
  * @returns {Promise<Object>} Session object
  * @returns {boolean} session.authenticated - Is user authenticated?
+ * @returns {string} session.name - Demo display name (empty if not authenticated)
  * @returns {string} session.email - User's email (empty if not authenticated)
- * @returns {boolean} session.hasJwtAssertion - Does session include JWT?
  *
  * @example
  * const session = await getSessionState();
@@ -162,36 +192,19 @@ export async function getSessionState() {
 }
 
 /**
- * Checks whether any cookie name starts with the given prefix (e.g. Cloudflare Access's
- * CF_Authorization cookie).
- * @param {string} prefix
- * @returns {boolean}
- */
-function hasCookieStartingWith(prefix) {
-  return document.cookie
-    .split(';')
-    .map((entry) => decodeURIComponent(entry.split('=')[0] || '').trim())
-    .some((cookieName) => cookieName.startsWith(prefix));
-}
-
-/**
- * Resolves the real authentication state: tries the session API first, falling back to
- * a CF_Authorization cookie check if that fails. This is the single source of truth for
- * "is the current visitor logged in?" — used by both the header (login/logout button)
- * and the gated-content author preview, so the two can never disagree.
- * @returns {Promise<{authenticated: boolean, email: string}>}
+ * Resolves the authentication state from the demo session API. This is the single source of
+ * truth for the header and the gated-content author preview.
+ * @returns {Promise<{authenticated: boolean, name: string, email: string}>}
  */
 export async function resolveAuthState() {
   try {
     const session = await getSessionState();
     return {
       authenticated: Boolean(session?.authenticated),
+      name: session?.name || '',
       email: session?.email || '',
     };
   } catch {
-    return {
-      authenticated: hasCookieStartingWith('CF_Authorization'),
-      email: '',
-    };
+    return { ...ANONYMOUS_SESSION };
   }
 }

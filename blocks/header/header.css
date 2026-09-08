@@ -311,7 +311,7 @@ body.dark-scheme header nav .nav-tools .icon img {
   }
 
   header nav .nav-tools .nav-auth-link {
-    display: none;
+    padding-inline: var(--space-s);
   }
 
   header nav .nav-sections ul > li.nav-drop > p {

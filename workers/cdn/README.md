@@ -11,18 +11,17 @@ Worker code is based on [aem-cloudflare-prod-worker](https://github.com/adobe/ae
 | `ORIGIN_HOSTNAME` | `main--examples--aem-sandbox.aem.live` |
 | `PUSH_INVALIDATION` | `enabled` |
 
-## Gated content
+## Auth-aware sections
 
 `handlers/gating.js` rewrites HTML for pages marked `<meta name="gated" content="true">`, dropping
 sections/blocks the visitor's audience can't see. Mirrors the author-preview logic in
-`scripts/utils/gated-content.js`, but this is the actual trust boundary — the client-side version
-only runs in author/dev environments.
+`scripts/utils/gated-content.js`. This personalizes a public page; it does not protect content at
+the origin or in alternate representations such as `.plain.html` and `.md`.
 
-**Auth:** `handlers/auth-check.js` — signed in if **`Cf-Access-*`** headers are set, or if the
-**`CF_Authorization`** cookie contains a valid Cloudflare Access JWT. This requires a Cloudflare
-Access (Zero Trust) policy in front of whichever routes should require a logged-in user; the
-worker only reads whatever Access headers/cookie happen to already be present, it doesn't perform
-login itself.
+**Auth:** `handlers/auth-check.js` verifies the HMAC signature and expiry of the
+`bbird_demo_session` cookie created by the demo login worker. Its signing key is intentionally
+public, and the user chooses the display name, so the cookie provides no identity or authorization
+assurance and must not be used to protect confidential content.
 
 **Skips gating:** `/fragments/`, `/nav.plain.html`, `/footer.plain.html` — otherwise a shared
 header/footer pulled into every page could get gated.

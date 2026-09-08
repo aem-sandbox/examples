@@ -156,19 +156,22 @@ function initThemeToggle(tools) {
  * Sets user info badge on auth link
  * The badge appears as a small circle with 'i' next to the button text
  */
-function setAuthUserInfo(link, email) {
+function setAuthUserInfo(link, email, name = '') {
   link.querySelector('.nav-auth-info')?.remove();
   link.removeAttribute('title');
   link.removeAttribute('data-auth-email');
+  link.removeAttribute('data-auth-name');
 
   if (!email) return;
 
   link.dataset.authEmail = email;
-  link.setAttribute('title', email);
+  if (name) link.dataset.authName = name;
+  const identity = name ? `${name} (${email})` : email;
+  link.setAttribute('title', identity);
   const info = document.createElement('span');
   info.className = 'nav-auth-info';
   info.setAttribute('aria-hidden', 'true');
-  info.setAttribute('title', email);
+  info.setAttribute('title', identity);
   info.textContent = 'ⓘ';
   link.append(info);
 }
@@ -198,13 +201,13 @@ async function initAuth(tools) {
   authLink.classList.add('nav-auth-link');
 
   // Get current auth state
-  const { authenticated, email } = await resolveAuthState();
+  const { authenticated, email, name } = await resolveAuthState();
 
   if (authenticated) {
     // User is logged in - show logout button
     authLink.textContent = logoutLabel;
     authLink.href = getLogoutUrl();
-    setAuthUserInfo(authLink, email);
+    setAuthUserInfo(authLink, email, name);
   } else {
     // User is anonymous - show login button
     authLink.textContent = loginLabel;
