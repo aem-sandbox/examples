@@ -71,6 +71,11 @@ Example authenticated session response:
 Access application from that route before testing the public demo; otherwise Access intercepts the
 request before this worker can show its form.
 
+Identify that application by the `aud` claim inside the `meta` JWT of the Access redirect rather
+than by its name: hostnames on one Cloudflare account can belong to different applications, and one
+application can cover several hostnames. Prefer adding a Bypass policy for everyone over deleting
+the application, which cannot be undone.
+
 ## Production adaptation
 
 Keep the route contract, but replace the demo implementation:
