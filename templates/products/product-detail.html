@@ -1,0 +1,74 @@
+<head>
+  <title>{{name}}</title>
+  <meta name="description" content="{{name}} — {{category}}">
+  <meta name="keywords" content="products">
+  <meta name="template" content="product-detail">
+  <meta name="image" content="{{{image_url}}}">
+  <meta property="og:title" content="{{name}}">
+  <meta property="og:image" content="{{{image_url}}}">
+  <meta name="product-id" content="{{product_id}}">
+  <meta name="sku" content="{{sku}}">
+  <meta name="category" content="{{category}}">
+  <meta name="price" content="{{price}}">
+  <meta name="currency" content="{{currency}}">
+  <meta name="color" content="{{color}}">
+  <meta name="rating" content="{{rating}}">
+  <meta name="stock-quantity" content="{{stock_quantity}}">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "productID": "{{product_id}}",
+      "sku": "{{sku}}",
+      "name": "{{name}}",
+      "image": "{{{image_url}}}",
+      "category": "{{category}}",
+      "color": "{{color}}",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{rating}}"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "{{price}}",
+        "priceCurrency": "{{currency}}",
+        "inventoryLevel": {
+          "@type": "QuantitativeValue",
+          "value": "{{stock_quantity}}"
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <header></header>
+  <main>
+    <div>
+      <div class="product-detail">
+        <div>
+          <div>
+            <h1>{{name}}</h1>
+          </div>
+          <div>{{category}}</div>
+        </div>
+        <div>
+          <div>
+            <img src="{{{image_url}}}" alt="{{name}}" loading="lazy">
+          </div>
+        </div>
+        <div>
+          <div>{{price}} {{currency}}</div>
+          <div>{{color}}</div>
+          <div>{{rating}}</div>
+          <div>{{stock_quantity}}</div>
+          <div>{{in_stock}}</div>
+        </div>
+        <div>
+          <div>{{sku}}</div>
+          <div>{{product_id}}</div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer></footer>
+</body>
