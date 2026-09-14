@@ -1,4 +1,4 @@
-import { createTag } from '../../scripts/shared.js';
+import { createTag, fetchPromotion } from '../../scripts/shared.js';
 
 /** The block's only authored content: a link (or bare text) to a Structured Content endpoint. */
 function getSourceUrl(block) {
@@ -14,25 +14,6 @@ function ctaLink(cta, isPrimary) {
 }
 
 /**
- * Fetches `{ metadata: { schemaName, title }, data }` from a Structured Content endpoint, e.g.
- * https://da-sc.adobeaem.workers.dev/live/{org}/{repo}/{path}. Returns null on any failure so the
- * caller can decide what an empty promo looks like.
- * @param {string} url
- * @returns {Promise<Object|null>}
- */
-async function fetchPromo(url) {
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`Promo request failed: ${resp.status}`);
-    return await resp.json();
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn('Promo: failed to load', url, e);
-    return null;
-  }
-}
-
-/**
  * Decorates a `promo` block whose only authored content is a URL to a Structured Content
  * endpoint returning `data.type` (used as a modifier class), `data.active`, `data.name`,
  * `data.description`, and `data.ctas` (`{ label, url }[]`, first rendered as the primary button).
@@ -43,7 +24,7 @@ export default async function decorate(block) {
   block.textContent = '';
   if (!url) return;
 
-  const payload = await fetchPromo(url);
+  const payload = await fetchPromotion(url);
   const { data } = payload || {};
   if (!data || data.active === false) return;
 

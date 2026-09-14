@@ -161,3 +161,22 @@ export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
   const { data } = await fetchQueryIndexBatch(offset, limit, baseUrl);
   return data;
 }
+
+/**
+ * Fetches `{ metadata: { schemaName, title }, data }` from a `promotion` Structured Content
+ * endpoint, e.g. https://da-sc.adobeaem.workers.dev/live/{org}/{repo}/{path}. Returns null on
+ * any failure so the caller can decide what an empty/missing promotion looks like.
+ * @param {string} url
+ * @returns {Promise<Object|null>}
+ */
+export async function fetchPromotion(url) {
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Promotion request failed: ${resp.status}`);
+    return await resp.json();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('Promotion: failed to load', url, e);
+    return null;
+  }
+}
