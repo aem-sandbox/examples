@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="gated" content="true">
+    <title>Local audience-rule smoke test</title>
+  </head>
+  <body>
+    <main>
+      <div data-view="logged-in" id="member-section">
+        <h1>Member section</h1>
+        <div class="cards logged-out" id="wrong-promo">Remove this promo for members.</div>
+        <div class="cards logged-in" id="member-card">Member card</div>
+      </div>
+      <div data-view="logged-out" id="anonymous-section">
+        <h1>Anonymous section</h1>
+        <div class="cards logged-in" id="wrong-member">Remove this card for anonymous visitors.</div>
+        <div class="cards logged-out" id="promo">Anonymous promo</div>
+      </div>
+      <div id="public-section">
+        <p>Public content</p>
+        <div class="cards logged-out-promo" id="public-card">Not an audience variant</div>
+        <div class="cards logged-in logged-out" id="neither">Visible to neither audience</div>
+      </div>
+    </main>
+    <script>window.SAMPLE_PAGEVIEWS_AT_RATE = 'off';</script>
+    <script type="module">
+      import { applyContentProtection } from '/scripts/utils/gated-content.js';
+      await applyContentProtection();
+      document.body.dataset.ready = 'true';
+    </script>
+  </body>
+</html>

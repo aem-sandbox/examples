@@ -1,0 +1,10 @@
+name = "gatefix-local"
+main = "index.js"
+compatibility_date = "2026-03-13"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+
+[vars]
+ORIGIN_HOSTNAME = "main--examples--aem-sandbox.aem.live"
+PUSH_INVALIDATION = "disabled"
