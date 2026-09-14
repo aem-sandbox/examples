@@ -218,6 +218,27 @@ describe('CDN gated request flow', () => {
     expect(await out.text()).not.toContain(PRIVATE);
   });
 
+  it.each([
+    { 'Content-Type': 'multipart/byteranges; boundary=parts' },
+    { 'Content-Type': 'text/html', 'Content-Range': 'bytes 0-10/200' },
+  ])('rejects a supposedly full probe that is still partial: %j', async (headers) => {
+    const full = new Response(GATED, { headers });
+    const cancel = vi.spyOn(full.body, 'cancel');
+    mockOrigin(new Response(null, { status: 304 }), full);
+    const out = await run({ headers: { 'If-None-Match': '"source"' } });
+    expect(out.status).toBe(502);
+    expect(out.headers.get('Cache-Control')).toContain('no-store');
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('inspects HTML with a Content-Range even when the origin returns status 200', async () => {
+    const fetchMock = mockOrigin(response(PRIVATE, { 'Content-Range': 'bytes 0-10/200' }));
+    const out = await run({ headers: { Range: 'bytes=0-10' } });
+    expectProbe(fetchMock);
+    expect(out.status).toBe(200);
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
   it('cancels a partial response body that the filtered response replaces', async () => {
     const cancel = vi.fn();
     const partial = new Response(new ReadableStream({ cancel }), {

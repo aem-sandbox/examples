@@ -67,7 +67,6 @@ describe('gated response cache policy', () => {
     const source = originResponse(gatedPage(body), {
       ETag: '"origin"',
       'Content-Length': '1234',
-      'Content-Range': 'bytes 0-1233/1234',
       'Accept-Ranges': 'bytes',
       'CDN-Cache-Control': 'max-age=172800',
       'Cloudflare-CDN-Cache-Control': 'public, max-age=172800',
