@@ -143,7 +143,7 @@ describe('CDN gated request flow', () => {
   });
 
   it('fails closed when the full representation is not HTML', async () => {
-    mockOrigin(new Response(null, { status: 304 }), new Response(PRIVATE));
+    mockOrigin(new Response(PRIVATE, { status: 206, headers: { 'Content-Type': 'text/html' } }), new Response(PRIVATE));
     const out = await run({ headers: { 'If-None-Match': '"source"' } });
     expect(out.status).toBe(502);
     expect(await out.text()).not.toContain(PRIVATE);
@@ -176,9 +176,84 @@ describe('CDN gated request flow', () => {
     const out = await run({}, `${PAGE}?auth=true`);
     expect(await out.text()).not.toContain(PRIVATE);
   });
+
+  it('inspects a dotted page even when its 304 has no media type', async () => {
+    const fetchMock = mockOrigin(new Response(null, { status: 304 }));
+    const out = await run({ headers: { 'If-None-Match': '"source"' } }, '/release.v2');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(out.status).toBe(200);
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
+  it('inspects multipart byte ranges before returning HTML', async () => {
+    const fetchMock = mockOrigin(new Response(PRIVATE, {
+      status: 206, headers: { 'Content-Type': 'multipart/byteranges; boundary=parts' },
+    }));
+    const out = await run({ headers: { Range: 'bytes=0-10,20-30' } }, '/release.v2');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(out.status).toBe(200);
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
+  it('accepts whitespace before HTML media-type parameters', async () => {
+    mockOrigin(response(GATED, { 'Content-Type': 'text/html ; charset=utf-8' }));
+    const out = await run();
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
+  it('only skips the exact shared nav/footer paths', async () => {
+    mockOrigin(response());
+    const out = await run({}, '/nav.plain.html-extra');
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
+  it('returns no-store 502 when the inspected response body errors', async () => {
+    const broken = new Response(new ReadableStream({
+      start(controller) { controller.error(new Error('Body read failed')); },
+    }), { headers: { 'Content-Type': 'text/html' } });
+    mockOrigin(new Response(null, { status: 304 }), broken);
+    const out = await run({ headers: { 'If-None-Match': '"source"' } });
+    expect(out.status).toBe(502);
+    expect(out.headers.get('Cache-Control')).toContain('no-store');
+    expect(await out.text()).not.toContain(PRIVATE);
+  });
+
+  it('cancels a partial response body that the filtered response replaces', async () => {
+    const cancel = vi.fn();
+    const partial = new Response(new ReadableStream({ cancel }), {
+      status: 206, headers: { 'Content-Type': 'text/html' },
+    });
+    mockOrigin(partial);
+    const out = await run({ headers: { Range: 'bytes=0-10' } });
+    await out.text();
+    expect(cancel).toHaveBeenCalledOnce();
+  });
 });
 
 describe('unrelated public CDN requests', () => {
+  it('does not probe an extensionless HEAD with a known non-HTML type', async () => {
+    const fetchMock = mockOrigin(new Response(null, {
+      headers: { 'Content-Type': 'application/json', ETag: '"json"' },
+    }));
+    const out = await run({ method: 'HEAD' }, '/api');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(out.status).toBe(200);
+    expect(out.headers.get('ETag')).toBe('"json"');
+  });
+
+  it('preserves a type-less 304 classified as non-HTML and cancels its probe body', async () => {
+    const cancel = vi.fn();
+    const full = new Response(new ReadableStream({ cancel }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const fetchMock = mockOrigin(new Response(null, { status: 304, headers: { ETag: '"json"' } }), full);
+    const out = await run({ headers: { 'If-None-Match': '"json"' } }, '/api');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(out.status).toBe(304);
+    expect(out.headers.get('ETag')).toBe('"json"');
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
   it.each(['/gated-content.plain.html', '/gated-content.md', '/fragments/example', '/nav.plain.html', '/footer.plain.html'])('leaves the explicit public-demo exclusion %s untouched', async (path) => {
     const fetchMock = mockOrigin(new Response('Public source', { status: 206, headers: { 'Content-Type': 'text/html' } }));
     const out = await run({ headers: { Range: 'bytes=0-12' } }, path);
