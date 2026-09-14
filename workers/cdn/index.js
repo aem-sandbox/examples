@@ -12,7 +12,9 @@
 
 /* eslint-disable strict, prefer-template, no-restricted-syntax */
 
-import { applyGatingIfNeeded, needsFullOriginResponse } from './handlers/gating.js';
+import { applyGatingIfNeeded } from './handlers/gating.js';
+// eslint-disable-next-line import/no-relative-packages
+import { DEMO_SESSION_COOKIE } from '../shared/demo-session.js';
 
 const getExtension = (path) => {
   const basename = path.split('/').pop();
@@ -23,6 +25,14 @@ const getExtension = (path) => {
 
 const isMediaRequest = (url) => /\/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\.[0-9a-z]+$/.test(url.pathname);
 const isRUMRequest = (url) => /\/\.(rum|optel)\/.*/.test(url.pathname);
+
+const fetchOrigin = (request) => fetch(request, {
+  method: request.method,
+  cf: {
+    // cf doesn't cache html by default: need to override the default behavior
+    cacheEverything: true,
+  },
+});
 
 // html2json - start
 const HTML2JSON_QUERY_PARAMS = new Set(['head', 'preview', 'compact']);
@@ -105,12 +115,14 @@ const handleRequest = async (request, env) => {
   const req = new Request(url, request);
   req.headers.set('x-forwarded-host', req.headers.get('host'));
   req.headers.set('x-byo-cdn-type', 'cloudflare');
-  if (needsFullOriginResponse(request)) {
-    // The cached copy this validator refers to may belong to a different audience, so a
-    // 304 from the origin could resurrect it. Ask for the full body and let the gating
-    // handler decide 200 versus 304.
-    req.headers.delete('if-none-match');
-    req.headers.delete('if-modified-since');
+  if (req.headers.has('cookie')) {
+    const cookies = req.headers.get('cookie').split(';')
+      .filter((part) => part.slice(0, part.indexOf('=')).trim() !== DEMO_SESSION_COOKIE)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join('; ');
+    if (cookies) req.headers.set('cookie', cookies);
+    else req.headers.delete('cookie');
   }
   if (env.PUSH_INVALIDATION !== 'disabled') {
     req.headers.set('x-push-invalidation', 'enabled');
@@ -118,13 +130,7 @@ const handleRequest = async (request, env) => {
   if (env.ORIGIN_AUTHENTICATION) {
     req.headers.set('authorization', `token ${env.ORIGIN_AUTHENTICATION}`);
   }
-  let resp = await fetch(req, {
-    method: req.method,
-    cf: {
-      // cf doesn't cache html by default: need to override the default behavior
-      cacheEverything: true,
-    },
-  });
+  let resp = await fetchOrigin(req);
 
   // html2json - start
   if (request.method === 'GET' && extension === 'json' && resp.status === 404) {
@@ -143,9 +149,15 @@ const handleRequest = async (request, env) => {
   }
   // html2json - end
 
-  resp = await applyGatingIfNeeded(request, requestURL, resp);
+  resp = await applyGatingIfNeeded(request, requestURL, resp, () => {
+    const fullRequest = new Request(req, { method: 'GET' });
+    [
+      'Range', 'If-Range', 'If-None-Match', 'If-Modified-Since', 'If-Match', 'If-Unmodified-Since',
+    ].forEach((name) => fullRequest.headers.delete(name));
+    return fetchOrigin(fullRequest);
+  });
 
-  resp = new Response(resp.body, resp);
+  resp = new Response(request.method === 'HEAD' ? null : resp.body, resp);
   if (resp.status === 301 && savedSearch) {
     const location = resp.headers.get('location');
     if (location && !location.match(/\?.*$/)) {
