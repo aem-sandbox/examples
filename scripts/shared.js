@@ -163,20 +163,29 @@ export async function fetchQueryIndexPage(offset, limit, baseUrl = '') {
 }
 
 /**
- * Fetches `{ metadata: { schemaName, title }, data }` from a `promotion` Structured Content
+ * Fetches `{ metadata: { schemaName, title }, data }` from a Structured Content delivery
  * endpoint, e.g. https://da-sc.adobeaem.workers.dev/live/{org}/{repo}/{path}. Returns null on
- * any failure so the caller can decide what an empty/missing promotion looks like.
+ * any failure so the caller can decide what an empty/missing record looks like.
+ *
+ * We call this origin directly for now. Production usage should proxy
+ * `da-sc.adobeaem.workers.dev` through your own CDN in front of it.
  * @param {string} url
  * @returns {Promise<Object|null>}
  */
-export async function fetchPromotion(url) {
+export async function fetchStructuredContent(url) {
   try {
     const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`Promotion request failed: ${resp.status}`);
+    if (!resp.ok) throw new Error(`Structured content request failed: ${resp.status}`);
     return await resp.json();
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn('Promotion: failed to load', url, e);
+    console.warn('Structured content: failed to load', url, e);
     return null;
   }
+}
+
+/** A block whose only authored content is a URL: a link, or bare text if unlinked. */
+export function getBlockSourceUrl(block) {
+  const link = block.querySelector('a');
+  return link ? link.getAttribute('href') : block.textContent.trim();
 }

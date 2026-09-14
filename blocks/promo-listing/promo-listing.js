@@ -1,6 +1,6 @@
 import { readBlockConfig } from '../../scripts/aem.js';
 import {
-  createTag, fetchPromotion, fetchQueryIndexPage, QUERY_INDEX_PAGE_SIZE,
+  createTag, fetchStructuredContent, fetchQueryIndexPage, QUERY_INDEX_PAGE_SIZE,
 } from '../../scripts/shared.js';
 
 /** Strips the trailing `query-index.json` (and any query string) to get the index's base URL. */
@@ -79,7 +79,7 @@ export default async function decorate(block) {
 
   const base = String(origin).replace(/\/+$/, '');
   const payloads = await Promise.all(
-    activeRows.map((row) => fetchPromotion(`${base}${row.path}`)),
+    activeRows.map((row) => fetchStructuredContent(`${base}${row.path}`)),
   );
 
   const list = createTag('ul', { class: 'promo-listing-items' });

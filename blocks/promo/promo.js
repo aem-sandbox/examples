@@ -1,10 +1,4 @@
-import { createTag, fetchPromotion } from '../../scripts/shared.js';
-
-/** The block's only authored content: a link (or bare text) to a Structured Content endpoint. */
-function getSourceUrl(block) {
-  const link = block.querySelector('a');
-  return link ? link.getAttribute('href') : block.textContent.trim();
-}
+import { createTag, fetchStructuredContent, getBlockSourceUrl } from '../../scripts/shared.js';
 
 function ctaLink(cta, isPrimary) {
   return createTag('a', {
@@ -20,11 +14,11 @@ function ctaLink(cta, isPrimary) {
  * @param {Element} block the `.promo` block
  */
 export default async function decorate(block) {
-  const url = getSourceUrl(block);
+  const url = getBlockSourceUrl(block);
   block.textContent = '';
   if (!url) return;
 
-  const payload = await fetchPromotion(url);
+  const payload = await fetchStructuredContent(url);
   const { data } = payload || {};
   if (!data || data.active === false) return;
 
