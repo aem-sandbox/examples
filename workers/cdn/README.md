@@ -39,18 +39,21 @@ CDN-specific shared-cache directives are removed. The worker does not issue audi
 on `Vary: Cookie`. The complete source can still use the origin/subrequest cache; transformed output
 must not enter a shared cache. Production cache rules must honor that separation.
 
-**Partial and conditional requests:** ordinary full HTML GETs need one origin fetch. A page-like
-`206`, `304`, or successful `HEAD` cannot establish whether the full page is gated. The worker
-fetches an unconditional full GET, without range or conditional headers, to check its metadata:
+**Partial and conditional requests:** ordinary full HTML GETs need one origin fetch. An HTML,
+untyped, or multipart `206`, `304`, or successful `HEAD` cannot establish whether the full page is
+gated. The worker fetches an unconditional full GET, without range or conditional headers, to
+classify the representation and check HTML metadata:
 
 - Gated GETs return full, filtered `200` responses, including for old validators and Range requests.
 - Gated HEADs return `200` with the same non-cacheable policy and no body.
 - Ungated pages retain the original partial/conditional response and its representation headers.
-- An unsuccessful or non-HTML full-response check returns a non-cacheable `502`, not unclassified
-  content. A HEAD error has no body.
+- A complete non-HTML probe preserves the original response unless the original explicitly claimed
+  to be HTML. Failed, unreadable or inconsistently typed checks return a non-cacheable `502`, not
+  unclassified content. A HEAD error has no body. Discarded response streams are cancelled.
 
-This can add an origin/subrequest-cache lookup for ambiguous HTML requests. It does not eliminate
-origin fetches. Media ranges and explicitly excluded representations do not need the HTML check.
+This can add an origin/subrequest-cache lookup for ambiguous responses. It does not eliminate
+origin fetches. Ranges/HEADs with a known non-HTML media type and explicitly excluded representations
+do not need the HTML check.
 
 **Dependencies:** `cheerio` is installed under `workers/cdn/` (not the repo root), and
 `compatibility_flags = ["nodejs_compat"]` in `wrangler.toml` is required for it to bundle/run.

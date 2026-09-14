@@ -5,9 +5,14 @@
 import { load } from 'cheerio';
 import { isAuthenticated } from './auth-check.js';
 
-const SKIP = ['/fragments/', '/nav.plain.html', '/footer.plain.html'];
+const SKIP = ['/nav.plain.html', '/footer.plain.html'];
 const normalize = (value) => String(value || '').trim().toLowerCase();
-const isHtml = (response) => normalize(response.headers.get('content-type')).split(';')[0] === 'text/html';
+const mediaType = (response) => normalize(response.headers.get('content-type')).split(';')[0].trim();
+const isHtml = (response) => mediaType(response) === 'text/html';
+
+function discard(response) {
+  if (!response.bodyUsed) response.body?.cancel().catch(() => undefined);
+}
 
 /**
  * Reads a section's audience restriction, if any.
@@ -77,30 +82,39 @@ function gatedResponse(body, source) {
 export async function applyGatingIfNeeded(request, requestURL, response, fetchFullResponse) {
   if (!['GET', 'HEAD'].includes(request.method)) return response;
   const { pathname } = requestURL;
-  if (SKIP.some((p) => pathname.startsWith(p)) || /\.(?:plain\.html|md|json)$/.test(pathname)) {
+  if (pathname.startsWith('/fragments/') || SKIP.includes(pathname)
+    || /\.(?:plain\.html|md|json)$/.test(pathname)) {
     return response;
   }
 
-  const pagePath = !pathname.split('/').pop().includes('.') || pathname.endsWith('.html');
+  const type = mediaType(response);
   const ambiguous = [206, 304].includes(response.status)
     || (request.method === 'HEAD' && response.status === 200);
   let source = response;
-  if (ambiguous && (pagePath || isHtml(response))) {
-    try {
+  try {
+    if (ambiguous && ['', 'text/html', 'multipart/byteranges'].includes(type)) {
       source = await fetchFullResponse();
-      if (source.status !== 200 || !isHtml(source)) throw new Error('Incomplete HTML');
-    } catch {
-      return new Response(request.method === 'HEAD' ? null : 'Unable to inspect page content.', {
-        status: 502,
-        headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' },
-      });
+      if (source.status !== 200 || !mediaType(source)) throw new Error('Incomplete response');
+      if (!isHtml(source)) {
+        if (type === 'text/html') throw new Error('Inconsistent media type');
+        discard(source);
+        return response;
+      }
     }
+    if (source.status !== 200 || !isHtml(source)) return response;
+
+    const $ = load(await (source === response ? source.clone() : source).text());
+    if (normalize($('head meta[name="gated"]').first().attr('content')) !== 'true') return response;
+
+    const loggedIn = await isAuthenticated(request);
+    discard(response);
+    return gatedResponse(request.method === 'HEAD' ? null : transformGatedHtml($, loggedIn), source);
+  } catch {
+    if (source !== response) discard(source);
+    discard(response);
+    return new Response(request.method === 'HEAD' ? null : 'Unable to inspect page content.', {
+      status: 502,
+      headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   }
-  if (source.status !== 200 || !isHtml(source)) return response;
-
-  const $ = load(await source.clone().text());
-  if (normalize($('head meta[name="gated"]').first().attr('content')) !== 'true') return response;
-
-  const loggedIn = await isAuthenticated(request);
-  return gatedResponse(request.method === 'HEAD' ? null : transformGatedHtml($, loggedIn), source);
 }
