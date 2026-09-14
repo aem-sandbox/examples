@@ -89,12 +89,15 @@ export async function applyGatingIfNeeded(request, requestURL, response, fetchFu
 
   const type = mediaType(response);
   const ambiguous = [206, 304].includes(response.status)
-    || (request.method === 'HEAD' && response.status === 200);
+    || (response.status === 200 && (request.method === 'HEAD'
+      || response.headers.has('content-range') || type === 'multipart/byteranges'));
   let source = response;
   try {
     if (ambiguous && ['', 'text/html', 'multipart/byteranges'].includes(type)) {
       source = await fetchFullResponse();
-      if (source.status !== 200 || !mediaType(source)) throw new Error('Incomplete response');
+      const fullType = mediaType(source);
+      if (source.status !== 200 || !fullType || fullType === 'multipart/byteranges'
+        || source.headers.has('content-range')) throw new Error('Incomplete response');
       if (!isHtml(source)) {
         if (type === 'text/html') throw new Error('Inconsistent media type');
         discard(source);
