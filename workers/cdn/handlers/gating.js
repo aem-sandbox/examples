@@ -53,7 +53,7 @@ function transformGatedHtml($, loggedIn) {
 }
 
 /**
- * Builds a non-cacheable gated response without source-representation metadata.
+ * Returns a response with no-store headers and no origin validators.
  * @param {string|null} body
  * @param {Response} source
  * @returns {Response}
@@ -70,8 +70,8 @@ function gatedResponse(body, source) {
 }
 
 /**
- * Rewrites complete gated HTML; ambiguous HEAD, partial and conditional responses
- * require an unconditional GET before deciding whether to preserve the original response.
+ * Filters complete HTML. Uses a full GET to check HEAD, partial and conditional
+ * responses when their type does not rule out HTML.
  * @param {Request} request
  * @param {URL} requestURL
  * @param {Response} response origin response

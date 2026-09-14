@@ -20,22 +20,22 @@ In another shell:
 node test/gating-local/smoke.mjs
 ```
 
-The script checks the actual HTTP responses for anonymous/member sections and blocks, login return
+The script checks HTTP responses for anonymous/member sections and blocks, login return
 paths, session state, logout, invalid sessions, Range, HEAD, old validators, the public plain-HTML
 exclusion, and ungated caching. It uses a synthetic display name and does not log session cookies.
 `GATING_TEST_URL` can override the local base URL. Do not point it at production or another user's
 session; the smoke script exercises login/logout.
 
 The source page must still contain the documented VIP/member and anonymous/public fixture markers.
-This smoke test deliberately does not validate unpublished DA edits, real identity-provider auth,
+This smoke test does not validate unpublished DA edits, identity-provider auth,
 origin access control, production CDN cache configuration, or the frontend's author-preview toggle.
-The latter's shared audience fixtures are covered by `npm test --prefix test`.
+Run `npm test --prefix test` to check the frontend's audience rules against the shared fixtures.
 
 For browser inspection, open `http://localhost:8787/gated-content`. The CDN handler is from this
-checkout; fetched frontend scripts/content are from the published origin, not unpublished changes.
+checkout. The frontend scripts and content come from the published origin, not unpublished changes.
 
-To exercise the candidate author-side code in a real browser without an EDS preview, serve the
-checkout itself in a separate local process:
+To test this checkout's author-side code in a browser without an EDS preview, serve the checkout
+in a separate local process:
 
 ```bash
 python3 -m http.server 8788 --bind 127.0.0.1
