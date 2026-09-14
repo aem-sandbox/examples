@@ -1,0 +1,48 @@
+{
+  "$defs": {
+    "Cta": {
+      "type": "object",
+      "title": "Call to Action",
+      "required": ["label", "url"],
+      "properties": {
+        "label": { "type": "string", "title": "Label" },
+        "url": { "type": "string", "title": "URL" }
+      }
+    }
+  },
+  "type": "object",
+  "title": "Promotion",
+  "required": ["name"],
+  "properties": {
+    "name": { "type": "string", "title": "Promotion Name" },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Detailed description of the promotion"
+    },
+    "type": {
+      "type": "string",
+      "title": "Promotion Type",
+      "enum": ["Banner", "Popup", "Inline Card"],
+      "default": "Banner"
+    },
+    "priority": {
+      "type": "integer",
+      "title": "Priority",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    },
+    "active": { "type": "boolean", "title": "Active", "default": true },
+    "audienceTags": {
+      "type": "array",
+      "title": "Audience Tags",
+      "items": { "type": "string", "title": "Tag" }
+    },
+    "ctas": {
+      "type": "array",
+      "title": "Calls to Action",
+      "items": { "$ref": "#/$defs/Cta" }
+    }
+  }
+}
