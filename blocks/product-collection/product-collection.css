@@ -1,0 +1,87 @@
+.product-collection .product-collection-heading {
+  margin: 0 0 var(--space-xs);
+}
+
+.product-collection .product-collection-description {
+  margin: 0 0 var(--space-l);
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+.product-collection .product-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-m);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product-collection .product-collection-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid light-dark(rgb(var(--color-brand-rgb) / 10%), rgb(255 255 255 / 10%));
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background-color: light-dark(var(--color-light), var(--color-gray-900));
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.product-collection .product-collection-card:hover {
+  border-color: light-dark(rgb(var(--color-brand-rgb) / 18%), rgb(255 255 255 / 16%));
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
+}
+
+.product-collection .product-collection-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-collection .product-collection-card-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.product-collection .product-collection-card-image {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.product-collection .product-collection-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out-smooth);
+}
+
+.product-collection .product-collection-card:hover .product-collection-card-image img {
+  transform: scale(1.04);
+}
+
+.product-collection .product-collection-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-m);
+}
+
+.product-collection .product-collection-card-title {
+  margin: 0;
+  font-size: var(--heading-font-size-xs);
+  line-height: 1.3;
+}
+
+.product-collection .product-collection-card-price {
+  margin-top: auto;
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+}

@@ -38,3 +38,11 @@ Tests for both are in [`test/`](../../test).
 - **Arrays of objects are not inline.** The parent cell holds `self://#specs-wuvstu` refs, and
   each ref names a sibling block's class. `getElementById` returns null.
 - **Booleans are the strings** `true` **and** `false` in the markup. `if (value)` is true for both.
+
+## Other schemas on this site
+
+Two more schemas run on the same `da-sc` worker, each with its own reference folder:
+
+- [`promo/`](promo) — the `Promotion` schema, read headlessly by [`blocks/promo`](../../blocks/promo).
+- [`product-collection/`](product-collection) — an editorial layer over externally sourced
+  product data, read by [`blocks/product-collection`](../../blocks/product-collection).
