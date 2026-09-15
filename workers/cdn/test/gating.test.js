@@ -80,7 +80,7 @@ describe('gated response cache policy', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-cache');
     expect(response.headers.get('Cloudflare-CDN-Cache-Control'))
       .toBe('public, max-age=60, must-revalidate');
-    expect(response.headers.get('Vary')).toBe('Accept-Encoding, Cookie');
+    expect(response.headers.get('Vary')).toBe('Accept-Encoding, Accept, Cookie');
     expect(response.headers.get('Set-Cookie')).toBeNull();
     [
       'ETag', 'Last-Modified', 'Content-Length', 'Content-Range', 'Accept-Ranges',
