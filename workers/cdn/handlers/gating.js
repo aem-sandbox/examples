@@ -77,16 +77,28 @@ function anonymousCacheTtl(request, source) {
     || /(?:^|,)\s*(?:private|no-cache|no-store)(?:\s|,|=|$)/i.test(cacheControl)
     || normalize(source.headers.get('Vary')) === '*') return 0;
 
-  const ttls = cacheControls.flatMap((value) => [...value.matchAll(
-    /(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*"?(-?\d+)/gi,
-  )].map((match) => Number(match[1])));
-  if (ttls.length) return Math.min(MAX_ANONYMOUS_TTL, ...ttls);
-  if (/(?:s-maxage|max-age)\s*=/i.test(cacheControl)) return 0;
+  const ttlPattern = /(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(?:"(\d+)"|(\d+))\s*(?=,|$)/gi;
+  const ttlMatches = [...cacheControl.matchAll(ttlPattern)];
+  const ttlDeclarations = cacheControl.match(/(?:^|,)\s*(?:s-maxage|max-age)\s*=/gi) || [];
+  if (ttlMatches.length !== ttlDeclarations.length) return 0;
+
+  const ageHeader = source.headers.get('Age');
+  if (ageHeader !== null && !/^\d+$/.test(ageHeader.trim())) return 0;
+  const age = Number(ageHeader || 0);
+  const date = Date.parse(source.headers.get('Date') || '');
+  const apparentAge = Number.isNaN(date) ? 0 : Math.max(0, Math.floor((Date.now() - date) / 1000));
+  const currentAge = Math.max(age, apparentAge);
+
+  if (ttlMatches.length) {
+    const freshness = Math.min(...ttlMatches.map((match) => Number(match[1] || match[2])));
+    return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, freshness - currentAge));
+  }
 
   const expires = Date.parse(source.headers.get('Expires') || '');
-  const date = Date.parse(source.headers.get('Date') || '') || Date.now();
   if (Number.isNaN(expires)) return 0;
-  return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, Math.floor((expires - date) / 1000)));
+  const responseDate = Number.isNaN(date) ? Date.now() : date;
+  const freshness = Math.floor((expires - responseDate) / 1000);
+  return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, freshness - currentAge));
 }
 
 function gatedResponse(body, source, request, loggedIn) {
