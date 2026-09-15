@@ -18,7 +18,7 @@ see [`how-to-use-json2html`](../../how-to-use-json2html) for that side of the pi
 
 Neither is loaded by the site. Reference copies only, same as the product and promotion examples.
 
-## One thing that bites
+## Gotcha
 
 The collection never authors product facts, only SKUs. A SKU with no matching row in the query
 index (removed, renamed, unpublished) is silently dropped from the rendered grid — the block has

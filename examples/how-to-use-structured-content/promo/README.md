@@ -18,7 +18,7 @@ dismissible banner.
 
 Neither is loaded by the site. Reference copies only, same as the product example.
 
-## One thing that bites
+## Gotcha
 
 `active: false` should hide the promotion, but the block has no way to know that without fetching
 first — so a promo always does one round trip before it can decide to render nothing.
