@@ -11,16 +11,22 @@
         <h1>Member section</h1>
         <div class="cards logged-out" id="wrong-promo">Remove this promo for members.</div>
         <div class="cards logged-in" id="member-card">Member card</div>
+        <div class="cards logged-in logged-out" id="member-both">Restricted by the member section</div>
       </div>
       <div data-view="logged-out" id="anonymous-section">
         <h1>Anonymous section</h1>
         <div class="cards logged-in" id="wrong-member">Remove this card for anonymous visitors.</div>
         <div class="cards logged-out" id="promo">Anonymous promo</div>
+        <div class="cards logged-in logged-out" id="anonymous-both">Restricted by the anonymous section</div>
       </div>
       <div id="public-section">
         <p>Public content</p>
         <div class="cards logged-out-promo" id="public-card">Not an audience variant</div>
-        <div class="cards logged-in logged-out" id="neither">Visible to neither audience</div>
+        <div class="cards logged-in logged-out" id="both">
+          <p>Visible to both audiences</p>
+          <div class="cards logged-in" id="both-member-only">Member child</div>
+          <div class="cards logged-out" id="both-anonymous-only">Anonymous child</div>
+        </div>
       </div>
     </main>
     <script>window.SAMPLE_PAGEVIEWS_AT_RATE = 'off';</script>
