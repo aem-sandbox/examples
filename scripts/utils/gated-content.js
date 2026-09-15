@@ -99,6 +99,7 @@ function checkBlockProtectionInSection(section, isAuthenticated) {
   restrictedBlocks.forEach((block) => {
     const hasLoggedIn = block.classList.contains('logged-in');
     const hasLoggedOut = block.classList.contains('logged-out');
+    if (hasLoggedIn && hasLoggedOut) return;
     if ((!isAuthenticated && hasLoggedIn) || (isAuthenticated && hasLoggedOut)) {
       block.remove();
     }

@@ -17,7 +17,8 @@ Worker code is based on [aem-cloudflare-prod-worker](https://github.com/adobe/ae
 sections/blocks the visitor's audience can't see. The author-preview logic in
 `scripts/utils/gated-content.js` applies the same rules: a removed section removes its descendants,
 and block rules still apply inside sections the handler keeps. Only exact `logged-in` and `logged-out` class
-tokens are audience variants. A block with both is hidden from both audiences.
+tokens are audience variants. Both variants allow either audience. Parent section and block rules
+still apply. Blocks without an audience variant are also shown to both audiences.
 
 This filters a public page by audience; it does not protect the origin, downloads, or alternate
 representations such as `.plain.html`, `.md`, and `.json`. The html2json fallback is a separate,

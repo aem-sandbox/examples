@@ -44,8 +44,11 @@ python3 -m http.server 8788 --bind 127.0.0.1
 Open `/test/gating-local/author.html?auth=false` and `?auth=true` at `http://localhost:8788`.
 When `document.body.dataset.ready` is `true`, the remaining `main [id]` elements must be:
 
-- Anonymous: `anonymous-section`, `promo`, `public-section`, `public-card`.
-- Member: `member-section`, `member-card`, `public-section`, `public-card`.
+- Anonymous: `anonymous-section`, `promo`, `anonymous-both`, `public-section`, `public-card`,
+  `both`, `both-anonymous-only`.
+- Member: `member-section`, `member-card`, `member-both`, `public-section`, `public-card`,
+  `both`, `both-member-only`.
 
-This local fixture checks nested restrictions, exact class matching, and opposing variants using
-this checkout's native browser modules. It does not preview or publish authored DA content.
+This local fixture checks exact class matching and blocks with both audience variants. Those blocks
+allow either audience, but parent and child restrictions still apply. It uses this checkout's native
+browser modules and does not preview or publish authored DA content.

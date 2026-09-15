@@ -46,7 +46,7 @@ function transformGatedHtml($, loggedIn) {
     if ((loggedIn && aud === 'logged-out') || (!loggedIn && aud === 'logged-in')) {
       section.remove();
     } else {
-      section.find(loggedIn ? '.logged-out' : '.logged-in').remove();
+      section.find(loggedIn ? '.logged-out:not(.logged-in)' : '.logged-in:not(.logged-out)').remove();
     }
   });
   return $.html();
