@@ -8,7 +8,10 @@ import { createDemoSession } from '../../shared/demo-session.js';
 import { gatedPage } from '../../../test/fixtures/gated-content.js';
 
 const SITE = 'https://examples.bbird.live';
-const ENV = { ORIGIN_HOSTNAME: 'main--examples--aem-sandbox.aem.live' };
+const ENV = {
+  ORIGIN_HOSTNAME: 'main--examples--aem-sandbox.aem.live',
+  GATED_CACHE_PATHS: '/gated-content',
+};
 const PAGE = '/gated-content';
 const PRIVATE = 'Member-only detail';
 const PUBLIC = 'Anonymous teaser';
@@ -165,7 +168,7 @@ describe('CDN gated request flow', () => {
     const [cachedRequest, options] = anonymousFetch.mock.calls[0];
     expect(cachedRequest.headers.has('Cookie')).toBe(false);
     expect(cachedRequest.headers.get('X-Audience')).toBe('logged-in');
-    expect(options.cf.cacheKey).toBe('examples.bbird.live/gated-content');
+    expect(options.cf.cacheKey).toBe('https://examples.bbird.live/gated-content');
     const html = await out.text();
     expect(html).toContain(PUBLIC);
     expect(html).not.toContain(PRIVATE);
@@ -209,8 +212,8 @@ describe('CDN gated request flow', () => {
       key: options.cf.cacheKey,
     }));
     expect(selections).toEqual([
-      { cookie: null, key: 'examples.bbird.live/gated-content' },
-      { cookie: null, key: 'examples.bbird.live/gated-content' },
+      { cookie: null, key: 'https://examples.bbird.live/gated-content' },
+      { cookie: null, key: 'https://examples.bbird.live/gated-content' },
     ]);
   });
 
@@ -417,6 +420,19 @@ describe('CDN gated request flow', () => {
 });
 
 describe('unrelated public CDN requests', () => {
+  it('preserves cookies on an ungated path instead of routing it through the cache', async () => {
+    const anonymousFetch = vi.fn();
+    const fetchMock = mockOrigin(response(UNGATED));
+    const out = await runWithContext(
+      { headers: { Cookie: 'analytics=one' } },
+      '/learn/free/article-1',
+      anonymousFetch,
+    );
+    expect(anonymousFetch).not.toHaveBeenCalled();
+    expect(fetchMock.mock.calls[0][0].headers.get('Cookie')).toBe('analytics=one');
+    expect(await out.text()).toBe(UNGATED);
+  });
+
   it('keeps ungated output out of the managed response cache', async () => {
     expect(Anonymous).toBeTypeOf('function');
     mockOrigin(response(UNGATED));

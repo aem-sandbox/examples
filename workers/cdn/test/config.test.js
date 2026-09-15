@@ -13,6 +13,7 @@ describe('managed Workers Cache configuration', () => {
     expect(config).toMatch(/\[exports\.default\.cache]\s+enabled = false/);
     expect(config).toMatch(/\[exports\.Anonymous\.cache]\s+enabled = true/);
     expect(config).not.toContain('cross_version_cache = true');
+    expect(config).toMatch(/GATED_CACHE_PATHS = "\/gated-content"/);
   });
 
   it('deploys with a Wrangler release that supports per-entrypoint caching', async () => {

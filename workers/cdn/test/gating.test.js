@@ -105,6 +105,8 @@ describe('gated response cache policy', () => {
   it.each([
     { name: 'Set-Cookie', responseHeaders: { 'Set-Cookie': 'personalized=1' }, requestHeaders: {} },
     { name: 'private origin response', responseHeaders: { 'Cache-Control': 'private, max-age=300' }, requestHeaders: {} },
+    { name: 'no-cache origin response', responseHeaders: { 'Cache-Control': 'no-cache' }, requestHeaders: {} },
+    { name: 'immediately stale origin response', responseHeaders: { 'Cache-Control': 'max-age=0' }, requestHeaders: {} },
     { name: 'authorized request', responseHeaders: {}, requestHeaders: { Authorization: 'Bearer client-value' } },
   ])('does not override unsafe cache signals: $name', async ({ responseHeaders, requestHeaders }) => {
     const response = await applyGatingIfNeeded(
@@ -114,6 +116,16 @@ describe('gated response cache policy', () => {
     );
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
     expect(response.headers.get('Cloudflare-CDN-Cache-Control')).toBeNull();
+  });
+
+  it('does not extend the origin shared-cache freshness', async () => {
+    const response = await applyGatingIfNeeded(
+      await request(false),
+      new URL(PAGE),
+      originResponse(gatedPage(body), { 'Cache-Control': 'public, max-age=15' }),
+    );
+    expect(response.headers.get('Cloudflare-CDN-Cache-Control'))
+      .toBe('public, max-age=15, must-revalidate');
   });
 
   it('does not issue a 304 for an old audience validator', async () => {
