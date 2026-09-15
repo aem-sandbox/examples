@@ -20,6 +20,11 @@ const response = (html = GATED, headers = {}) => new Response(html, {
   },
 });
 const run = (init = {}, path = PAGE) => worker.fetch(new Request(`${SITE}${path}`, init), ENV);
+const runWithContext = (init = {}, path = PAGE, anonymousFetch = vi.fn()) => worker.fetch(
+  new Request(`${SITE}${path}`, init),
+  ENV,
+  { exports: { Anonymous: { fetch: anonymousFetch } } },
+);
 
 const conditionalHeaders = {
   Range: 'bytes=80-160',
@@ -46,9 +51,163 @@ function expectProbe(fetchMock) {
   });
 }
 
+function managedAnonymousCache(handler) {
+  let now = 0;
+  const entries = new Map();
+  const fetch = vi.fn(async (request, options = {}) => {
+    const key = options.cf?.cacheKey || new URL(request.url).pathname;
+    const cached = entries.get(key);
+    if (cached && cached.expires > now) return cached.response.clone();
+    const result = await handler(request);
+    const policy = result.headers.get('Cloudflare-CDN-Cache-Control') || '';
+    const ttl = Number(policy.match(/(?:^|,)\s*max-age=(\d+)/)?.[1] || 0);
+    if (policy.includes('public') && ttl > 0 && !result.headers.has('Set-Cookie')) {
+      entries.set(key, { expires: now + ttl, response: result.clone() });
+    }
+    return result;
+  });
+  fetch.advance = (seconds) => { now += seconds; };
+  return fetch;
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 describe('CDN gated request flow', () => {
+  it('keeps warm anonymous, login, logout, and expired-session responses isolated', async () => {
+    const origin = vi.fn().mockImplementation(() => response());
+    vi.stubGlobal('fetch', origin);
+    const anonymousFetch = managedAnonymousCache(
+      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+    );
+
+    const anonymous = await runWithContext({}, PAGE, anonymousFetch);
+    expect(await anonymous.text()).toContain(PUBLIC);
+
+    const valid = await createDemoSession({ name: 'Demo Member' });
+    const member = await runWithContext({
+      headers: { Cookie: `bbird_demo_session=${valid}` },
+    }, PAGE, anonymousFetch);
+    expect(await member.text()).toContain(PRIVATE);
+    expect(member.headers.get('Cache-Control')).toBe('private, no-store');
+
+    const logout = await runWithContext({}, PAGE, anonymousFetch);
+    expect(await logout.text()).toContain(PUBLIC);
+
+    const expired = await createDemoSession(
+      { name: 'Expired' },
+      { now: Date.now() - 2000, ttlSeconds: 1 },
+    );
+    const afterExpiry = await runWithContext({
+      headers: { Cookie: `bbird_demo_session=${expired}` },
+    }, PAGE, anonymousFetch);
+    expect(await afterExpiry.text()).toContain(PUBLIC);
+    expect(origin).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not let a member-first request populate the anonymous cache', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockImplementation(() => response()));
+    const anonymousFetch = managedAnonymousCache(
+      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+    );
+    const valid = await createDemoSession({ name: 'Demo Member' });
+
+    const member = await runWithContext({
+      headers: { Cookie: `bbird_demo_session=${valid}` },
+    }, PAGE, anonymousFetch);
+    expect(await member.text()).toContain(PRIVATE);
+    const anonymous = await runWithContext({}, PAGE, anonymousFetch);
+    expect(await anonymous.text()).toContain(PUBLIC);
+    const repeatedMember = await runWithContext({
+      headers: { Cookie: `bbird_demo_session=${valid}` },
+    }, PAGE, anonymousFetch);
+    expect(await repeatedMember.text()).toContain(PRIVATE);
+  });
+
+  it('expires cached content and audience-rule changes after the bounded CDN TTL', async () => {
+    let source = GATED;
+    const origin = vi.fn().mockImplementation(() => response(source));
+    vi.stubGlobal('fetch', origin);
+    const anonymousFetch = managedAnonymousCache(
+      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+    );
+
+    const first = await runWithContext({}, PAGE, anonymousFetch);
+    expect(await first.text()).toContain(PUBLIC);
+
+    source = gatedPage(
+      '<div data-view="logged-out">Updated teaser</div>'
+      + '<div data-view="logged-in">Updated member detail</div>',
+    );
+    const stillWarm = await runWithContext({}, PAGE, anonymousFetch);
+    const warmHtml = await stillWarm.text();
+    expect(warmHtml).toContain(PUBLIC);
+    expect(warmHtml).not.toContain('Updated teaser');
+
+    anonymousFetch.advance(61);
+    const refreshed = await runWithContext({}, PAGE, anonymousFetch);
+    expect(await refreshed.text()).toContain('Updated teaser');
+    expect(await refreshed.text()).not.toContain('Updated member detail');
+  });
+
+  it('selects the anonymous managed cache after verifying the request session', async () => {
+    const anonymousFetch = vi.fn().mockResolvedValue(response());
+    const out = await runWithContext({
+      headers: {
+        Cookie: 'analytics=one; bbird_demo_session=invalid',
+        'X-Audience': 'logged-in',
+      },
+    }, PAGE, anonymousFetch);
+    expect(anonymousFetch).toHaveBeenCalledOnce();
+    const [cachedRequest, options] = anonymousFetch.mock.calls[0];
+    expect(cachedRequest.headers.has('Cookie')).toBe(false);
+    expect(cachedRequest.headers.get('X-Audience')).toBe('logged-in');
+    expect(options.cf.cacheKey).toBe('examples.bbird.live/gated-content');
+    expect(await out.text()).toContain(PUBLIC);
+  });
+
+  it('bypasses the anonymous managed cache for a valid session', async () => {
+    const token = await createDemoSession({ name: 'Demo Member' });
+    const anonymousFetch = vi.fn();
+    mockOrigin(response());
+    const out = await runWithContext({
+      headers: { Cookie: `analytics=one; bbird_demo_session=${token}` },
+    }, PAGE, anonymousFetch);
+    expect(anonymousFetch).not.toHaveBeenCalled();
+    expect(out.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(await out.text()).toContain(PRIVATE);
+  });
+
+  it.each([
+    ['absent', undefined],
+    ['invalid', 'bbird_demo_session=invalid'],
+    ['expired', 'expired'],
+  ])('uses the anonymous managed cache for an %s session', async (_, cookie) => {
+    let value = cookie;
+    if (cookie === 'expired') {
+      value = `bbird_demo_session=${await createDemoSession(
+        { name: 'Expired' },
+        { now: Date.now() - 2000, ttlSeconds: 1 },
+      )}`;
+    }
+    const anonymousFetch = vi.fn().mockResolvedValue(response());
+    await runWithContext(value ? { headers: { Cookie: value } } : {}, PAGE, anonymousFetch);
+    expect(anonymousFetch).toHaveBeenCalledOnce();
+  });
+
+  it('uses one canonical cache selection for unrelated anonymous cookies', async () => {
+    const anonymousFetch = vi.fn().mockResolvedValue(response());
+    await runWithContext({ headers: { Cookie: 'analytics=one' } }, PAGE, anonymousFetch);
+    await runWithContext({ headers: { Cookie: 'analytics=two; campaign=spring' } }, PAGE, anonymousFetch);
+    const selections = anonymousFetch.mock.calls.map(([cachedRequest, options]) => ({
+      cookie: cachedRequest.headers.get('Cookie'),
+      key: options.cf.cacheKey,
+    }));
+    expect(selections).toEqual([
+      { cookie: null, key: 'examples.bbird.live/gated-content' },
+      { cookie: null, key: 'examples.bbird.live/gated-content' },
+    ]);
+  });
+
   it('replaces a partial gated response with a full filtered response', async () => {
     const first = new Response(PRIVATE, {
       status: 206,
@@ -58,7 +217,7 @@ describe('CDN gated request flow', () => {
     const out = await run({ headers: conditionalHeaders });
     expectProbe(fetchMock);
     expect(out.status).toBe(200);
-    expect(out.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(out.headers.get('Cache-Control')).toBe('no-cache');
     expect(out.headers.get('Content-Range')).toBeNull();
     const html = await out.text();
     expect(html).not.toContain(PRIVATE);
@@ -75,7 +234,7 @@ describe('CDN gated request flow', () => {
     expectProbe(fetchMock);
     expect(out.status).toBe(200);
     expect(out.headers.get('ETag')).toBeNull();
-    expect(out.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(out.headers.get('Cache-Control')).toBe('no-cache');
     expect(await out.text()).not.toContain(PRIVATE);
   });
 
@@ -84,7 +243,7 @@ describe('CDN gated request flow', () => {
     const out = await run({ method: 'HEAD' });
     expectProbe(fetchMock);
     expect(out.status).toBe(200);
-    expect(out.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(out.headers.get('Cache-Control')).toBe('no-cache');
     expect(out.headers.get('Content-Length')).toBeNull();
     expect(out.headers.get('ETag')).toBeNull();
     expect(await out.text()).toBe('');

@@ -63,7 +63,7 @@ describe('gated HTML audiences', () => {
 });
 
 describe('gated response cache policy', () => {
-  it.each([false, true])('disallows storage for audience authenticated=%s', async (authenticated) => {
+  it('allows the managed CDN cache to store the anonymous representation only', async () => {
     const source = originResponse(gatedPage(body), {
       ETag: '"origin"',
       'Content-Length': '1234',
@@ -76,14 +76,44 @@ describe('gated response cache policy', () => {
       Vary: 'Accept-Encoding',
       'Content-Security-Policy': "default-src 'self'",
     });
-    const response = await applyGatingIfNeeded(await request(authenticated), new URL(PAGE), source);
+    const response = await applyGatingIfNeeded(await request(false), new URL(PAGE), source);
+    expect(response.headers.get('Cache-Control')).toBe('no-cache');
+    expect(response.headers.get('Cloudflare-CDN-Cache-Control'))
+      .toBe('public, max-age=60, must-revalidate');
+    expect(response.headers.get('Vary')).toBe('Accept-Encoding, Cookie');
+    expect(response.headers.get('Set-Cookie')).toBeNull();
+    [
+      'ETag', 'Last-Modified', 'Content-Length', 'Content-Range', 'Accept-Ranges',
+      'CDN-Cache-Control', 'Surrogate-Control', 'Expires', 'Age',
+    ].forEach((name) => expect(response.headers.get(name), name).toBeNull());
+    expect(response.headers.get('Content-Security-Policy')).toBe("default-src 'self'");
+  });
+
+  it('keeps the authenticated representation private and uncacheable', async () => {
+    const source = originResponse(gatedPage(body), {
+      ETag: '"origin"',
+      'Cloudflare-CDN-Cache-Control': 'public, max-age=172800',
+    });
+    const response = await applyGatingIfNeeded(await request(true), new URL(PAGE), source);
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
     [
       'ETag', 'Last-Modified', 'Content-Length', 'Content-Range', 'Accept-Ranges',
       'CDN-Cache-Control', 'Cloudflare-CDN-Cache-Control', 'Surrogate-Control', 'Expires', 'Age',
     ].forEach((name) => expect(response.headers.get(name), name).toBeNull());
-    expect(response.headers.get('Vary')).toBe('Accept-Encoding');
-    expect(response.headers.get('Content-Security-Policy')).toBe("default-src 'self'");
+  });
+
+  it.each([
+    { name: 'Set-Cookie', responseHeaders: { 'Set-Cookie': 'personalized=1' }, requestHeaders: {} },
+    { name: 'private origin response', responseHeaders: { 'Cache-Control': 'private, max-age=300' }, requestHeaders: {} },
+    { name: 'authorized request', responseHeaders: {}, requestHeaders: { Authorization: 'Bearer client-value' } },
+  ])('does not override unsafe cache signals: $name', async ({ responseHeaders, requestHeaders }) => {
+    const response = await applyGatingIfNeeded(
+      await request(false, requestHeaders),
+      new URL(PAGE),
+      originResponse(gatedPage(body), responseHeaders),
+    );
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('Cloudflare-CDN-Cache-Control')).toBeNull();
   });
 
   it('does not issue a 304 for an old audience validator', async () => {
@@ -98,7 +128,7 @@ describe('gated response cache policy', () => {
   });
 
   it('marks gated output no-store even when no content is removed', async () => {
-    const response = await applyGatingIfNeeded(await request(), new URL(PAGE), originResponse(gatedPage('<div>Public</div>')));
+    const response = await applyGatingIfNeeded(await request(true), new URL(PAGE), originResponse(gatedPage('<div>Public</div>')));
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
   });
 
