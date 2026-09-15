@@ -6,7 +6,7 @@ import {
 const PRODUCT_INDEX_BASE = '/products/product-detail';
 
 /*
- * Behr's color-collection filters the query index at the origin with an edge worker, e.g.
+ * A future edge worker could filter the query index at the origin, e.g.
  * `/query-index.json?skus=SKU-A,SKU-B`, so only the curated rows are ever transferred. That
  * worker doesn't exist in this repo yet, so fetchAllProductRows() below fetches the whole
  * index and this block filters client-side instead. Once the worker ships, swap the fetch
