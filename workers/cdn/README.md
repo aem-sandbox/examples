@@ -10,6 +10,7 @@ Worker code is based on [aem-cloudflare-prod-worker](https://github.com/adobe/ae
 |------|--------|
 | `ORIGIN_HOSTNAME` | `main--examples--aem-sandbox.aem.live` |
 | `PUSH_INVALIDATION` | `enabled` |
+| `GATED_CACHE_PATHS` | `/gated-content` |
 
 ## Auth-aware sections
 
@@ -34,11 +35,33 @@ content origin. It forwards unrelated cookies unchanged.
 representations above. These are public demo exclusions, not suitable locations for confidential
 content. Hiding a link to one of them does not protect its response.
 
-**Gated responses:** `Cache-Control: private, no-store` is set for both audiences, including when a
-page contains no blocks to remove. Origin validators, range/length/encoding metadata, expiry and
-CDN-specific shared-cache directives are removed. The worker does not issue audience ETags or rely
-on `Vary: Cookie`. The origin/subrequest cache can still store the complete source; transformed output
-must not enter a shared cache. Production cache rules must honor that separation.
+**Cache selection:** For paths listed in `GATED_CACHE_PATHS`, the default entrypoint checks the
+signed demo session before calling the cached `Anonymous` entrypoint. Valid sessions bypass that
+entrypoint. Anonymous requests use a canonical request without cookies, so analytics cookies do not
+split the CDN cache. The cache key has the request scheme, host, and path. Client-supplied audience
+headers have no effect. Other paths keep their existing request and cookie handling.
+
+**Gated responses:** Safe anonymous HTML has `Cache-Control: no-cache` for browsers and
+`Cloudflare-CDN-Cache-Control: public, max-age=60, must-revalidate` for Cloudflare's managed Workers
+Cache. `Vary: Accept, Cookie` keeps browser representations separate when the accepted media types
+or session cookie change. The cookie variance does not split the managed cache because the
+`Anonymous` entrypoint receives a cookie-free request.
+
+Authenticated HTML uses `Cache-Control: private, no-store`. Anonymous output is also private and
+uncacheable when the request has `Authorization`, or when the origin response has `Set-Cookie`,
+`Vary: *`, `private`, or `no-store`. The named entrypoint adds a CDN `no-store` override to ungated
+and error responses, so only filtered anonymous HTML enters the managed response cache.
+
+Both gated variants drop origin validators, range/length/encoding metadata, expiry, and conflicting
+CDN cache headers. The worker does not issue audience ETags. The origin/subrequest cache can still
+store the complete source.
+
+**Invalidation:** The existing AEM push invalidation purges Cloudflare's zone cache, not Workers
+Cache. Anonymous gated HTML can therefore be stale for up to 60 seconds after publication, deletion,
+or an audience-rule change. The worker uses a shorter TTL when the origin allows less than 60 seconds
+and does not override an immediately stale or private origin response. `must-revalidate` prevents
+stale responses after that window. Worker code deployments use a new cache namespace because
+`cross_version_cache` is not enabled.
 
 **Partial and conditional requests:** ordinary full HTML GETs need one source fetch. A `206` may
 omit the page metadata; `304` and `HEAD` responses have no body to inspect. For an ambiguous
@@ -57,9 +80,10 @@ origin fetches. Ranges/HEADs with a known non-HTML media type and explicitly exc
 do not need the HTML check.
 
 **Dependencies:** `cheerio` is installed under `workers/cdn/` (not the repo root), and
-`compatibility_flags = ["nodejs_compat"]` in `wrangler.toml` is required for it to bundle/run.
-Run `npm install` in this directory before `wrangler dev`/`deploy` locally; the `deploy-worker`
-GitHub Action does this automatically in CI when a `package.json` is present.
+`compatibility_flags = ["nodejs_compat"]` in `wrangler.toml` is required for it to bundle and run.
+Managed-cache entrypoint configuration needs Wrangler 4.107.0 or newer. The shared deployment
+workflow pins Wrangler 4.131.2. Run `npm install` in this directory before `wrangler dev` or `deploy`;
+the `deploy-worker` GitHub Action does this automatically when a `package.json` is present.
 
 ## Tests
 
@@ -71,7 +95,9 @@ npm test --prefix ./test
 ```
 
 The worker suite covers the full CDN entry point, including partial/conditional responses, HEAD,
-upstream cookies, error handling, and public passthrough. The edge and author-preview tests share
+upstream cookies, error handling, and public passthrough. A local managed-cache contract test covers
+request order, login, logout, expiry, unrelated cookies, and the 60-second freshness bound. It does
+not prove Cloudflare's deployed cache behavior. The edge and author-preview tests share
 `test/fixtures/gated-content.js` to check the same audience rules.
 
 ## Local dev

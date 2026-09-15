@@ -13,8 +13,11 @@ const send = (path, options = {}) => fetch(`${base}${path}`, {
 
 async function audience(response, member, name) {
   assert.equal(response.status, 200, name);
-  assert.equal(response.headers.get('cache-control'), 'private, no-store', name);
-  forbiddenCacheHeaders.forEach((header) => {
+  assert.equal(response.headers.get('cache-control'), member ? 'private, no-store' : 'no-cache', name);
+  const forbidden = member
+    ? forbiddenCacheHeaders
+    : forbiddenCacheHeaders.filter((header) => header !== 'cloudflare-cdn-cache-control');
+  forbidden.forEach((header) => {
     assert.equal(response.headers.get(header), null, header);
   });
   const html = await response.text();
@@ -41,9 +44,9 @@ await audience(await send(page, { headers: { 'If-None-Match': 'W/"1ni59yq-out"' 
 
 const head = await send(page, { method: 'HEAD' });
 assert.equal(head.status, 200);
-assert.equal(head.headers.get('cache-control'), 'private, no-store');
+assert.equal(head.headers.get('cache-control'), 'no-cache');
 assert.equal(await head.text(), '');
-checks.push('HEAD uses no-store and has no body');
+checks.push('anonymous HEAD has no body');
 
 const login = await send('/auth/login', {
   method: 'POST',

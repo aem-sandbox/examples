@@ -26,6 +26,7 @@ enabled = true
 [vars]
 ORIGIN_HOSTNAME = "main--examples--aem-sandbox.aem.live"
 PUSH_INVALIDATION = "enabled"
+GATED_CACHE_PATHS = "/gated-content"
 
 [observability.logs]
 enabled = true

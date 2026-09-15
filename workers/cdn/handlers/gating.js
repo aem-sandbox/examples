@@ -6,7 +6,7 @@ import { load } from 'cheerio';
 import { isAuthenticated } from './auth-check.js';
 
 const SKIP = ['/nav.plain.html', '/footer.plain.html'];
-const ANONYMOUS_CACHE_POLICY = 'public, max-age=60, must-revalidate';
+const MAX_ANONYMOUS_TTL = 60;
 const anonymousCacheable = new WeakSet();
 const normalize = (value) => String(value || '').trim().toLowerCase();
 const mediaType = (response) => normalize(response.headers.get('content-type')).split(';')[0].trim();
@@ -66,21 +66,33 @@ function appendVary(headers, name) {
   headers.set('Vary', values.join(', '));
 }
 
-function canCacheAnonymous(request, source) {
-  const cacheControl = [
+function anonymousCacheTtl(request, source) {
+  const cacheControls = [
     source.headers.get('Cache-Control'),
     source.headers.get('CDN-Cache-Control'),
     source.headers.get('Cloudflare-CDN-Cache-Control'),
-  ].filter(Boolean).join(',');
-  return !request.headers.has('Authorization')
-    && !source.headers.has('Set-Cookie')
-    && !/(?:^|,)\s*(?:private|no-store)(?:\s|,|=|$)/i.test(cacheControl)
-    && normalize(source.headers.get('Vary')) !== '*';
+  ].filter(Boolean);
+  const cacheControl = cacheControls.join(',');
+  if (request.headers.has('Authorization') || source.headers.has('Set-Cookie')
+    || /(?:^|,)\s*(?:private|no-cache|no-store)(?:\s|,|=|$)/i.test(cacheControl)
+    || normalize(source.headers.get('Vary')) === '*') return 0;
+
+  const ttls = cacheControls.flatMap((value) => [...value.matchAll(
+    /(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*"?(-?\d+)/gi,
+  )].map((match) => Number(match[1])));
+  if (ttls.length) return Math.min(MAX_ANONYMOUS_TTL, ...ttls);
+  if (/(?:s-maxage|max-age)\s*=/i.test(cacheControl)) return 0;
+
+  const expires = Date.parse(source.headers.get('Expires') || '');
+  const date = Date.parse(source.headers.get('Date') || '') || Date.now();
+  if (Number.isNaN(expires)) return 0;
+  return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, Math.floor((expires - date) / 1000)));
 }
 
 function gatedResponse(body, source, request, loggedIn) {
   const headers = new Headers(source.headers);
-  const cacheable = !loggedIn && canCacheAnonymous(request, source);
+  const ttl = loggedIn ? 0 : anonymousCacheTtl(request, source);
+  const cacheable = ttl > 0;
   [
     'Content-Length', 'Content-Range', 'Accept-Ranges', 'Content-Encoding',
     'ETag', 'Last-Modified', 'Age', 'Expires',
@@ -88,7 +100,8 @@ function gatedResponse(body, source, request, loggedIn) {
   ].forEach((name) => headers.delete(name));
   if (cacheable) {
     headers.set('Cache-Control', 'no-cache');
-    headers.set('Cloudflare-CDN-Cache-Control', ANONYMOUS_CACHE_POLICY);
+    headers.set('Cloudflare-CDN-Cache-Control', `public, max-age=${ttl}, must-revalidate`);
+    appendVary(headers, 'Accept');
     appendVary(headers, 'Cookie');
   } else {
     headers.set('Cache-Control', 'private, no-store');

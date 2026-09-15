@@ -193,13 +193,18 @@ export class Anonymous extends WorkerEntrypoint {
 
 const anonymousCacheKey = (request) => {
   const url = new URL(request.url);
-  return `${url.host}${url.pathname}`;
+  return `${url.protocol}//${url.host}${url.pathname}`;
 };
+
+const isCachedGatedPath = (url, env) => String(env.GATED_CACHE_PATHS || '').split(',')
+  .map((path) => path.trim()).filter(Boolean)
+  .includes(url.pathname);
 
 const handleFetch = async (request, env, ctx) => {
   const url = new URL(request.url);
   if (!ctx?.exports?.Anonymous || url.port || request.headers.has('Authorization')
-    || !canContainGatedHtml(request, url) || await isAuthenticated(request)) {
+    || !canContainGatedHtml(request, url) || !isCachedGatedPath(url, env)
+    || await isAuthenticated(request)) {
     return handleRequest(request, env);
   }
 
