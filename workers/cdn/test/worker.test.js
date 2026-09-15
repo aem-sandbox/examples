@@ -411,6 +411,15 @@ describe('CDN gated request flow', () => {
 });
 
 describe('unrelated public CDN requests', () => {
+  it('keeps ungated output out of the managed response cache', async () => {
+    const { Anonymous } = await import('../index.js');
+    expect(Anonymous).toBeTypeOf('function');
+    mockOrigin(response(UNGATED));
+    const out = await Anonymous.prototype.fetch.call({ env: ENV }, new Request(`${SITE}${PAGE}`));
+    expect(out.headers.get('Cloudflare-CDN-Cache-Control')).toBe('no-store');
+    expect(await out.text()).toBe(UNGATED);
+  });
+
   it('does not probe an extensionless HEAD with a known non-HTML type', async () => {
     const fetchMock = mockOrigin(new Response(null, {
       headers: { 'Content-Type': 'application/json', ETag: '"json"' },
