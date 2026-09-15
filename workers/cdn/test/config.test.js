@@ -7,6 +7,13 @@ const workerConfig = new URL('../wrangler.toml', import.meta.url);
 const deploymentWorkflow = new URL('../../../.github/workflows/deploy-worker.yaml', import.meta.url);
 
 describe('managed Workers Cache configuration', () => {
+  it('exports only configured Worker entrypoints', async () => {
+    const workerModule = await import('../index.js');
+    expect(workerModule).not.toHaveProperty('handleRequest');
+    expect(workerModule).toHaveProperty('Anonymous');
+    expect(workerModule).toHaveProperty('default');
+  });
+
   it('keeps the request gateway uncached and caches only the anonymous entrypoint', async () => {
     const config = await readFile(workerConfig, 'utf8');
     expect(config).toMatch(/\[cache]\s+enabled = true/);
