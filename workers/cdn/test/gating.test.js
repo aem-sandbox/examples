@@ -128,6 +128,26 @@ describe('gated response cache policy', () => {
       .toBe('public, max-age=15, must-revalidate');
   });
 
+  it('subtracts the response age from the origin freshness', async () => {
+    const response = await applyGatingIfNeeded(
+      await request(false),
+      new URL(PAGE),
+      originResponse(gatedPage(body), { 'Cache-Control': 'public, max-age=60', Age: '59' }),
+    );
+    expect(response.headers.get('Cloudflare-CDN-Cache-Control'))
+      .toBe('public, max-age=1, must-revalidate');
+  });
+
+  it.each(['max-age=60junk', 'max-age="60junk"', 'max-age=1.5'])('rejects malformed freshness %s', async (cacheControl) => {
+    const response = await applyGatingIfNeeded(
+      await request(false),
+      new URL(PAGE),
+      originResponse(gatedPage(body), { 'Cache-Control': cacheControl }),
+    );
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('Cloudflare-CDN-Cache-Control')).toBeNull();
+  });
+
   it('does not issue a 304 for an old audience validator', async () => {
     const response = await applyGatingIfNeeded(
       await request(false, { 'If-None-Match': 'W/"1ni59yq-out"' }),
