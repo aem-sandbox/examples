@@ -57,7 +57,7 @@ const buildHTML2JSONURL = (requestURL) => {
 };
 // html2json - end
 
-export const handleRequest = async (request, env) => {
+const handleRequest = async (request, env) => {
   const requestURL = new URL(request.url);
   const url = new URL(request.url);
   if (url.port) {
