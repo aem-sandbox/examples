@@ -6,6 +6,8 @@ import { load } from 'cheerio';
 import { isAuthenticated } from './auth-check.js';
 
 const SKIP = ['/nav.plain.html', '/footer.plain.html'];
+const ANONYMOUS_CACHE_POLICY = 'public, max-age=60, must-revalidate';
+const anonymousCacheable = new WeakSet();
 const normalize = (value) => String(value || '').trim().toLowerCase();
 const mediaType = (response) => normalize(response.headers.get('content-type')).split(';')[0].trim();
 const isHtml = (response) => mediaType(response) === 'text/html';
@@ -53,20 +55,59 @@ function transformGatedHtml($, loggedIn) {
 }
 
 /**
- * Returns a response with no-store headers and no origin validators.
+ * Returns filtered HTML without origin validators.
  * @param {string|null} body
  * @param {Response} source
  * @returns {Response}
  */
-function gatedResponse(body, source) {
+function appendVary(headers, name) {
+  const values = (headers.get('Vary') || '').split(',').map((value) => value.trim()).filter(Boolean);
+  if (!values.some((value) => value.toLowerCase() === name.toLowerCase())) values.push(name);
+  headers.set('Vary', values.join(', '));
+}
+
+function canCacheAnonymous(request, source) {
+  const cacheControl = [
+    source.headers.get('Cache-Control'),
+    source.headers.get('CDN-Cache-Control'),
+    source.headers.get('Cloudflare-CDN-Cache-Control'),
+  ].filter(Boolean).join(',');
+  return !request.headers.has('Authorization')
+    && !source.headers.has('Set-Cookie')
+    && !/(?:^|,)\s*(?:private|no-store)(?:\s|,|=|$)/i.test(cacheControl)
+    && normalize(source.headers.get('Vary')) !== '*';
+}
+
+function gatedResponse(body, source, request, loggedIn) {
   const headers = new Headers(source.headers);
+  const cacheable = !loggedIn && canCacheAnonymous(request, source);
   [
     'Content-Length', 'Content-Range', 'Accept-Ranges', 'Content-Encoding',
     'ETag', 'Last-Modified', 'Age', 'Expires',
     'CDN-Cache-Control', 'Cloudflare-CDN-Cache-Control', 'Surrogate-Control',
   ].forEach((name) => headers.delete(name));
-  headers.set('Cache-Control', 'private, no-store');
-  return new Response(body, { status: 200, headers });
+  if (cacheable) {
+    headers.set('Cache-Control', 'no-cache');
+    headers.set('Cloudflare-CDN-Cache-Control', ANONYMOUS_CACHE_POLICY);
+    appendVary(headers, 'Cookie');
+  } else {
+    headers.set('Cache-Control', 'private, no-store');
+  }
+  const response = new Response(body, { status: 200, headers });
+  if (cacheable) anonymousCacheable.add(response);
+  return response;
+}
+
+/**
+ * @param {Request} request
+ * @param {URL} requestURL
+ * @returns {boolean}
+ */
+export function canContainGatedHtml(request, requestURL) {
+  if (!['GET', 'HEAD'].includes(request.method)) return false;
+  const { pathname } = requestURL;
+  return !pathname.startsWith('/fragments/') && !SKIP.includes(pathname)
+    && !/\.(?:plain\.html|md|json)$/.test(pathname);
 }
 
 /**
@@ -80,12 +121,7 @@ function gatedResponse(body, source) {
  */
 // eslint-disable-next-line import/prefer-default-export
 export async function applyGatingIfNeeded(request, requestURL, response, fetchFullResponse) {
-  if (!['GET', 'HEAD'].includes(request.method)) return response;
-  const { pathname } = requestURL;
-  if (pathname.startsWith('/fragments/') || SKIP.includes(pathname)
-    || /\.(?:plain\.html|md|json)$/.test(pathname)) {
-    return response;
-  }
+  if (!canContainGatedHtml(request, requestURL)) return response;
 
   const type = mediaType(response);
   const ambiguous = [206, 304].includes(response.status)
@@ -111,7 +147,12 @@ export async function applyGatingIfNeeded(request, requestURL, response, fetchFu
 
     const loggedIn = await isAuthenticated(request);
     discard(response);
-    return gatedResponse(request.method === 'HEAD' ? null : transformGatedHtml($, loggedIn), source);
+    return gatedResponse(
+      request.method === 'HEAD' ? null : transformGatedHtml($, loggedIn),
+      source,
+      request,
+      loggedIn,
+    );
   } catch {
     if (source !== response) discard(source);
     discard(response);
@@ -120,4 +161,12 @@ export async function applyGatingIfNeeded(request, requestURL, response, fetchFu
       headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' },
     });
   }
+}
+
+export function isAnonymousCacheable(response) {
+  return anonymousCacheable.has(response);
+}
+
+export function copyAnonymousCacheability(source, target) {
+  if (isAnonymousCacheable(source)) anonymousCacheable.add(target);
 }

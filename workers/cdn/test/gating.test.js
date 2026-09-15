@@ -50,7 +50,7 @@ describe('gated HTML audiences', () => {
       originResponse(gatedPage(body, meta)),
     );
     expect(await response.text()).not.toContain('VIP Perks');
-    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('Cache-Control')).toBe('no-cache');
   });
 
   it('does not mistake a marker in a comment for page metadata', async () => {

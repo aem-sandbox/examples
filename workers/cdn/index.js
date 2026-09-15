@@ -12,7 +12,14 @@
 
 /* eslint-disable strict, prefer-template, no-restricted-syntax */
 
-import { applyGatingIfNeeded } from './handlers/gating.js';
+import { WorkerEntrypoint } from 'cloudflare:workers'; // eslint-disable-line import/no-unresolved
+import {
+  applyGatingIfNeeded,
+  canContainGatedHtml,
+  copyAnonymousCacheability,
+  isAnonymousCacheable,
+} from './handlers/gating.js';
+import { isAuthenticated } from './handlers/auth-check.js';
 // eslint-disable-next-line import/no-relative-packages
 import { DEMO_SESSION_COOKIE } from '../shared/demo-session.js';
 
@@ -50,7 +57,7 @@ const buildHTML2JSONURL = (requestURL) => {
 };
 // html2json - end
 
-const handleRequest = async (request, env) => {
+export const handleRequest = async (request, env) => {
   const requestURL = new URL(request.url);
   const url = new URL(request.url);
   if (url.port) {
@@ -157,7 +164,9 @@ const handleRequest = async (request, env) => {
     return fetchOrigin(fullRequest);
   });
 
-  resp = new Response(request.method === 'HEAD' ? null : resp.body, resp);
+  const finalResponse = new Response(request.method === 'HEAD' ? null : resp.body, resp);
+  copyAnonymousCacheability(resp, finalResponse);
+  resp = finalResponse;
   if (resp.status === 301 && savedSearch) {
     const location = resp.headers.get('location');
     if (location && !location.match(/\?.*$/)) {
@@ -173,6 +182,34 @@ const handleRequest = async (request, env) => {
   return resp;
 };
 
+export class Anonymous extends WorkerEntrypoint {
+  async fetch(request) {
+    const response = await handleRequest(request, this.env);
+    const cacheable = isAnonymousCacheable(response);
+    if (!cacheable) response.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+    return response;
+  }
+}
+
+const anonymousCacheKey = (request) => {
+  const url = new URL(request.url);
+  return `${url.host}${url.pathname}`;
+};
+
+const handleFetch = async (request, env, ctx) => {
+  const url = new URL(request.url);
+  if (!ctx?.exports?.Anonymous || url.port || request.headers.has('Authorization')
+    || !canContainGatedHtml(request, url) || await isAuthenticated(request)) {
+    return handleRequest(request, env);
+  }
+
+  const anonymousRequest = new Request(request);
+  anonymousRequest.headers.delete('Cookie');
+  return ctx.exports.Anonymous.fetch(anonymousRequest, {
+    cf: { cacheKey: anonymousCacheKey(request) },
+  });
+};
+
 export default {
-  fetch: handleRequest,
+  fetch: handleFetch,
 };

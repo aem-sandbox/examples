@@ -1,7 +1,7 @@
 import {
   afterEach, describe, expect, it, vi,
 } from 'vitest';
-import worker from '../index.js';
+import worker, { Anonymous } from '../index.js';
 // eslint-disable-next-line import/no-relative-packages
 import { createDemoSession } from '../../shared/demo-session.js';
 // eslint-disable-next-line import/no-relative-packages
@@ -77,7 +77,7 @@ describe('CDN gated request flow', () => {
     const origin = vi.fn().mockImplementation(() => response());
     vi.stubGlobal('fetch', origin);
     const anonymousFetch = managedAnonymousCache(
-      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+      (cachedRequest) => Anonymous.prototype.fetch.call({ env: ENV }, cachedRequest),
     );
 
     const anonymous = await runWithContext({}, PAGE, anonymousFetch);
@@ -107,7 +107,7 @@ describe('CDN gated request flow', () => {
   it('does not let a member-first request populate the anonymous cache', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(() => response()));
     const anonymousFetch = managedAnonymousCache(
-      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+      (cachedRequest) => Anonymous.prototype.fetch.call({ env: ENV }, cachedRequest),
     );
     const valid = await createDemoSession({ name: 'Demo Member' });
 
@@ -128,7 +128,7 @@ describe('CDN gated request flow', () => {
     const origin = vi.fn().mockImplementation(() => response(source));
     vi.stubGlobal('fetch', origin);
     const anonymousFetch = managedAnonymousCache(
-      (cachedRequest) => worker.fetch(cachedRequest, ENV),
+      (cachedRequest) => Anonymous.prototype.fetch.call({ env: ENV }, cachedRequest),
     );
 
     const first = await runWithContext({}, PAGE, anonymousFetch);
@@ -145,12 +145,16 @@ describe('CDN gated request flow', () => {
 
     anonymousFetch.advance(61);
     const refreshed = await runWithContext({}, PAGE, anonymousFetch);
-    expect(await refreshed.text()).toContain('Updated teaser');
-    expect(await refreshed.text()).not.toContain('Updated member detail');
+    const refreshedHtml = await refreshed.text();
+    expect(refreshedHtml).toContain('Updated teaser');
+    expect(refreshedHtml).not.toContain('Updated member detail');
   });
 
   it('selects the anonymous managed cache after verifying the request session', async () => {
-    const anonymousFetch = vi.fn().mockResolvedValue(response());
+    mockOrigin(response());
+    const anonymousFetch = managedAnonymousCache(
+      (cachedRequest) => Anonymous.prototype.fetch.call({ env: ENV }, cachedRequest),
+    );
     const out = await runWithContext({
       headers: {
         Cookie: 'analytics=one; bbird_demo_session=invalid',
@@ -162,7 +166,9 @@ describe('CDN gated request flow', () => {
     expect(cachedRequest.headers.has('Cookie')).toBe(false);
     expect(cachedRequest.headers.get('X-Audience')).toBe('logged-in');
     expect(options.cf.cacheKey).toBe('examples.bbird.live/gated-content');
-    expect(await out.text()).toContain(PUBLIC);
+    const html = await out.text();
+    expect(html).toContain(PUBLIC);
+    expect(html).not.toContain(PRIVATE);
   });
 
   it('bypasses the anonymous managed cache for a valid session', async () => {
@@ -412,12 +418,20 @@ describe('CDN gated request flow', () => {
 
 describe('unrelated public CDN requests', () => {
   it('keeps ungated output out of the managed response cache', async () => {
-    const { Anonymous } = await import('../index.js');
     expect(Anonymous).toBeTypeOf('function');
     mockOrigin(response(UNGATED));
     const out = await Anonymous.prototype.fetch.call({ env: ENV }, new Request(`${SITE}${PAGE}`));
     expect(out.headers.get('Cloudflare-CDN-Cache-Control')).toBe('no-store');
     expect(await out.text()).toBe(UNGATED);
+  });
+
+  it('marks errors uncacheable at the anonymous entrypoint boundary', async () => {
+    const out = await Anonymous.prototype.fetch.call(
+      { env: { ORIGIN_HOSTNAME: 'invalid.example' } },
+      new Request(`${SITE}${PAGE}`),
+    );
+    expect(out.status).toBe(500);
+    expect(out.headers.get('Cloudflare-CDN-Cache-Control')).toBe('no-store');
   });
 
   it('does not probe an extensionless HEAD with a known non-HTML type', async () => {

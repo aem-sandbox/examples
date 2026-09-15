@@ -8,6 +8,21 @@ routes = [
    { pattern = "examples.bbird.live/*", zone_name = "bbird.live" },
 ]
 
+[cache]
+enabled = true
+
+[exports.default]
+type = "worker"
+
+[exports.default.cache]
+enabled = false
+
+[exports.Anonymous]
+type = "worker"
+
+[exports.Anonymous.cache]
+enabled = true
+
 [vars]
 ORIGIN_HOSTNAME = "main--examples--aem-sandbox.aem.live"
 PUSH_INVALIDATION = "enabled"
