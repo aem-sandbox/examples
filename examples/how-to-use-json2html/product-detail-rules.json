@@ -1,0 +1,9 @@
+[
+  {
+    "path": "/products/product-detail/",
+    "endpoint": "https://examples.bbird.live/products/product-detail/data.json",
+    "arrayKey": "data",
+    "pathKey": "path",
+    "template": "/templates/products/product-detail.html"
+  }
+]
