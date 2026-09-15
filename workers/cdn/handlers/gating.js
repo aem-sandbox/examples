@@ -4,76 +4,16 @@
  */
 import { load } from 'cheerio';
 import { isAuthenticated } from './auth-check.js';
-// eslint-disable-next-line import/no-relative-packages
-import { DEMO_SESSION_COOKIE, readCookie } from '../../shared/demo-session.js';
 
-const SKIP = ['/fragments/', '/nav.plain.html', '/footer.plain.html'];
-const GATED_META = /<meta[^>]+name=["']gated["'][^>]*content=["']true["']/i;
+const SKIP = ['/nav.plain.html', '/footer.plain.html'];
+const MAX_ANONYMOUS_TTL = 60;
+const anonymousCacheable = new WeakSet();
+const normalize = (value) => String(value || '').trim().toLowerCase();
+const mediaType = (response) => normalize(response.headers.get('content-type')).split(';')[0].trim();
+const isHtml = (response) => mediaType(response) === 'text/html';
 
-/**
- * Shape of the validator this handler issues for gated pages: a digest of the origin's
- * own validator plus the audience the body was built for.
- */
-const VARIANT_ETAG = /^(?:W\/)?"[0-9a-z]+-(?:in|out)"$/;
-
-/**
- * Non-cryptographic digest (FNV-1a). Only needs to be stable and compact; it protects
- * nothing, it just distinguishes one origin revision from another.
- * @param {string} value
- * @returns {string}
- */
-/* eslint-disable no-bitwise -- FNV-1a needs xor and unsigned shift */
-function digest(value) {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < value.length; i += 1) {
-    hash ^= value.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return hash.toString(36);
-}
-/* eslint-enable no-bitwise */
-
-/**
- * Builds the audience-specific validator for a gated response.
- *
- * The origin's own `ETag`/`Last-Modified` describe the source document, which is identical
- * for both audiences. Reusing it lets a browser revalidate a cached anonymous page into a
- * 304 after signing in (and vice versa), so the visitor keeps the wrong variant. Folding the
- * audience into the validator keeps revalidation available without that confusion.
- *
- * @param {Response} source origin response
- * @param {boolean} loggedIn audience the body was built for
- * @returns {string} entity tag
- */
-function variantEtag(source, loggedIn) {
-  const base = source.headers.get('ETag')
-    || source.headers.get('Last-Modified')
-    || '';
-  return `W/"${digest(base)}-${loggedIn ? 'in' : 'out'}"`;
-}
-
-/**
- * True when a conditional request must not be answered by the origin, because the cached
- * copy it refers to may belong to a different audience than the visitor now belongs to.
- *
- * Two cases:
- * 1. the validator is one this handler issued, which the origin cannot evaluate at all;
- * 2. the visitor has a demo session but sent an origin-style validator, so the cache entry
- *    predates audience-specific validators and may hold the anonymous body.
- *
- * Anonymous requests carrying ordinary validators are left alone, so public pages keep
- * revalidating against the origin exactly as before.
- *
- * @param {Request} request
- * @returns {boolean}
- */
-export function needsFullOriginResponse(request) {
-  const ifNoneMatch = request.headers.get('If-None-Match');
-  if (ifNoneMatch && ifNoneMatch.split(',').some((tag) => VARIANT_ETAG.test(tag.trim()))) {
-    return true;
-  }
-  const conditional = ifNoneMatch || request.headers.get('If-Modified-Since');
-  return Boolean(conditional) && readCookie(request, DEMO_SESSION_COOKIE) !== '';
+function discard(response) {
+  if (!response.bodyUsed) response.body?.cancel().catch(() => undefined);
 }
 
 /**
@@ -84,114 +24,174 @@ export function needsFullOriginResponse(request) {
  * @returns {'logged-in'|'logged-out'|null}
  */
 function audience($, $section) {
-  const a = String($section.attr('data-view') || '').trim().toLowerCase();
+  const a = normalize($section.attr('data-view'));
   if (a === 'logged-in' || a === 'logged-out') return a;
 
   const meta = $section.find('.section-metadata').first();
   if (!meta.length) return null;
-  const viewDiv = meta.find('div').filter((__, div) => $(div).text().trim().toLowerCase() === 'view');
+  const viewDiv = meta.find('div').filter((__, div) => normalize($(div).text()) === 'view').first();
   if (!viewDiv.length) return null;
-  const v = String(viewDiv.next().text() || '').trim().toLowerCase();
+  const v = normalize(viewDiv.next().text());
   return v === 'logged-in' || v === 'logged-out' ? v : null;
 }
 
 /**
  * Rewrites gated HTML for one audience: drops sections/blocks the visitor can't see.
- * @param {string} html
+ * @param {import('cheerio').CheerioAPI} $
  * @param {boolean} loggedIn
  * @returns {string} the rewritten HTML
  */
-function transformGatedHtml(html, loggedIn) {
-  const $ = load(html);
-  /** @type {Set<import('domhandler').Element>} */
-  const removeEls = new Set();
+function transformGatedHtml($, loggedIn) {
   $('main > div').each((_, el) => {
-    const $s = $(el);
-    const aud = audience($, $s);
-    if (aud) {
-      const drop = (loggedIn && aud === 'logged-out') || (!loggedIn && aud === 'logged-in');
-      if (drop) removeEls.add(el);
-    }
-    if (!removeEls.has(el)) {
-      if (loggedIn) $s.find('[class*="logged-out"]').remove();
-      if (loggedIn) $s.find('.logged-out').remove();
-      else $s.find('.logged-in').remove();
+    const section = $(el);
+    const aud = audience($, section);
+    if ((loggedIn && aud === 'logged-out') || (!loggedIn && aud === 'logged-in')) {
+      section.remove();
+    } else {
+      section.find(loggedIn ? '.logged-out:not(.logged-in)' : '.logged-in:not(.logged-out)').remove();
     }
   });
-  removeEls.forEach((node) => $(node).remove());
   return $.html();
 }
 
 /**
- * Adds `Cookie` to the `Vary` header, preserving any existing values.
- * @param {Headers} headers
+ * Returns filtered HTML without origin validators.
+ * @param {string|null} body
+ * @param {Response} source
+ * @returns {Response}
  */
-function mergeVaryCookie(headers) {
-  const vary = headers.get('Vary');
-  if (!vary) {
-    headers.set('Vary', 'Cookie');
-    return;
-  }
-  if (vary.split(',').map((s) => s.trim().toLowerCase()).includes('cookie')) return;
-  headers.set('Vary', `${vary}, Cookie`);
+function appendVary(headers, name) {
+  const values = (headers.get('Vary') || '').split(',').map((value) => value.trim()).filter(Boolean);
+  if (!values.some((value) => value.toLowerCase() === name.toLowerCase())) values.push(name);
+  headers.set('Vary', values.join(', '));
 }
 
-/**
- * Builds the outgoing Response, copying status/headers from the origin response.
- * @param {string} body
- * @param {Response} source origin response to copy status/headers from
- * @param {boolean} [personalized] gated HTML was changed per user; tighten cache + Vary
- */
-function htmlResponse(body, source, personalized = false, loggedIn = false) {
+function anonymousCacheTtl(request, source) {
+  const cacheControls = [
+    source.headers.get('Cache-Control'),
+    source.headers.get('CDN-Cache-Control'),
+    source.headers.get('Cloudflare-CDN-Cache-Control'),
+  ].filter(Boolean);
+  const cacheControl = cacheControls.join(',');
+  if (request.headers.has('Authorization') || source.headers.has('Set-Cookie')
+    || /(?:^|,)\s*(?:private|no-cache|no-store)(?:\s|,|=|$)/i.test(cacheControl)
+    || normalize(source.headers.get('Vary')) === '*') return 0;
+
+  const ttlPattern = /(?:^|,)\s*(?:s-maxage|max-age)\s*=\s*(?:"(\d+)"|(\d+))\s*(?=,|$)/gi;
+  const ttlMatches = [...cacheControl.matchAll(ttlPattern)];
+  const ttlDeclarations = cacheControl.match(/(?:^|,)\s*(?:s-maxage|max-age)\s*=/gi) || [];
+  if (ttlMatches.length !== ttlDeclarations.length) return 0;
+
+  const ageHeader = source.headers.get('Age');
+  if (ageHeader !== null && !/^\d+$/.test(ageHeader.trim())) return 0;
+  const age = Number(ageHeader || 0);
+  const date = Date.parse(source.headers.get('Date') || '');
+  const apparentAge = Number.isNaN(date) ? 0 : Math.max(0, Math.floor((Date.now() - date) / 1000));
+  const currentAge = Math.max(age, apparentAge);
+
+  if (ttlMatches.length) {
+    const freshness = Math.min(...ttlMatches.map((match) => Number(match[1] || match[2])));
+    return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, freshness - currentAge));
+  }
+
+  const expires = Date.parse(source.headers.get('Expires') || '');
+  if (Number.isNaN(expires)) return 0;
+  const responseDate = Number.isNaN(date) ? Date.now() : date;
+  const freshness = Math.floor((expires - responseDate) / 1000);
+  return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, freshness - currentAge));
+}
+
+function gatedResponse(body, source, request, loggedIn) {
   const headers = new Headers(source.headers);
-  if (personalized) {
-    headers.delete('content-length');
-    headers.set('Cache-Control', 'private, no-cache, must-revalidate');
-    headers.delete('Age');
-    // The origin validator describes the shared source document, not this audience's body.
-    headers.delete('Last-Modified');
-    headers.set('ETag', variantEtag(source, loggedIn));
-    mergeVaryCookie(headers);
+  const ttl = loggedIn ? 0 : anonymousCacheTtl(request, source);
+  const cacheable = ttl > 0;
+  [
+    'Content-Length', 'Content-Range', 'Accept-Ranges', 'Content-Encoding',
+    'ETag', 'Last-Modified', 'Age', 'Expires',
+    'CDN-Cache-Control', 'Cloudflare-CDN-Cache-Control', 'Surrogate-Control',
+  ].forEach((name) => headers.delete(name));
+  if (cacheable) {
+    headers.set('Cache-Control', 'no-cache');
+    headers.set('Cloudflare-CDN-Cache-Control', `public, max-age=${ttl}, must-revalidate`);
+    appendVary(headers, 'Accept');
+    appendVary(headers, 'Cookie');
+  } else {
+    headers.set('Cache-Control', 'private, no-store');
   }
-  return new Response(body, {
-    status: source.status,
-    statusText: source.statusText,
-    headers,
-  });
+  const response = new Response(body, { status: 200, headers });
+  if (cacheable) anonymousCacheable.add(response);
+  return response;
 }
 
 /**
- * Rewrites the response for gated pages based on the visitor's auth state; passes
- * everything else through untouched.
  * @param {Request} request
- * @param {URL} requestURL parsed request URL (pathname used for the skip list)
+ * @param {URL} requestURL
+ * @returns {boolean}
+ */
+export function canContainGatedHtml(request, requestURL) {
+  if (!['GET', 'HEAD'].includes(request.method)) return false;
+  const { pathname } = requestURL;
+  return !pathname.startsWith('/fragments/') && !SKIP.includes(pathname)
+    && !/\.(?:plain\.html|md|json)$/.test(pathname);
+}
+
+/**
+ * Filters complete HTML. Uses a full GET to check HEAD, partial and conditional
+ * responses when their type does not rule out HTML.
+ * @param {Request} request
+ * @param {URL} requestURL
  * @param {Response} response origin response
+ * @param {function(): Promise<Response>} fetchFullResponse unconditional origin GET
  * @returns {Promise<Response>}
  */
 // eslint-disable-next-line import/prefer-default-export
-export async function applyGatingIfNeeded(request, requestURL, response) {
-  if (request.method !== 'GET' || response.status !== 200) return response;
-  if (SKIP.some((p) => requestURL.pathname.startsWith(p))) return response;
-  if (!(response.headers.get('content-type') || '').includes('text/html')) return response;
+export async function applyGatingIfNeeded(request, requestURL, response, fetchFullResponse) {
+  if (!canContainGatedHtml(request, requestURL)) return response;
 
-  const html = await response.text();
+  const type = mediaType(response);
+  const ambiguous = [206, 304].includes(response.status)
+    || (response.status === 200 && (request.method === 'HEAD'
+      || response.headers.has('content-range') || type === 'multipart/byteranges'));
+  let source = response;
+  try {
+    if (ambiguous && ['', 'text/html', 'multipart/byteranges'].includes(type)) {
+      source = await fetchFullResponse();
+      const fullType = mediaType(source);
+      if (source.status !== 200 || !fullType || fullType === 'multipart/byteranges'
+        || source.headers.has('content-range')) throw new Error('Incomplete response');
+      if (!isHtml(source)) {
+        if (type === 'text/html') throw new Error('Inconsistent media type');
+        discard(source);
+        return response;
+      }
+    }
+    if (source.status !== 200 || !isHtml(source)) return response;
 
-  if (!GATED_META.test(html)) {
-    return htmlResponse(html, response);
+    const $ = load(await (source === response ? source.clone() : source).text());
+    if (normalize($('head meta[name="gated"]').first().attr('content')) !== 'true') return response;
+
+    const loggedIn = await isAuthenticated(request);
+    discard(response);
+    return gatedResponse(
+      request.method === 'HEAD' ? null : transformGatedHtml($, loggedIn),
+      source,
+      request,
+      loggedIn,
+    );
+  } catch {
+    if (source !== response) discard(source);
+    discard(response);
+    return new Response(request.method === 'HEAD' ? null : 'Unable to inspect page content.', {
+      status: 502,
+      headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   }
+}
 
-  const loggedIn = await isAuthenticated(request);
-  const out = transformGatedHtml(html, loggedIn);
+export function isAnonymousCacheable(response) {
+  return anonymousCacheable.has(response);
+}
 
-  // A gated page is always audience-specific, even when this visitor's transform happens to
-  // drop nothing: caching it as shared content would let one audience serve the other.
-  const personalized = htmlResponse(out, response, true, loggedIn);
-
-  const etag = personalized.headers.get('ETag');
-  if (request.headers.get('If-None-Match')?.split(',').some((tag) => tag.trim() === etag)) {
-    const headers = new Headers(personalized.headers);
-    headers.delete('content-length');
-    return new Response(null, { status: 304, headers });
-  }
-  return personalized;
+export function copyAnonymousCacheability(source, target) {
+  if (isAnonymousCacheable(source)) anonymousCacheable.add(target);
 }
