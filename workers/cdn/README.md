@@ -15,75 +15,67 @@ Worker code is based on [aem-cloudflare-prod-worker](https://github.com/adobe/ae
 ## Auth-aware sections
 
 `handlers/gating.js` rewrites HTML for pages marked `<meta name="gated" content="true">`, dropping
-sections/blocks the visitor's audience can't see. The author-preview logic in
-`scripts/utils/gated-content.js` applies the same rules: a removed section removes its descendants,
-and block rules still apply inside sections the handler keeps. Only exact `logged-in` and `logged-out` class
-tokens are audience variants. Both variants allow either audience. Parent section and block rules
-still apply. Blocks without an audience variant are also shown to both audiences.
+sections/blocks the visitor's audience can't see. Mirrors the author-preview logic in
+`scripts/utils/gated-content.js`.
 
-This filters a public page by audience; it does not protect the origin, downloads, or alternate
-representations such as `.plain.html`, `.md`, and `.json`. The html2json fallback is a separate,
-public delivery path. `gated: true` enables filtering, not a whole-page authorization policy.
+Block variants must match `logged-in` or `logged-out` exactly. Both variants, or neither, allow
+either audience. Removing a section or block removes everything inside it. Blocks inside a section
+the worker keeps still follow their own audience rules.
 
 **Auth:** `handlers/auth-check.js` verifies the HMAC signature and expiry of the
 `bbird_demo_session` cookie created by the demo login worker. Its signing key is intentionally
-public, and the user chooses the display name. The cookie does not prove identity or permission
-to read confidential content. The CDN checks this cookie locally and does not forward it to the
-content origin. It forwards unrelated cookies unchanged.
+public, so it must not protect confidential content. The worker removes this cookie before
+forwarding requests to the origin.
 
-**Skips gating:** `/fragments/`, `/nav.plain.html`, `/footer.plain.html`, and the alternate
-representations above. These are public demo exclusions, not suitable locations for confidential
-content. Hiding a link to one of them does not protect its response.
+**Skips gating:** `/fragments/`, `/nav.plain.html`, `/footer.plain.html`, and `.plain.html`, `.md`
+and `.json` responses. The origin, downloads and html2json fallback are also outside this filter.
+
+## Caching
 
 **Cache selection:** For paths listed in `GATED_CACHE_PATHS`, the default entrypoint checks the
-signed demo session before calling the cached `Anonymous` entrypoint. Valid sessions bypass that
-entrypoint. Anonymous requests use a canonical request without cookies, so analytics cookies do not
-split the CDN cache. The cache key has the request scheme, host, and path. Client-supplied audience
-headers have no effect. Other paths keep their existing request and cookie handling.
+session before calling the cached `Anonymous` entrypoint. Valid sessions and requests with
+`Authorization` bypass it. Anonymous requests have no cookies, so analytics cookies don't split
+the cache. The cache key uses the scheme, host and path. Other paths keep their cookie handling.
 
-**Gated responses:** Safe anonymous HTML has `Cache-Control: no-cache` for browsers and
-`Cloudflare-CDN-Cache-Control: public, max-age=60, must-revalidate` for Cloudflare's managed Workers
-Cache. `Vary: Accept, Cookie` keeps browser representations separate when the accepted media types
-or session cookie change. The cookie variance does not split the managed cache because the
-`Anonymous` entrypoint receives a cookie-free request.
+**Gated responses:** Cloudflare's managed Workers Cache stores filtered anonymous HTML for up to
+60 seconds, or less if the origin's remaining cache lifetime is shorter.
 
-Authenticated HTML uses `Cache-Control: private, no-store`. Anonymous output is also private and
-uncacheable when the request has `Authorization`, or when the origin response has `Set-Cookie`,
-`Vary: *`, `private`, or `no-store`. The named entrypoint adds a CDN `no-store` override to ungated
-and error responses, so only filtered anonymous HTML enters the managed response cache.
+- Browsers get `Cache-Control: no-cache` and `Vary: Accept, Cookie` to recheck after login or logout.
+- Cloudflare gets `Cloudflare-CDN-Cache-Control: public, max-age=<ttl>, must-revalidate`.
+- Signed-in responses get `Cache-Control: private, no-store`.
 
-Both gated variants drop origin validators, range/length/encoding metadata, expiry, and conflicting
-CDN cache headers. The worker does not issue audience ETags. The origin/subrequest cache can still
-store the complete source.
+Anonymous HTML is also private and uncacheable if the origin sends `Set-Cookie`, `Vary: *`,
+`private`, `no-cache` or `no-store`, or has no valid cache lifetime left. The `Anonymous` entrypoint
+doesn't cache ungated pages or errors.
 
-**Invalidation:** The existing AEM push invalidation purges Cloudflare's zone cache, not Workers
-Cache. Anonymous gated HTML can therefore be stale for up to 60 seconds after publication, deletion,
-or an audience-rule change. The worker uses a shorter TTL when the origin allows less than 60 seconds
-and does not override an immediately stale or private origin response. `must-revalidate` prevents
-stale responses after that window. Worker code deployments use a new cache namespace because
-`cross_version_cache` is not enabled.
+Rewritten responses replace origin cache headers and drop validators, range, length and encoding
+headers. The origin cache can still store the full source.
 
-**Partial and conditional requests:** ordinary full HTML GETs need one source fetch. A `206` may
-omit the page metadata; `304` and `HEAD` responses have no body to inspect. For an ambiguous
-response with media type `text/html`, `multipart/byteranges`, or no media type, the worker sends
-a GET without range or conditional headers, then checks the full response's type and HTML metadata:
+**Invalidation:** AEM push invalidation clears Cloudflare's zone cache, not Workers Cache. Published
+changes, deletions and audience changes can take up to 60 seconds to appear. Expired responses aren't
+served. Code deployments start with a new cache.
 
-- Gated GETs return full, filtered `200` responses, including for old validators and Range requests.
-- Gated HEADs return `200` with the same non-cacheable policy and no body.
-- Ungated pages retain the original partial/conditional response and its representation headers.
-- A complete non-HTML probe preserves the original response unless the original explicitly claimed
-  to be HTML. Failed, unreadable or inconsistently typed checks return a non-cacheable `502`, not
-  unclassified content. A HEAD error has no body. Discarded response streams are cancelled.
+## Partial and conditional requests
 
-The full-response check can require another origin/subrequest-cache lookup. It does not eliminate
-origin fetches. Ranges/HEADs with a known non-HTML media type and explicitly excluded representations
-do not need the HTML check.
+A `206`, `304` or `HEAD` response may lack the metadata needed to check gating. If it could be HTML,
+the worker fetches the full response without range or conditional headers before filtering it.
+Normal HTML GETs need one fetch; this check can need another.
+
+- Gated GETs return full, filtered `200` responses. HEADs use the same cache policy, with no body.
+- Ungated pages keep the original response and headers.
+- If the full response isn't HTML, keep the original unless the original is HTML.
+- Failed checks or conflicting content types return an uncacheable `502`. HEAD errors have no body.
+
+## Local dev
 
 **Dependencies:** `cheerio` is installed under `workers/cdn/` (not the repo root), and
 `compatibility_flags = ["nodejs_compat"]` in `wrangler.toml` is required for it to bundle and run.
-Managed-cache entrypoint configuration needs Wrangler 4.107.0 or newer. The shared deployment
-workflow pins Wrangler 4.131.2. Run `npm install` in this directory before `wrangler dev` or `deploy`;
-the `deploy-worker` GitHub Action does this automatically when a `package.json` is present.
+This cache setup needs Wrangler 4.107.0 or newer; CI uses 4.131.2 and installs dependencies automatically.
+
+```bash
+npm install --prefix ./workers/cdn
+npx wrangler dev --config ./workers/cdn/wrangler.toml
+```
 
 ## Tests
 
@@ -94,18 +86,9 @@ npm ci --prefix ./test
 npm test --prefix ./test
 ```
 
-The worker suite covers the full CDN entry point, including partial/conditional responses, HEAD,
-upstream cookies, error handling, and public passthrough. A local managed-cache contract test covers
-request order, login, logout, expiry, unrelated cookies, and the 60-second freshness bound. It does
-not prove Cloudflare's deployed cache behavior. The edge and author-preview tests share
-`test/fixtures/gated-content.js` to check the same audience rules.
-
-## Local dev
-
-```bash
-npm install --prefix ./workers/cdn
-npx wrangler dev --config ./workers/cdn/wrangler.toml
-```
+The CDN and author-preview tests share audience fixtures. Cache tests use a local mock; checking
+Cloudflare's cache needs a deployed Worker. See [local smoke tests](../../test/gating-local/README.md)
+for workerd and browser checks.
 
 ## Deploy
 
