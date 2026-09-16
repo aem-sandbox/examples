@@ -26,9 +26,19 @@ assurance and must not be used to protect confidential content.
 **Skips gating:** `/fragments/`, `/nav.plain.html`, `/footer.plain.html` — otherwise a shared
 header/footer pulled into every page could get gated.
 
-**Gated responses:** `Cache-Control: private, no-cache, must-revalidate` and `Vary: Cookie` are set
-whenever the gated HTML is actually rewritten per-visitor, so a shared cache never serves one
-visitor's personalized HTML to the next.
+**Gated responses:** any page carrying the `gated` meta counts as per-visitor, including one whose
+audience happens to drop nothing, so `Cache-Control: private, no-cache, must-revalidate` and
+`Vary: Cookie` are always set. A shared cache therefore never serves one visitor's personalized
+HTML to the next, and one audience never receives a shared copy built for the other.
+
+**Gated validators:** the origin's `Last-Modified` describes the source document and is identical
+for both audiences, so it is removed and replaced with an audience-specific
+`ETag` (`W/"{digest}-in"` or `-out`), and this worker answers those conditional requests itself.
+Without that, a browser holding the anonymous copy revalidates after login, the origin answers
+`304`, and the visitor keeps the anonymous page — a `304` carries no body, so gating cannot rewrite
+it. Requests whose cached copy may belong to another audience (`needsFullOriginResponse`) drop
+`If-None-Match`/`If-Modified-Since` before the origin fetch. Ungated pages keep the origin's own
+validators and revalidate against it unchanged.
 
 **Dependencies:** `cheerio` is installed under `workers/cdn/` (not the repo root), and
 `compatibility_flags = ["nodejs_compat"]` in `wrangler.toml` is required for it to bundle/run.

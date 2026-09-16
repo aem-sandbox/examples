@@ -131,6 +131,11 @@ Pages are progressively loaded in three phases to maximize performance. This pro
 - Test with screen readers
 - Follow WCAG 2.1 AA guidelines
 
+### Tests
+- Unit tests run per package with vitest: `npm test --prefix ./test` for site code, and `npm test --prefix ./workers/{name}` for a worker. Run every affected package plus `npm run lint` before committing.
+- Do not pipe a lint or test run through `tail` alone when deciding whether to commit: a non-zero exit is easy to miss that way, and the failure reaches CI instead.
+- The site suite loads `scripts/aem.js`, whose RUM sampling selects roughly one run in a hundred and sends a real beacon, which vitest reports as an unhandled rejection and fails an otherwise green run. `test/setup.js` opts out (`SAMPLE_PAGEVIEWS_AT_RATE = 'off'`) and is registered through `test/vitest.config.js`. Keep new suites offline and deterministic the same way rather than accepting a flaky run.
+
 ## Deployment
 
 ### Environments
@@ -155,6 +160,20 @@ With this information, you can construct URLs for the preview environment (same 
 5. use `gh pr checks` to verify the status of code synchronization, linting, and performance tests
 6. A human reviewer will review the code, inspect the provided URL and merge the PR
 7. AEM Code Sync updates the main branch for production
+
+### Workers
+
+Cloudflare Workers live in `workers/{name}/` with their own `wrangler.toml` and deploy independently of the site code:
+
+- `workers/cdn` deploys automatically on push to `main` (`.github/workflows/deploy-cdn.yaml`); `contact_us`, `feed` and `usgs_quakes` have equivalent workflows.
+- Any other worker, `auth` included, has no push trigger. Deploy it through the shared job and then confirm what is actually live:
+  ```bash
+  gh workflow run deploy-worker.yaml --ref main -f working-directory=workers/auth
+  npx wrangler deployments list   # run inside workers/auth
+  ```
+- A worker route can sit behind a Cloudflare Access application, which answers before the worker runs. Deploying a worker does not change Access, so a route that still redirects to `cloudflareaccess.com` is an Access policy question rather than a worker bug.
+- To exercise a worker before merging, deploy a separately named copy with `workers_dev = true` and no `routes`, then remove it afterwards with `npx wrangler delete --name {name}`. Never run `wrangler deploy` from a feature branch against the production `wrangler.toml`: its `routes` would take over production traffic. `wrangler versions upload` is not an alternative here, because version preview URLs are disabled on this account.
+- If the behavior under test depends on a first-party cookie, serve the site and the worker from one host in that preview copy. A cookie set by a `workers.dev` host is not sent on requests from an `aem.page` page, so a split-origin preview shows a signed-out state no matter how the worker behaves.
 
 ## Troubleshooting
 
