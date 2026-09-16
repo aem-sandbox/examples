@@ -67,6 +67,19 @@ describe('promo block', () => {
     ]);
   });
 
+  it('slugs a multi-word type into a single valid class token', async () => {
+    // classList.add() throws InvalidCharacterError on a token containing whitespace, so
+    // "Inline Card" must become "inline-card", not "inline card".
+    vi.stubGlobal('fetch', async () => ({
+      ok: true,
+      json: async () => ({ ...PAYLOAD, data: { ...PAYLOAD.data, type: 'Inline Card' } }),
+    }));
+    const block = blockWithLink();
+    await decorate(block);
+    expect(block.classList.contains('promo-type-inline-card')).toBe(true);
+    expect(block.querySelector('.promo-name').textContent).toBe('Summer Sale');
+  });
+
   it('omits the description paragraph when the field is absent', async () => {
     const { description, ...dataWithoutDescription } = PAYLOAD.data;
     vi.stubGlobal('fetch', async () => ({

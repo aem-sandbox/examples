@@ -31,8 +31,9 @@ function ctaLink(cta, isPrimary) {
 }
 
 function promoListingItem(data) {
+  const typeSlug = (data.type || 'banner').toLowerCase().replace(/\s+/g, '-');
   const item = createTag('li', {
-    class: `promo-listing-item promo-listing-type-${(data.type || 'banner').toLowerCase()}`,
+    class: `promo-listing-item promo-listing-type-${typeSlug}`,
   }, [
     createTag('p', { class: 'promo-listing-item-name' }, data.name || ''),
     data.description ? createTag('p', { class: 'promo-listing-item-description' }, data.description) : '',

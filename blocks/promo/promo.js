@@ -22,7 +22,8 @@ export default async function decorate(block) {
   const { data } = payload || {};
   if (!data || data.active === false) return;
 
-  block.classList.add(`promo-type-${(data.type || 'banner').toLowerCase()}`);
+  const typeSlug = (data.type || 'banner').toLowerCase().replace(/\s+/g, '-');
+  block.classList.add(`promo-type-${typeSlug}`);
 
   const text = createTag('div', { class: 'promo-text' }, [
     createTag('p', { class: 'promo-name' }, data.name || ''),

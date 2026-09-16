@@ -20,8 +20,11 @@ const INDEX = {
     {
       path: '/forms/sc/promotions/winter-preview', name: 'Winter Preview', type: 'Inline Card', priority: '4', active: 'false',
     },
+    {
+      path: '/forms/sc/promotions/holiday-bundle', name: 'Holiday Bundle', type: 'Inline Card', priority: '9', active: 'true',
+    },
   ],
-  total: 3,
+  total: 4,
 };
 
 const RECORDS = {
@@ -43,6 +46,16 @@ const RECORDS = {
       active: true,
       description: 'New arrivals for the season.',
       ctas: [{ label: 'Shop new arrivals', url: '/promotions/fall-refresh' }],
+    },
+  },
+  '/forms/sc/promotions/holiday-bundle': {
+    data: {
+      name: 'Holiday Bundle',
+      type: 'Inline Card',
+      priority: 9,
+      active: true,
+      description: 'Bundle and save.',
+      ctas: [{ label: 'View bundles', url: '/promotions/holiday-bundle' }],
     },
   },
 };
@@ -91,18 +104,29 @@ describe('promo-listing block', () => {
     const block = render();
     await decorate(block);
     const names = [...block.querySelectorAll('.promo-listing-item-name')].map((el) => el.textContent);
-    expect(names).toEqual(['Summer Sale', 'Fall Refresh']);
+    expect(names).toEqual(['Holiday Bundle', 'Summer Sale', 'Fall Refresh']);
   });
 
   it('renders a CTA and the type modifier class per item', async () => {
     const block = render();
     await decorate(block);
-    const item = block.querySelector('.promo-listing-item');
-    expect(item.classList.contains('promo-listing-type-banner')).toBe(true);
-    const cta = item.querySelector('.promo-listing-item-ctas a');
+    const items = [...block.querySelectorAll('.promo-listing-item')];
+    const bannerItem = items.find((item) => item.classList.contains('promo-listing-type-banner'));
+    expect(bannerItem).toBeTruthy();
+    const cta = bannerItem.querySelector('.promo-listing-item-ctas a');
     expect([cta.textContent, cta.getAttribute('href'), cta.className]).toEqual([
       'Shop the sale', '/promotions/summer-sale', 'button primary',
     ]);
+  });
+
+  it('slugs a multi-word type into a single valid class token', async () => {
+    // classList/className with an embedded space produces a bogus extra class token, so
+    // "Inline Card" must become "inline-card", not "inline card".
+    const block = render();
+    await decorate(block);
+    const items = [...block.querySelectorAll('.promo-listing-item')];
+    const cardItem = items.find((item) => item.querySelector('.promo-listing-item-name').textContent === 'Holiday Bundle');
+    expect(cardItem.classList.contains('promo-listing-type-inline-card')).toBe(true);
   });
 
   it('renders nothing without an index or origin config', async () => {
