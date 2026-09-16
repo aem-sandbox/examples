@@ -1,4 +1,6 @@
-.product-detail {
+/* Scoped to main, not just the class: the `product-detail` template puts this same class
+   name on <body>, and an unscoped `.product-detail` here would clamp the whole page. */
+main .product-detail {
   max-width: 900px;
   margin-inline: auto;
 }

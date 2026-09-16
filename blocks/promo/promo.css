@@ -20,8 +20,11 @@
 }
 
 .promo .promo-text {
-  flex: 1;
-  min-width: 0;
+  /* `flex: 1` alone has a 0% basis, so the wrap calculation treats this as ~0 width and
+     never wraps the CTAs to their own line — it just squeezes the text to whatever's
+     left, wrapping every word. A real min-width makes the CTAs wrap instead. */
+  flex: 1 1 200px;
+  min-width: 200px;
 }
 
 .promo .promo-name {
