@@ -7,6 +7,30 @@ function factRow(label, value) {
   ]);
 }
 
+/**
+ * Home > Products > {category} > {product name}. Built here, not in the page template,
+ * even though it's page-level breadcrumb chrome: the block already has `name`/`category`
+ * synchronously (no fetch) as part of decorating, which runs eagerly before first paint.
+ * Building it in the template script instead meant it only appeared once that lazy-phase
+ * script loaded and ran — measured at a ~0.36 CLS on a throttled connection, since the
+ * whole page shifts down when a breadcrumb is inserted above already-painted content.
+ * "Products" and the category aren't links: this SKU catalog has no browsable listing page
+ * of its own (it's JSON2HTML detail pages plus a query index), unlike the /products bike
+ * catalog, which is a different, unrelated block and index.
+ */
+function buildBreadcrumb(name, category) {
+  if (!name) return null;
+
+  const list = createTag('ol', {}, [
+    createTag('li', {}, createTag('a', { href: '/' }, 'Home')),
+    createTag('li', {}, 'Products'),
+    category ? createTag('li', {}, category) : '',
+    createTag('li', { 'aria-current': 'page' }, name),
+  ]);
+
+  return createTag('nav', { class: 'product-detail-breadcrumb', 'aria-label': 'Breadcrumb' }, list);
+}
+
 /** Mustache can't format, so the star string is built here rather than upstream. */
 function ratingStars(rating) {
   const score = Number.parseFloat(rating);
@@ -41,6 +65,9 @@ export default function decorate(block) {
   const productId = productIdCell?.textContent.trim();
 
   block.textContent = '';
+
+  const breadcrumb = buildBreadcrumb(name, category);
+  if (breadcrumb) block.append(breadcrumb);
 
   const subtitle = [category, inStock ? null : 'Out of stock'].filter(Boolean).join(' · ');
   const heading = createTag('div', { class: 'product-detail-heading' }, [

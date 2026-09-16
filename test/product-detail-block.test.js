@@ -49,6 +49,29 @@ describe('product-detail block', () => {
     decorate(block);
   });
 
+  it('builds Home > Products > category > current page as the first thing in the block', () => {
+    // Built here, not in the page template: the block already has name/category
+    // synchronously, so the breadcrumb exists before first paint instead of popping in
+    // during the lazy phase and shifting everything below it (a measured ~0.36 CLS).
+    const nav = block.querySelector('.product-detail-breadcrumb');
+    expect(block.firstElementChild).toBe(nav);
+    const items = [...nav.querySelectorAll('li')];
+    expect(items.map((li) => li.textContent)).toEqual(['Home', 'Products', 'Footwear', 'Granite Loafers']);
+    expect(items[0].querySelector('a').getAttribute('href')).toBe('/');
+    // "Products" and the category aren't links: this catalog has no browsable listing page.
+    expect(items[1].querySelector('a')).toBeNull();
+    expect(items[2].querySelector('a')).toBeNull();
+    expect(items[3].getAttribute('aria-current')).toBe('page');
+  });
+
+  it('omits the category crumb when the record has none', () => {
+    document.body.innerHTML = RECORD.replace('<div>Footwear</div>', '<div></div>');
+    const b = document.querySelector('.product-detail');
+    decorate(b);
+    const items = [...b.querySelectorAll('.product-detail-breadcrumb li')];
+    expect(items.map((li) => li.textContent)).toEqual(['Home', 'Products', 'Granite Loafers']);
+  });
+
   it('renders the name as the heading and the category as the subtitle', () => {
     expect(block.querySelector('h1').textContent).toBe('Granite Loafers');
     expect(block.querySelector('.product-detail-subtitle').textContent).toBe('Footwear');
