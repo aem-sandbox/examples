@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "schemaName": "product-collection",
+    "title": "summer-essentials"
+  },
+  "data": {
+    "collection-name": "Summer Essentials",
+    "description": "Warm-weather must-haves for long days outside — coolers, hammocks, sun protection, and gear that goes wherever summer takes you.",
+    "products": [
+      "SKU-OUT-001",
+      "SKU-ACC-003",
+      "SKU-OUT-002",
+      "SKU-FOO-008",
+      "SKU-ACC-009",
+      "SKU-OUT-010",
+      "SKU-FIT-007",
+      "SKU-OUT-011",
+      "SKU-ACC-011",
+      "SKU-OUT-020"
+    ]
+  }
+}

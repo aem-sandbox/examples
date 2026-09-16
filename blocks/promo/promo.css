@@ -1,0 +1,61 @@
+.promo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  padding: var(--space-m);
+  border-radius: var(--radius-m);
+  background-color: var(--color-brand-subtle);
+}
+
+.promo:empty {
+  display: none;
+}
+
+.promo .promo-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+.promo .promo-text {
+  /* `flex: 1` alone has a 0% basis, so the wrap calculation treats this as ~0 width and
+     never wraps the CTAs to their own line — it just squeezes the text to whatever's
+     left, wrapping every word. A real min-width makes the CTAs wrap instead. */
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.promo .promo-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.promo .promo-description {
+  margin: var(--space-xs) 0 0;
+  color: light-dark(var(--color-gray-600), var(--color-gray-200));
+}
+
+.promo .promo-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+}
+
+.promo .promo-dismiss {
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  padding: var(--space-xs);
+  font-size: var(--body-font-size-m);
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+@media (width >= 600px) {
+  .promo {
+    padding: var(--space-m) var(--space-l);
+  }
+}

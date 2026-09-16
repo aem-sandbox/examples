@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "schemaName": "promotion",
+    "title": "summer-sale"
+  },
+  "data": {
+    "type": "Banner",
+    "priority": 8,
+    "active": true,
+    "name": "Summer Sale",
+    "audienceTags": [
+      "returning-visitor",
+      "newsletter-subscriber"
+    ],
+    "ctas": [
+      {
+        "label": "Shop the sale",
+        "url": "/promotions/summer-sale"
+      },
+      {
+        "label": "See full terms",
+        "url": "/terms/summer-sale"
+      }
+    ],
+    "description": "Exclusive summer sale for returning customers and newsletter subscribers. Shop seasonal savings on select items."
+  }
+}

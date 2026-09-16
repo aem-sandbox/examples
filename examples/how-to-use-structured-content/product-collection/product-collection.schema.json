@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Product Collection",
+  "description": "A curated collection of products referencing SKUs from the product catalog.",
+  "type": "object",
+  "properties": {
+    "collection-name": {
+      "type": "string",
+      "title": "Collection Name",
+      "description": "The merchandised title of this collection, e.g. 'Summer Essentials'"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Optional editorial copy displayed above the product grid."
+    },
+    "products": {
+      "type": "array",
+      "title": "Products",
+      "description": "Ordered list of product SKUs in this collection.",
+      "items": {
+        "type": "string",
+        "title": "SKU",
+        "description": "The product SKU, must match the sku field in the query index."
+      }
+    }
+  },
+  "required": [
+    "collection-name",
+    "products"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "product_id": "PRD-0001",
+  "name": "Granite Loafers",
+  "category": "Footwear",
+  "price": "155.12",
+  "currency": "USD",
+  "stock_quantity": "224",
+  "sku": "SKU-FOO-001",
+  "color": "Green",
+  "rating": "4.4",
+  "in_stock": "TRUE",
+  "path": "/products/product-detail/sku-foo-001",
+  "image_url": "https://picsum.photos/seed/sku-foo-001/640/480"
+}
