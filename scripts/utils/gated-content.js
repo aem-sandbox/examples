@@ -2,7 +2,7 @@
  * Author/dev-only preview of gated content: hides sections/blocks the current preview
  * auth state can't see, and injects the auth-toggle panel to switch between states.
  * Mirrors the server-side rewrite in `workers/cdn/handlers/gating.js`, which is the
- * actual trust boundary in production.
+ * edge HTML filter. The demo session does not prove identity or entitlement.
  */
 // eslint-disable-next-line import/no-cycle
 import { createAuthToggle } from '../../blocks/auth-toggle/auth-toggle.js';
@@ -99,6 +99,7 @@ function checkBlockProtectionInSection(section, isAuthenticated) {
   restrictedBlocks.forEach((block) => {
     const hasLoggedIn = block.classList.contains('logged-in');
     const hasLoggedOut = block.classList.contains('logged-out');
+    if (hasLoggedIn && hasLoggedOut) return;
     if ((!isAuthenticated && hasLoggedIn) || (isAuthenticated && hasLoggedOut)) {
       block.remove();
     }
@@ -115,11 +116,7 @@ function applySectionLevelProtection(protectionMetadata, isAuthenticated) {
   });
 
   const remainingSections = document.querySelectorAll('main > div');
-  const publicSections = Array.from(remainingSections).filter((section) => (
-    audience(section) === null
-  ));
-
-  publicSections.forEach((section) => {
+  remainingSections.forEach((section) => {
     checkBlockProtectionInSection(section, isAuthenticated);
   });
 }

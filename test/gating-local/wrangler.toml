@@ -1,12 +1,9 @@
-name = "examples-bbird-cdn"
+name = "gatefix-local"
 main = "index.js"
 compatibility_date = "2026-03-13"
 compatibility_flags = ["nodejs_compat"]
-account_id = "ac7ee4615628005dc5ba0a22f0aae2a6"
-
-routes = [
-   { pattern = "examples.bbird.live/*", zone_name = "bbird.live" },
-]
+workers_dev = false
+preview_urls = false
 
 [cache]
 enabled = true
@@ -25,8 +22,5 @@ enabled = true
 
 [vars]
 ORIGIN_HOSTNAME = "main--examples--aem-sandbox.aem.live"
-PUSH_INVALIDATION = "enabled"
+PUSH_INVALIDATION = "disabled"
 GATED_CACHE_PATHS = "/gated-content"
-
-[observability.logs]
-enabled = true
