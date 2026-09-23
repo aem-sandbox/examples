@@ -202,6 +202,7 @@ const isCachedGatedPath = (url, env) => String(env.GATED_CACHE_PATHS || '').spli
 
 const handleFetch = async (request, env, ctx) => {
   const url = new URL(request.url);
+  // Authenticate before cache lookup: a cache hit skips the Anonymous entrypoint.
   if (!ctx?.exports?.Anonymous || url.port || request.headers.has('Authorization')
     || !canContainGatedHtml(request, url) || !isCachedGatedPath(url, env)
     || await isAuthenticated(request)) {
@@ -209,6 +210,7 @@ const handleFetch = async (request, env, ctx) => {
   }
 
   const anonymousRequest = new Request(request);
+  // The shared cache key has no cookies, so its origin request must have none either.
   anonymousRequest.headers.delete('Cookie');
   return ctx.exports.Anonymous.fetch(anonymousRequest, {
     cf: { cacheKey: anonymousCacheKey(request) },
