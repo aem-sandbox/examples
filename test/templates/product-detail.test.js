@@ -7,7 +7,7 @@ import {
 // eslint-disable-next-line import/no-relative-packages
 import { loadBlock } from '../../scripts/aem.js';
 // eslint-disable-next-line import/no-relative-packages
-import init, { buildBreadcrumb, appendRelatedProducts } from '../../templates/product-detail/product-detail.js';
+import { appendRelatedProducts } from '../../templates/product-detail/product-detail.js';
 
 // `loadBlock` fetches /blocks/cards/cards.js and its CSS over the network. Everything else
 // in aem.js is the real thing, so `decorateBlock` and `getMetadata` behave as they do on a page.
@@ -89,40 +89,6 @@ function stubIndex(rows) {
 
 const main = () => document.querySelector('main');
 const related = () => document.querySelector('main .cards.product-detail-related');
-
-describe('product-detail template breadcrumb', () => {
-  it('builds Home > Products > category > current page from page metadata', () => {
-    mountPage();
-    const nav = buildBreadcrumb();
-    const items = [...nav.querySelectorAll('li')];
-    expect(items.map((li) => li.textContent)).toEqual(['Home', 'Products', 'Footwear', 'Granite Loafers']);
-    expect(items[0].querySelector('a').getAttribute('href')).toBe('/');
-    // "Products" and the category aren't links: this catalog has no browsable listing page.
-    expect(items[1].querySelector('a')).toBeNull();
-    expect(items[2].querySelector('a')).toBeNull();
-    expect(items[3].getAttribute('aria-current')).toBe('page');
-  });
-
-  it('omits the category crumb when the page has none', () => {
-    window.happyDOM.setURL('https://examples.bbird.live/products/product-detail/sku-foo-001');
-    document.head.innerHTML = '<title>Granite Loafers</title>';
-    const nav = buildBreadcrumb();
-    const items = [...nav.querySelectorAll('li')];
-    expect(items.map((li) => li.textContent)).toEqual(['Home', 'Products', 'Granite Loafers']);
-  });
-
-  it('prepends the breadcrumb into the block\'s own wrapper div, not the bare section', async () => {
-    // Nesting inside the wrapper (rather than as a section sibling) is what makes the
-    // breadcrumb inherit the same two-layer centering as the block, without duplicating it.
-    mountPage();
-    stubIndex([]);
-    init(document);
-    const nav = main().querySelector('.product-detail-wrapper > .product-detail-breadcrumb');
-    expect(nav).not.toBeNull();
-    expect(nav.parentElement.classList.contains('product-detail-wrapper')).toBe(true);
-    expect(nav.parentElement.firstElementChild).toBe(nav);
-  });
-});
 
 describe('product-detail template related products', () => {
   beforeEach(() => {

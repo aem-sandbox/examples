@@ -5,6 +5,50 @@ main .product-detail {
   margin-inline: auto;
 }
 
+.product-detail .product-detail-breadcrumb {
+  margin: 0 0 var(--space-l);
+}
+
+.product-detail .product-detail-breadcrumb ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  font-size: var(--body-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.product-detail .product-detail-breadcrumb li:not(:last-child)::after {
+  content: '›';
+  margin: 0 var(--space-s);
+  color: var(--color-brand);
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.product-detail .product-detail-breadcrumb a {
+  color: light-dark(var(--color-gray-600), var(--color-gray-500));
+  text-decoration: none;
+}
+
+.product-detail .product-detail-breadcrumb a:hover,
+.product-detail .product-detail-breadcrumb a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.product-detail .product-detail-breadcrumb li[aria-current='page'] {
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-color);
+}
+
 .product-detail .product-detail-hero {
   display: grid;
   gap: var(--space-l);

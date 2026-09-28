@@ -4,27 +4,6 @@ import { createTag, fetchQueryIndexPage, QUERY_INDEX_PAGE_SIZE } from '../../scr
 const PRODUCT_INDEX_BASE = '/products/product-detail';
 const RELATED_LIMIT = 4;
 
-/**
- * Home > Products > {category} > {product name}, built from page metadata already in
- * <head> — no extra fetch. "Products" and the category aren't links: this SKU catalog has
- * no browsable listing page of its own (it's JSON2HTML detail pages plus a query index),
- * unlike the /products bike catalog, which is a different, unrelated block and index.
- */
-export function buildBreadcrumb() {
-  const category = getMetadata('category');
-  const name = document.title;
-  if (!name) return null;
-
-  const list = createTag('ol', {}, [
-    createTag('li', {}, createTag('a', { href: '/' }, 'Home')),
-    createTag('li', {}, 'Products'),
-    category ? createTag('li', {}, category) : '',
-    createTag('li', { 'aria-current': 'page' }, name),
-  ]);
-
-  return createTag('nav', { class: 'product-detail-breadcrumb', 'aria-label': 'Breadcrumb' }, list);
-}
-
 async function fetchAllProductRows() {
   const rows = [];
   let offset = 0;
@@ -104,14 +83,6 @@ export async function appendRelatedProducts(main) {
 export default function init(root = document) {
   const main = root.querySelector('main');
   if (!main) return;
-
-  // Prepended inside the block's own wrapper div, not the bare section: that wrapper
-  // already carries the site's standard section padding/centering, so nesting the
-  // breadcrumb inside it — rather than as a sibling — lines it up with the block's
-  // own further-narrowed 900px column for free, without duplicating that math here.
-  const blockWrapper = main.querySelector(':scope > div .product-detail')?.parentElement;
-  const breadcrumb = buildBreadcrumb();
-  if (breadcrumb && blockWrapper) blockWrapper.prepend(breadcrumb);
 
   // Started, not awaited: a query-index round trip here would hold up the rest of the
   // page. The section appears when the index resolves; a failure just leaves it out.
