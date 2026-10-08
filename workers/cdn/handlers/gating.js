@@ -7,6 +7,7 @@ import { isAuthenticated } from './auth-check.js';
 
 const SKIP = ['/nav.plain.html', '/footer.plain.html'];
 const MAX_ANONYMOUS_TTL = 60;
+// Only responses filtered here may enter the anonymous cache.
 const anonymousCacheable = new WeakSet();
 const normalize = (value) => String(value || '').trim().toLowerCase();
 const mediaType = (response) => normalize(response.headers.get('content-type')).split(';')[0].trim();
@@ -48,6 +49,7 @@ function transformGatedHtml($, loggedIn) {
     if ((loggedIn && aud === 'logged-out') || (!loggedIn && aud === 'logged-in')) {
       section.remove();
     } else {
+      // Kept sections still enforce block rules; both variants allow either audience.
       section.find(loggedIn ? '.logged-out:not(.logged-in)' : '.logged-in:not(.logged-out)').remove();
     }
   });
@@ -55,10 +57,9 @@ function transformGatedHtml($, loggedIn) {
 }
 
 /**
- * Returns filtered HTML without origin validators.
- * @param {string|null} body
- * @param {Response} source
- * @returns {Response}
+ * Adds a Vary field without dropping existing fields or duplicating names.
+ * @param {Headers} headers
+ * @param {string} name
  */
 function appendVary(headers, name) {
   const values = (headers.get('Vary') || '').split(',').map((value) => value.trim()).filter(Boolean);
@@ -90,6 +91,7 @@ function anonymousCacheTtl(request, source) {
   const currentAge = Math.max(age, apparentAge);
 
   if (ttlMatches.length) {
+    // Rewriting must not restart the origin's freshness window.
     const freshness = Math.min(...ttlMatches.map((match) => Number(match[1] || match[2])));
     return Math.min(MAX_ANONYMOUS_TTL, Math.max(0, freshness - currentAge));
   }
@@ -105,12 +107,14 @@ function gatedResponse(body, source, request, loggedIn) {
   const headers = new Headers(source.headers);
   const ttl = loggedIn ? 0 : anonymousCacheTtl(request, source);
   const cacheable = ttl > 0;
+  // Source validators and byte metadata do not describe the filtered body.
   [
     'Content-Length', 'Content-Range', 'Accept-Ranges', 'Content-Encoding',
     'ETag', 'Last-Modified', 'Age', 'Expires',
     'CDN-Cache-Control', 'Cloudflare-CDN-Cache-Control', 'Surrogate-Control',
   ].forEach((name) => headers.delete(name));
   if (cacheable) {
+    // Browsers recheck the session; only the shared anonymous response gets a TTL.
     headers.set('Cache-Control', 'no-cache');
     headers.set('Cloudflare-CDN-Cache-Control', `public, max-age=${ttl}, must-revalidate`);
     appendVary(headers, 'Accept');
@@ -155,6 +159,7 @@ export async function applyGatingIfNeeded(request, requestURL, response, fetchFu
   let source = response;
   try {
     if (ambiguous && ['', 'text/html', 'multipart/byteranges'].includes(type)) {
+      // A partial or bodyless response cannot reveal whether the page is gated.
       source = await fetchFullResponse();
       const fullType = mediaType(source);
       if (source.status !== 200 || !fullType || fullType === 'multipart/byteranges'
@@ -179,6 +184,7 @@ export async function applyGatingIfNeeded(request, requestURL, response, fetchFu
       loggedIn,
     );
   } catch {
+    // Fail closed rather than return HTML whose audience rules could not be checked.
     if (source !== response) discard(source);
     discard(response);
     return new Response(request.method === 'HEAD' ? null : 'Unable to inspect page content.', {
